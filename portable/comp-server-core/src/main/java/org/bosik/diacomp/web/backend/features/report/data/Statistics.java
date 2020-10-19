@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.report.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -28,7 +29,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.TimeZone;
 import java.util.function.Function;
 
@@ -38,13 +38,15 @@ import static java.util.stream.Collectors.toList;
 public class Statistics
 {
 	private final List<Versioned<DiaryRecord>>              records;
+	@JsonIgnore
 	private final Map<String, List<Versioned<DiaryRecord>>> recordsPerDay;
 	private final Map<String, Metrics>                      metrics;
 	private final Metrics                                   totalMetrics;
+	@JsonIgnore
 	private final AverageBS                                 averageBS;
 	private final double                                    targetMinBS;
 	private final double                                    targetMaxBS;
-	private final OptionalDouble                            targetAchievement; // 0..1
+	private final Double                                    targetAchievement; // 0..1
 	private final String                                    dateStart;
 	private final String                                    dateEnd;
 	private final TimeZone                                  timeZone;
@@ -85,13 +87,13 @@ public class Statistics
 		return metricsMap;
 	}
 
-	private OptionalDouble calculateTargetAchievement(List<Versioned<DiaryRecord>> records, double targetMinBS, double targetMaxBS)
+	private Double calculateTargetAchievement(List<Versioned<DiaryRecord>> records, double targetMinBS, double targetMaxBS)
 	{
 		final List<BloodRecord> bloodRecords = filterRecords(records, BloodRecord.class);
 
 		if (bloodRecords.isEmpty())
 		{
-			return OptionalDouble.empty();
+			return null;
 		}
 
 		double timeTotal = 0.0;
@@ -108,7 +110,7 @@ public class Statistics
 			timeTarget += getIntersectionPeriod(t1, v1, t2, v2, targetMinBS, targetMaxBS);
 		}
 
-		return OptionalDouble.of(timeTarget / timeTotal);
+		return timeTarget / timeTotal;
 	}
 
 	/**

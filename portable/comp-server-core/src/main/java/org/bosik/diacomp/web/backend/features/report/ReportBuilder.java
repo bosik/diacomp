@@ -35,6 +35,8 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
 import org.apache.pdfbox.io.IOUtils;
+import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -61,11 +63,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class ReportBuilder
 {
@@ -124,10 +128,10 @@ public class ReportBuilder
 
 		table.addCell(buildCellBorderless("Средний сахар крови:"));
 		table.addCell(buildCellBorderless(
-				statistics.getTotalMetrics().getAverageBs().isPresent()
+				statistics.getTotalMetrics().getAverageBs() != null
 						? String.format(Locale.US, "%.1f ± %.1f ммоль/л",
-						statistics.getTotalMetrics().getAverageBs().getAsDouble(),
-						statistics.getTotalMetrics().getDeviationBs().getAsDouble()
+						statistics.getTotalMetrics().getAverageBs(),
+						statistics.getTotalMetrics().getDeviationBs()
 				)
 						: "–"
 		));
@@ -139,8 +143,8 @@ public class ReportBuilder
 
 		table.addCell(buildCellBorderless("Нахождение в целевом интервале:"));
 		table.addCell(buildCellBorderless(
-				statistics.getTargetAchievement().isPresent()
-						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement().getAsDouble() * 100)
+				statistics.getTargetAchievement() != null
+						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement() * 100)
 						: "–"
 		));
 		doc.add(table);
@@ -425,8 +429,8 @@ public class ReportBuilder
 
 			table.addCell(buildCellContent(date));
 			table.addCell(buildCellNumber(
-					metrics.getAverageBs().isPresent()
-							? String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs().getAsDouble(), metrics.getTotalBsCount())
+					metrics.getAverageBs() != null
+							? String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(), metrics.getTotalBsCount())
 							: "–"
 			));
 			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getTotalProts())));
@@ -443,13 +447,13 @@ public class ReportBuilder
 			final Metrics metrics = statistics.getTotalMetrics();
 
 			table.addCell(buildCellContent("Среднее").setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs().getAsDouble(),
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(),
 					metrics.getTotalBsCount())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageProts().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageFats().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageCarbs().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getAverageValue().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getAverageIns().getAsDouble())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageProts())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageFats())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageCarbs())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getAverageValue())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getAverageIns())).setBold());
 		}
 
 		doc.add(table);
@@ -553,7 +557,8 @@ public class ReportBuilder
 				{
 					final String value = String.format(Locale.US, "%.1f ХЕ",
 							((MealRecord) record.getData()).getCarbs() / Utils.CARB_PER_BU);
-					addRecordMeal(table, time, value);
+					final String content = getMealDescription((MealRecord) record.getData());
+					addRecordMeal(table, time, value, content);
 				}
 				else if (record.getData() instanceof NoteRecord)
 				{
@@ -578,6 +583,19 @@ public class ReportBuilder
 		}
 
 		doc.add(table);
+	}
+
+	private static String getMealDescription(MealRecord data)
+	{
+		if (data == null || data.getItems() == null)
+		{
+			return "";
+		}
+
+		return data.getItems().stream()
+				.sorted(Comparator.comparing(FoodMassed::getMass).reversed())
+				.map(Food::getName)
+				.collect(Collectors.joining(", "));
 	}
 
 	private static BloodRecord getPrevBloodRecord(List<Map.Entry<String, List<Versioned<DiaryRecord>>>> list, int i)
@@ -640,13 +658,13 @@ public class ReportBuilder
 		table.addCell(buildCellEmpty());
 	}
 
-	private static void addRecordMeal(Table table, String time, String value)
+	private static void addRecordMeal(Table table, String time, String value, String content)
 	{
 		table.addCell(buildCellTime(time));
 		table.addCell(buildCellEmpty().setMinWidth(MIN_WIDTH_BLOOD_SUGAR));
 		table.addCell(buildCellEmpty());
 		table.addCell(buildCellNumber(value).setMinWidth(MIN_WIDTH_MEAL));
-		table.addCell(buildCellEmpty());
+		table.addCell(buildCellContent(content));
 	}
 
 	private static void addRecordNote(Table table, String time, String value)

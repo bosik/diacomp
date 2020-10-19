@@ -25,26 +25,25 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.merklesync.Versioned;
 
 import java.util.List;
-import java.util.OptionalDouble;
 import java.util.TimeZone;
 
 @Value
 public class Metrics
 {
-	private int            count;
-	private double         totalProts;
-	private double         totalFats;
-	private double         totalCarbs;
-	private double         totalValue;
-	private double         totalIns;
-	private OptionalDouble averageProts;
-	private OptionalDouble averageFats;
-	private OptionalDouble averageCarbs;
-	private OptionalDouble averageValue;
-	private OptionalDouble averageIns;
-	private int            totalBsCount;
-	private OptionalDouble averageBs;
-	private OptionalDouble deviationBs;
+	private int    count;
+	private double totalProts;
+	private double totalFats;
+	private double totalCarbs;
+	private double totalValue;
+	private double totalIns;
+	private Double averageProts;
+	private Double averageFats;
+	private Double averageCarbs;
+	private Double averageValue;
+	private Double averageIns;
+	private int    totalBsCount;
+	private Double averageBs;
+	private Double deviationBs;
 
 	public Metrics(List<Versioned<DiaryRecord>> records, TimeZone timeZone)
 	{
@@ -54,27 +53,34 @@ public class Metrics
 
 		this.count = countDistinctDays(records, timeZone);
 		this.totalBsCount = bloodRecords.size();
-		this.averageBs = bloodRecords.stream().mapToDouble(BloodRecord::getValue).average();
-		this.deviationBs = bloodRecords.size() > 0
-				? OptionalDouble.of(
-				Math.sqrt(bloodRecords.stream()
-						.mapToDouble(r -> r.getValue() - averageBs.getAsDouble())
-						.map(x -> x * x)
-						.average()
-						.getAsDouble())
-		)
-				: OptionalDouble.empty();
+
+		if (bloodRecords.size() > 0)
+		{
+			this.averageBs = bloodRecords.stream().mapToDouble(BloodRecord::getValue).average().getAsDouble();
+			this.deviationBs = Math.sqrt(bloodRecords.stream()
+					.mapToDouble(r -> r.getValue() - averageBs)
+					.map(x -> x * x)
+					.average()
+					.getAsDouble()
+			);
+		}
+		else
+		{
+			this.averageBs = null;
+			this.deviationBs = null;
+		}
+
 		this.totalIns = insRecords.stream().mapToDouble(InsRecord::getValue).sum();
 		this.totalProts = meals.stream().mapToDouble(MealRecord::getProts).sum();
 		this.totalFats = meals.stream().mapToDouble(MealRecord::getFats).sum();
 		this.totalCarbs = meals.stream().mapToDouble(MealRecord::getCarbs).sum();
 		this.totalValue = meals.stream().mapToDouble(MealRecord::getValue).sum();
 
-		this.averageIns = count > 0 ? OptionalDouble.of(totalIns / count) : OptionalDouble.empty();
-		this.averageProts = count > 0 ? OptionalDouble.of(totalProts / count) : OptionalDouble.empty();
-		this.averageFats = count > 0 ? OptionalDouble.of(totalFats / count) : OptionalDouble.empty();
-		this.averageCarbs = count > 0 ? OptionalDouble.of(totalCarbs / count) : OptionalDouble.empty();
-		this.averageValue = count > 0 ? OptionalDouble.of(totalValue / count) : OptionalDouble.empty();
+		this.averageIns = count > 0 ? totalIns / count : null;
+		this.averageProts = count > 0 ? totalProts / count : null;
+		this.averageFats = count > 0 ? totalFats / count : null;
+		this.averageCarbs = count > 0 ? totalCarbs / count : null;
+		this.averageValue = count > 0 ? totalValue / count : null;
 	}
 
 	private int countDistinctDays(List<Versioned<DiaryRecord>> records, TimeZone timeZone)

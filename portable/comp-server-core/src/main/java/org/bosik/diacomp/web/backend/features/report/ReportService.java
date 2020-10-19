@@ -17,15 +17,16 @@
  */
 package org.bosik.diacomp.web.backend.features.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.report.data.Statistics;
 import org.bosik.merklesync.Versioned;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -35,19 +36,34 @@ import java.util.List;
 import java.util.TimeZone;
 
 @Service
-@RequiredArgsConstructor
 public class ReportService
 {
-	private final DiaryLocalService diaryService;
+	// FIXME
+	private static final double minBs = 3.7;
+	private static final double maxBs = 7.8;
 
-	public Report exportReport(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	@Autowired
+	private DiaryLocalService diaryService;
+
+	private Statistics getStatistics(int userId, Date fromDate, Date toDate, TimeZone timeZone)
 	{
 		final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(userId, fromDate, toDate, false);
+		return new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
+	}
 
-		// FIXME
-		final double minBs = 3.7;
-		final double maxBs = 7.8;
-		final Statistics statistics = new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
+	public Report exportReportJson(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	{
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
+
+		return new Report(
+				getFileName(statistics) + ".json",
+				new ObjectMapper().writeValueAsString(statistics).getBytes()
+		);
+	}
+
+	public Report exportReportPdf(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	{
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
 
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (final Document doc = new Document(new PdfDocument(new PdfWriter(outputStream))))
@@ -56,9 +72,14 @@ public class ReportService
 		}
 
 		return new Report(
-				"diacomp_report_" + statistics.getDateStart() + "_" + statistics.getDateEnd() + ".pdf",
+				getFileName(statistics) + ".pdf",
 				outputStream.toByteArray()
 		);
+	}
+
+	private static String getFileName(Statistics statistics)
+	{
+		return "diacomp_report_" + statistics.getDateStart() + "_" + statistics.getDateEnd();
 	}
 
 	@Value
