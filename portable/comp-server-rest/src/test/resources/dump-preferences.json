@@ -1,0 +1,26 @@
+[
+  {
+    "id": {
+      "userId": 1,
+      "key": "589985b443c243d6844209964b2b1e8e"
+    },
+    "value": "56ce855fac9846698a78edf2cacf4cfe",
+    "version": 4
+  },
+  {
+    "id": {
+      "userId": 1,
+      "key": "f3f54f8f02a3411faf48f90aadf0ca2d"
+    },
+    "value": "f2dbaeeafffb487496d953c619e9479e",
+    "version": 20
+  },
+  {
+    "id": {
+      "userId": 2,
+      "key": "589985b443c243d6844209964b2b1e8e"
+    },
+    "value": "38be712c8ef74b70b4dba793cc7b349f",
+    "version": 1
+  }
+]

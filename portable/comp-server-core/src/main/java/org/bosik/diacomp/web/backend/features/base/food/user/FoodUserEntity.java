@@ -20,6 +20,7 @@ package org.bosik.diacomp.web.backend.features.base.food.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodEntity;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -32,12 +33,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "food_user")
-public class FoodUserEntity
+public class FoodUserEntity implements FoodEntity
 {
 	public static final int MAX_SIZE_NAME = 100;
 
 	@EmbeddedId
-	private FoodUserEntityPK id;
+	private FoodUserEntityPK key;
 
 	@Column(name = "name", length = MAX_SIZE_NAME)
 	private String name;
@@ -69,16 +70,23 @@ public class FoodUserEntity
 	@Column(name = "version")
 	private int version;
 
-	public FoodUserEntityPK getId()
+	public FoodUserEntityPK getKey()
 	{
-		return id;
+		return key;
 	}
 
-	public void setId(FoodUserEntityPK id)
+	public void setKey(FoodUserEntityPK key)
 	{
-		this.id = id;
+		this.key = key;
 	}
 
+	@Override
+	public String getId()
+	{
+		return key.getId();
+	}
+
+	@Override
 	public String getName()
 	{
 		return name;
@@ -89,6 +97,7 @@ public class FoodUserEntity
 		this.name = name;
 	}
 
+	@Override
 	public double getProts()
 	{
 		return prots;
@@ -99,6 +108,7 @@ public class FoodUserEntity
 		this.prots = prots;
 	}
 
+	@Override
 	public double getFats()
 	{
 		return fats;
@@ -109,6 +119,7 @@ public class FoodUserEntity
 		this.fats = fats;
 	}
 
+	@Override
 	public double getCarbs()
 	{
 		return carbs;
@@ -119,6 +130,7 @@ public class FoodUserEntity
 		this.carbs = carbs;
 	}
 
+	@Override
 	public double getValue()
 	{
 		return value;
@@ -129,6 +141,7 @@ public class FoodUserEntity
 		this.value = value;
 	}
 
+	@Override
 	public boolean isFromTable()
 	{
 		return fromTable;
@@ -139,6 +152,7 @@ public class FoodUserEntity
 		this.fromTable = fromTable;
 	}
 
+	@Override
 	public boolean isDeleted()
 	{
 		return deleted;
@@ -149,6 +163,7 @@ public class FoodUserEntity
 		this.deleted = deleted;
 	}
 
+	@Override
 	public Date getLastModified()
 	{
 		return lastModified;
@@ -159,6 +174,7 @@ public class FoodUserEntity
 		this.lastModified = lastModified;
 	}
 
+	@Override
 	public String getHash()
 	{
 		return hash;
@@ -169,6 +185,7 @@ public class FoodUserEntity
 		this.hash = hash;
 	}
 
+	@Override
 	public int getVersion()
 	{
 		return version;

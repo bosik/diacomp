@@ -40,10 +40,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 
 @Service
@@ -62,29 +62,12 @@ public class FoodComboLocalService
 	private CachedFoodComboHashTree cachedHashTree;
 
 	@Autowired
-	private FoodUserEntityRepository foodUserEntityRepository;
-
-	@Autowired
 	private FoodCommonEntityRepository foodCommonEntityRepository;
 
+	@Autowired
+	private FoodUserEntityRepository foodUserEntityRepository;
+
 	// -------------------------------------------------------------------------------------------------
-
-	@Deprecated
-	private static List<Versioned<FoodItem>> merge(List<Versioned<FoodItem>> foodCommon, List<Versioned<FoodItem>> foodUser)
-	{
-		Map<String, Versioned<FoodItem>> map = new HashMap<>();
-		for (Versioned<FoodItem> f : foodCommon)
-		{
-			map.put(f.getId(), f);
-		}
-
-		for (Versioned<FoodItem> f : foodUser) // user overrides common
-		{
-			map.put(f.getId(), f);
-		}
-
-		return new ArrayList<>(map.values());
-	}
 
 	public void add(int userId, Versioned<FoodItem> item) throws PersistenceException
 	{
@@ -93,7 +76,8 @@ public class FoodComboLocalService
 
 	public int count(int userId)
 	{
-		return foodUserEntityRepository.countCombo(userId);
+		return foodUserEntityRepository.countByKeyUserId(userId) +
+				foodCommonEntityRepository.countOrg(userId);
 	}
 
 	public int count(int userId, String prefix)
@@ -103,7 +87,8 @@ public class FoodComboLocalService
 			throw new IllegalArgumentException("ID prefix is null");
 		}
 
-		return foodUserEntityRepository.countCombo(userId, prefix);
+		return foodUserEntityRepository.countByKeyUserIdAndKeyIdStartingWith(userId, prefix) +
+				foodCommonEntityRepository.countOrgByIdStartingWith(userId, prefix);
 	}
 
 	public void delete(int userId, String id)
@@ -127,65 +112,82 @@ public class FoodComboLocalService
 
 	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.findAll(true);
-		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findAll(userId, true);
-		List<Versioned<FoodItem>> result = merge(foodCommon, foodUser);
+		final List<FoodEntity> entities = includeRemoved
 
-		if (!includeRemoved)
-		{
-			result.removeIf(Versioned::isDeleted);
-		}
+				? combineSorted(
+				foodCommonEntityRepository.findOrg(userId),
+				foodUserEntityRepository.findByKeyUserId(userId))
 
-		return result;
+				: combineSorted(
+				foodCommonEntityRepository.findOrgByDeletedIsFalse(userId),
+				foodUserEntityRepository.findByKeyUserIdAndDeletedIsFalse(userId));
+
+		return FoodUserLocalService.convert(entities);
 	}
 
 	public List<Versioned<FoodItem>> findAny(int userId, String filter)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.findAny(filter);
-		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findAny(userId, filter);
-		return merge(foodCommon, foodUser);
+		final List<FoodEntity> entities = combineSorted(
+				foodCommonEntityRepository.findOrgByDeletedIsFalseAndNameContaining(userId, filter),
+				foodUserEntityRepository.findByKeyUserIdAndDeletedIsFalseAndNameContaining(userId, filter));
+
+		return FoodUserLocalService.convert(entities);
 	}
 
 	public Versioned<FoodItem> findOne(int userId, String exactName)
 	{
-		Versioned<FoodItem> foodUser = foodUserLocalService.findOne(userId, exactName);
+		final List<FoodUserEntity> user = foodUserEntityRepository.findByKeyUserIdAndName(userId, exactName);
 
-		if (foodUser != null)
+		// user has such food, non-deleted
+		final Optional<FoodUserEntity> userNonDeleted = user.stream()
+				.filter(e -> !e.isDeleted())
+				.findAny();
+
+		if (userNonDeleted.isPresent())
 		{
-			return foodUser;
+			return FoodUserLocalService.convert(userNonDeleted.get());
 		}
-		else
+
+		// user has such food, but it's deleted
+		if (!user.isEmpty())
 		{
-			return foodCommonLocalService.findOne(exactName);
+			return null;
 		}
+
+		// check common base
+		final List<FoodCommonEntity> common = foodCommonEntityRepository.findByDeletedIsFalseAndName(exactName);
+		if (!common.isEmpty())
+		{
+			return FoodUserLocalService.convert(common.get(0));
+		}
+
+		return null;
 	}
 
 	public Versioned<FoodItem> findById(int userId, String id)
 	{
-		Versioned<FoodItem> foodUser = foodUserLocalService.findById(userId, id);
-
+		final FoodUserEntity foodUser = foodUserEntityRepository.findByKeyUserIdAndKeyId(userId, id);
 		if (foodUser != null)
 		{
-			return foodUser;
+			return FoodUserLocalService.convert(foodUser);
 		}
-		else
-		{
-			return foodCommonLocalService.findById(id);
-		}
+
+		final FoodCommonEntity foodCommon = foodCommonEntityRepository.findById(id).orElse(null);
+		return FoodUserLocalService.convert(foodCommon);
 	}
 
 	public List<Versioned<FoodItem>> findByIdPrefix(int userId, String prefix)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.findByIdPrefix(prefix);
-		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findByIdPrefix(userId, prefix);
-		return merge(foodCommon, foodUser);
+		return FoodUserLocalService.convert(combine(
+				foodUserEntityRepository.findByKeyUserIdAndKeyIdStartingWith(userId, prefix),
+				foodCommonEntityRepository.findOrgByIdStartingWith(userId, prefix)));
 	}
 
 	public List<Versioned<FoodItem>> findChanged(int userId, Date since)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.findChanged(since);
-		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findChanged(userId, since);
-		return merge(foodCommon, foodUser);
+		return FoodUserLocalService.convert(combine(
+				foodUserEntityRepository.findByKeyUserIdAndLastModifiedIsGreaterThanEqual(userId, since),
+				foodCommonEntityRepository.findOrgByLastModifiedIsGreaterThanEqual(userId, since)));
 	}
 
 	/**
@@ -222,9 +224,10 @@ public class FoodComboLocalService
 		final StringBuilder s = new StringBuilder();
 		s.append("[");
 
-		// fetch common food
-		List<FoodCommonEntity> foodCommon = foodCommonEntityRepository.findNotOverridden(userId);
-		for (FoodCommonEntity food : foodCommon)
+		for (FoodEntity food : combine(
+				foodCommonEntityRepository.findOrg(userId),
+				foodUserEntityRepository.findByKeyUserId(userId)
+		))
 		{
 			if (s.length() > 1)
 			{
@@ -241,25 +244,6 @@ public class FoodComboLocalService
 			s.append("}");
 		}
 
-		// fetch user food
-		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByIdUserId(userId);
-		for (FoodUserEntity f : foodUser)
-		{
-			if (s.length() > 1)
-			{
-				s.append(",");
-			}
-
-			s.append("{");
-			s.append("\"id\":\"").append(f.getId().getId()).append("\",");
-			s.append("\"stamp\":\"").append(Utils.formatTimeUTC(f.getLastModified())).append("\",");
-			s.append("\"hash\":\"").append(f.getHash()).append("\",");
-			s.append("\"version\":").append(f.getVersion()).append(",");
-			s.append("\"deleted\":").append(f.isDeleted()).append(",");
-			s.append("\"data\":").append(serializer.write(convertToFoodItem(f)));
-			s.append("}");
-		}
-
 		s.append("]");
 		return s.toString();
 	}
@@ -269,38 +253,26 @@ public class FoodComboLocalService
 		final StringBuilder s = new StringBuilder();
 		s.append("VERSION=1\n");
 
-		// fetch common food
-		List<FoodCommonEntity> foodCommon = foodCommonEntityRepository.findNotOverridden(userId);
-		for (FoodCommonEntity f : foodCommon)
+		for (FoodEntity food : combine(
+				foodCommonEntityRepository.findOrg(userId),
+				foodUserEntityRepository.findByKeyUserId(userId)
+		))
 		{
-			s.append(Utils.removeTabs(f.getName())).append('\t');
-			s.append(f.getId()).append('\t');
-			s.append(Utils.formatTimeUTC(f.getLastModified())).append('\t');
-			s.append(f.getHash()).append('\t');
-			s.append(f.getVersion()).append('\t');
-			s.append(f.isDeleted()).append('\t');
-			s.append(serializer.write(convertToFoodItem(f))).append('\n');
-		}
-
-		// fetch user food
-		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByIdUserId(userId);
-		for (FoodUserEntity f : foodUser)
-		{
-			s.append(Utils.removeTabs(f.getName())).append('\t');
-			s.append(f.getId().getId()).append('\t');
-			s.append(Utils.formatTimeUTC(f.getLastModified())).append('\t');
-			s.append(f.getHash()).append('\t');
-			s.append(f.getVersion()).append('\t');
-			s.append(f.isDeleted()).append('\t');
-			s.append(serializer.write(convertToFoodItem(f))).append('\n');
+			s.append(Utils.removeTabs(food.getName())).append('\t');
+			s.append(food.getId()).append('\t');
+			s.append(Utils.formatTimeUTC(food.getLastModified())).append('\t');
+			s.append(food.getHash()).append('\t');
+			s.append(food.getVersion()).append('\t');
+			s.append(food.isDeleted()).append('\t');
+			s.append(serializer.write(convertToFoodItem(food))).append('\n');
 		}
 
 		return s.toString();
 	}
 
-	private static FoodItem convertToFoodItem(FoodUserEntity entity)
+	private static FoodItem convertToFoodItem(FoodEntity entity)
 	{
-		FoodItem food = new FoodItem();
+		final FoodItem food = new FoodItem();
 
 		food.setName(entity.getName());
 		food.setRelProts(entity.getProts());
@@ -312,17 +284,18 @@ public class FoodComboLocalService
 		return food;
 	}
 
-	private static FoodItem convertToFoodItem(FoodCommonEntity entity)
+	private static <T> List<T> combine(List<? extends T> a, List<? extends T> b)
 	{
-		FoodItem food = new FoodItem();
+		final List<T> result = new ArrayList<>(a.size() + b.size());
+		result.addAll(a);
+		result.addAll(b);
+		return result;
+	}
 
-		food.setName(entity.getName());
-		food.setRelProts(entity.getProts());
-		food.setRelFats(entity.getFats());
-		food.setRelCarbs(entity.getCarbs());
-		food.setRelValue(entity.getValue());
-		food.setFromTable(entity.isFromTable());
-
-		return food;
+	private static <T extends FoodEntity> List<T> combineSorted(List<? extends T> a, List<? extends T> b)
+	{
+		final List<T> combined = combine(a, b);
+		combined.sort(Comparator.comparing(FoodEntity::getName));
+		return combined;
 	}
 }

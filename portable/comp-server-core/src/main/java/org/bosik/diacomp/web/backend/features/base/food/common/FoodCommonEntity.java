@@ -20,6 +20,7 @@ package org.bosik.diacomp.web.backend.features.base.food.common;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +33,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "food_common")
-public class FoodCommonEntity
+public class FoodCommonEntity implements FoodEntity
 {
 	public static final int MAX_SIZE_NAME = 100;
 
@@ -73,6 +74,7 @@ public class FoodCommonEntity
 	@Column(name = "tag")
 	private String tag;
 
+	@Override
 	public String getId()
 	{
 		return id;
@@ -83,6 +85,7 @@ public class FoodCommonEntity
 		this.id = id;
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
@@ -93,6 +96,7 @@ public class FoodCommonEntity
 		this.name = name;
 	}
 
+	@Override
 	public double getProts()
 	{
 		return prots;
@@ -103,6 +107,7 @@ public class FoodCommonEntity
 		this.prots = prots;
 	}
 
+	@Override
 	public double getFats()
 	{
 		return fats;
@@ -113,6 +118,7 @@ public class FoodCommonEntity
 		this.fats = fats;
 	}
 
+	@Override
 	public double getCarbs()
 	{
 		return carbs;
@@ -123,6 +129,7 @@ public class FoodCommonEntity
 		this.carbs = carbs;
 	}
 
+	@Override
 	public double getValue()
 	{
 		return value;
@@ -133,6 +140,7 @@ public class FoodCommonEntity
 		this.value = value;
 	}
 
+	@Override
 	public boolean isFromTable()
 	{
 		return fromTable;
@@ -143,6 +151,7 @@ public class FoodCommonEntity
 		this.fromTable = fromTable;
 	}
 
+	@Override
 	public boolean isDeleted()
 	{
 		return deleted;
@@ -153,6 +162,7 @@ public class FoodCommonEntity
 		this.deleted = deleted;
 	}
 
+	@Override
 	public Date getLastModified()
 	{
 		return lastModified;
@@ -163,6 +173,7 @@ public class FoodCommonEntity
 		this.lastModified = lastModified;
 	}
 
+	@Override
 	public String getHash()
 	{
 		return hash;
@@ -173,6 +184,7 @@ public class FoodCommonEntity
 		this.hash = hash;
 	}
 
+	@Override
 	public int getVersion()
 	{
 		return version;

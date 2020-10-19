@@ -23,26 +23,25 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.IntegrationTest;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserEntity;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserEntityPK;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserEntityRepository;
+import org.bosik.diacomp.web.backend.features.base.food.common.FoodCommonLocalService;
 import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,90 +51,10 @@ public class FoodComboRestTest extends IntegrationTest
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 	private final Serializer<Versioned<FoodItem>> serializer    = new SerializerFoodItem();
 
-	@Autowired
-	private FoodUserEntityRepository foodUserEntityRepository;
-
 	@Before
 	public void onBefore()
 	{
 		super.onBefore();
-
-		foodUserEntityRepository.deleteAll();
-		foodUserEntityRepository.saveAll(buildData(getUserId()));
-	}
-
-	private static List<FoodUserEntity> buildData(int userId)
-	{
-		return Arrays.asList(
-				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
-								.id("f906b4341cc54a59acf23ed0108164f0")
-								.userId(userId)
-								.build()
-						)
-						.lastModified(new Date())
-						.hash("7c47e50757a14528a2b0b6896cb03432")
-						.version(1)
-						.deleted(false)
-						.name("Food 1")
-						.prots(1.0)
-						.fats(2.0)
-						.carbs(3.0)
-						.value(16.8)
-						.fromTable(true)
-						.build(),
-				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
-								.id("5e2d537c5110494d90d7f5277f4367ca")
-								.userId(userId)
-								.build()
-						)
-						.lastModified(new Date())
-						.hash("821818e3ef4f41e3bcb3893364b38835")
-						.version(1)
-						.deleted(false)
-						.name("Food 2")
-						.prots(2.0)
-						.fats(3.0)
-						.carbs(4.0)
-						.value(28.7)
-						.fromTable(false)
-						.build(),
-				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
-								.id("f9455692ef294608a85c1d7d52fb6956")
-								.userId(userId)
-								.build()
-						)
-						.lastModified(new Date())
-						.hash("d6704d5506ab4104a5a5cab720af8736")
-						.version(2)
-						.deleted(true)
-						.name("Deleted food")
-						.prots(0.01)
-						.fats(0.0)
-						.carbs(88.0)
-						.value(280)
-						.fromTable(false)
-						.build(),
-				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
-								.id("5e20de21655447ce849e42a1c51db615")
-								.userId(userId + 1) // another user
-								.build()
-						)
-						.lastModified(new Date())
-						.hash("684ad8d6363b4c1bbdb9e74b9472adc6")
-						.version(1)
-						.deleted(false)
-						.name("Food 4")
-						.prots(4.2)
-						.fats(3.5)
-						.carbs(5.7)
-						.value(56.2)
-						.fromTable(false)
-						.build()
-		);
 	}
 
 	@Test
@@ -151,7 +70,7 @@ public class FoodComboRestTest extends IntegrationTest
 		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.isEqualTo("3");
+				.isEqualTo("5");
 	}
 
 	@Test
@@ -167,7 +86,7 @@ public class FoodComboRestTest extends IntegrationTest
 		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.isEqualTo("1");
+				.isEqualTo("2");
 	}
 
 	@Test
@@ -192,7 +111,7 @@ public class FoodComboRestTest extends IntegrationTest
 	{
 		// given
 		final int userId = getUserId();
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository.findByIdUserId(userId));
+		final List<Versioned<FoodItem>> expected = getCombined(userId, true);
 
 		// when
 		final ResponseSpec result = webClient
@@ -216,8 +135,11 @@ public class FoodComboRestTest extends IntegrationTest
 	{
 		// given
 		final int userId = getUserId();
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdIdStartingWith(userId, "5e"));
+		final Map<String, Versioned<FoodItem>> expected = new HashMap<>();
+		FoodUserLocalService.convert(foodUserEntityRepository.findByKeyUserIdAndKeyIdStartingWith(userId, "5e"))
+				.forEach(e -> expected.put(e.getId(), e));
+		FoodCommonLocalService.convert(foodCommonEntityRepository.findByIdStartingWith("5e"))
+				.forEach(e -> expected.put(e.getId(), e));
 
 		// when
 		final ResponseSpec result = webClient
@@ -233,7 +155,7 @@ public class FoodComboRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEqualsSorted(expected, actual);
+		assertEqualsSorted(expected.values(), actual);
 	}
 
 	@Test
@@ -242,7 +164,7 @@ public class FoodComboRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final Versioned<FoodItem> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdId(userId, "f906b4341cc54a59acf23ed0108164f0"));
+				foodUserEntityRepository.findByKeyUserIdAndKeyId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
 		final ResponseSpec result = webClient
@@ -301,8 +223,7 @@ public class FoodComboRestTest extends IntegrationTest
 	{
 		// given
 		final int userId = getUserId();
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndDeletedIsFalse(userId));
+		final List<Versioned<FoodItem>> expected = getCombined(userId, false);
 
 		// when
 		final ResponseSpec result = webClient
@@ -326,8 +247,7 @@ public class FoodComboRestTest extends IntegrationTest
 	{
 		// given
 		final int userId = getUserId();
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserId(userId));
+		final List<Versioned<FoodItem>> expected = getCombined(userId, true);
 
 		// when
 		final ResponseSpec result = webClient
@@ -372,10 +292,10 @@ public class FoodComboRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final String query = "od";
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository
-				.findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(
-						userId, query
-				));
+		final List<Versioned<FoodItem>> combined = getCombined(userId, false);
+		final List<Versioned<FoodItem>> expected = combined.stream()
+				.filter(e -> e.getData().getName().toLowerCase().contains(query.toLowerCase()))
+				.collect(Collectors.toList());
 
 		assertTrue("Data must contain at least one element", !expected.isEmpty());
 
@@ -434,14 +354,15 @@ public class FoodComboRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final Date since = new Date(0);
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndLastModifiedIsGreaterThanEqual(userId, since));
+
+		final List<Versioned<FoodItem>> expected = getCombined(userId, true).stream()
+				.filter(e -> e.getTimeStamp().after(since))
+				.collect(Collectors.toList());
 
 		// when
 		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.FindChanged.URL)
-						.queryParam(Api.Food.FindChanged.PARAM_SINCE,
-								Utils.formatDateUTC(since))
+						.queryParam(Api.Food.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since))
 						.build()
 				)
 				.cookies(c -> c.addAll(signIn()))
@@ -477,8 +398,7 @@ public class FoodComboRestTest extends IntegrationTest
 		// given / when
 		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.FindChanged.URL)
-						.queryParam(Api.Food.FindChanged.PARAM_SINCE,
-								Utils.buildString(20))
+						.queryParam(Api.Food.FindChanged.PARAM_SINCE, Utils.buildString(20))
 						.build()
 				)
 				.cookies(c -> c.addAll(signIn()))
@@ -501,7 +421,7 @@ public class FoodComboRestTest extends IntegrationTest
 		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.isEqualTo("c4cf3a3f3c8bc70ff308f963e002339d");
+				.isEqualTo("b64238203d4b4e4208a753c7e6a9c27c");
 	}
 
 	@Test
@@ -539,7 +459,8 @@ public class FoodComboRestTest extends IntegrationTest
 		// given
 		final Map<String, String> expected = new HashMap<String, String>()
 		{{
-			put("5", "821818e3ef4f41e3bcb3893364b38835");
+			put("5", "af3630390519802c4494200705f7f121");
+			put("6", "d565e6abebf6480a8dcec390656326f3");
 			put("f", "42b7225c5d4c862c475570308c5fbb68");
 		}};
 
@@ -643,7 +564,7 @@ public class FoodComboRestTest extends IntegrationTest
 				.isEqualTo(Api.Food.Save.RESPONSE_OK);
 
 		final Versioned<FoodItem> actual = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdId(userId, itemId));
+				foodUserEntityRepository.findByKeyUserIdAndKeyId(userId, itemId));
 		assertEquals(item, actual);
 	}
 
@@ -662,5 +583,21 @@ public class FoodComboRestTest extends IntegrationTest
 
 		// then
 		result.expectStatus().isBadRequest();
+	}
+
+	private List<Versioned<FoodItem>> getCombined(int userId, boolean includeDeleted)
+	{
+		final List<Versioned<FoodItem>> combo = new ArrayList<>();
+		combo.addAll(FoodUserLocalService.convert(foodCommonEntityRepository.findOrg(userId)));
+		combo.addAll(FoodUserLocalService.convert(foodUserEntityRepository.findByKeyUserId(userId)));
+
+		if (!includeDeleted)
+		{
+			combo.removeIf(Versioned::isDeleted);
+		}
+
+		combo.sort(Comparator.comparing(e -> e.getData().getName()));
+
+		return combo;
 	}
 }

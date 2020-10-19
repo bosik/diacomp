@@ -65,7 +65,7 @@ public class FoodUserRestTest extends IntegrationTest
 	{
 		return Arrays.asList(
 				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
+						.key(FoodUserEntityPK.builder()
 								.id("f906b4341cc54a59acf23ed0108164f0")
 								.userId(userId)
 								.build()
@@ -82,7 +82,7 @@ public class FoodUserRestTest extends IntegrationTest
 						.fromTable(true)
 						.build(),
 				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
+						.key(FoodUserEntityPK.builder()
 								.id("5e2d537c5110494d90d7f5277f4367ca")
 								.userId(userId)
 								.build()
@@ -99,7 +99,7 @@ public class FoodUserRestTest extends IntegrationTest
 						.fromTable(false)
 						.build(),
 				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
+						.key(FoodUserEntityPK.builder()
 								.id("f9455692ef294608a85c1d7d52fb6956")
 								.userId(userId)
 								.build()
@@ -116,7 +116,7 @@ public class FoodUserRestTest extends IntegrationTest
 						.fromTable(false)
 						.build(),
 				FoodUserEntity.builder()
-						.id(FoodUserEntityPK.builder()
+						.key(FoodUserEntityPK.builder()
 								.id("5e20de21655447ce849e42a1c51db615")
 								.userId(userId + 1) // another user
 								.build()
@@ -189,7 +189,7 @@ public class FoodUserRestTest extends IntegrationTest
 	{
 		// given
 		final int userId = getUserId();
-		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository.findByIdUserId(userId));
+		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository.findByKeyUserId(userId));
 
 		// when
 		final ResponseSpec result = webClient
@@ -214,7 +214,7 @@ public class FoodUserRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdIdStartingWith(userId, "5e"));
+				foodUserEntityRepository.findByKeyUserIdAndKeyIdStartingWith(userId, "5e"));
 
 		// when
 		final ResponseSpec result = webClient
@@ -239,7 +239,7 @@ public class FoodUserRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final Versioned<FoodItem> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdId(userId, "f906b4341cc54a59acf23ed0108164f0"));
+				foodUserEntityRepository.findByKeyUserIdAndKeyId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
 		final ResponseSpec result = webClient
@@ -299,7 +299,7 @@ public class FoodUserRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndDeletedIsFalse(userId));
+				foodUserEntityRepository.findByKeyUserIdAndDeletedIsFalse(userId));
 
 		// when
 		final ResponseSpec result = webClient
@@ -324,7 +324,7 @@ public class FoodUserRestTest extends IntegrationTest
 		// given
 		final int userId = getUserId();
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserId(userId));
+				foodUserEntityRepository.findByKeyUserId(userId));
 
 		// when
 		final ResponseSpec result = webClient
@@ -370,7 +370,7 @@ public class FoodUserRestTest extends IntegrationTest
 		final int userId = getUserId();
 		final String query = "od";
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository
-				.findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(
+				.findByKeyUserIdAndDeletedIsFalseAndNameContaining(
 						userId, query
 				));
 
@@ -432,7 +432,7 @@ public class FoodUserRestTest extends IntegrationTest
 		final int userId = getUserId();
 		final Date since = new Date(0);
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndLastModifiedIsGreaterThanEqual(userId, since));
+				foodUserEntityRepository.findByKeyUserIdAndLastModifiedIsGreaterThanEqual(userId, since));
 
 		// when
 		final ResponseSpec result = webClient
@@ -640,7 +640,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.isEqualTo(Api.Food.User.Save.RESPONSE_OK);
 
 		final Versioned<FoodItem> actual = FoodUserLocalService.convert(
-				foodUserEntityRepository.findByIdUserIdAndIdId(userId, itemId));
+				foodUserEntityRepository.findByKeyUserIdAndKeyId(userId, itemId));
 		assertEquals(item, actual);
 	}
 

@@ -38,7 +38,7 @@ public class FoodCommonLocalService implements FoodCommonService
 	@Autowired
 	private FoodCommonEntityRepository repository;
 
-	private static Versioned<FoodItem> convert(FoodCommonEntity e)
+	public static Versioned<FoodItem> convert(FoodCommonEntity e)
 	{
 		if (e == null)
 		{

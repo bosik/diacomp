@@ -26,10 +26,31 @@ import java.util.List;
 
 public interface FoodCommonEntityRepository extends CrudRepository<FoodCommonEntity, String>
 {
+	// Org = original (non-overridden)
+	String IS_ORIGINAL = "id NOT IN (SELECT u.key.id FROM FoodUserEntity u WHERE u.key.userId = :userId)";
+
 	List<FoodCommonEntity> findAll();
 
-	@Query(value = "SELECT * FROM food_common WHERE id NOT IN (SELECT id FROM food_user WHERE user_id = :userId)", nativeQuery = true)
-	List<FoodCommonEntity> findNotOverridden(@Param("userId") int userId);
+	@Query(value = "SELECT COUNT(1) FROM FoodCommonEntity f WHERE " + IS_ORIGINAL)
+	int countOrg(@Param("userId") int userId);
+
+	@Query(value = "SELECT COUNT(1) FROM FoodCommonEntity f WHERE " + IS_ORIGINAL + " AND id LIKE :prefix%")
+	int countOrgByIdStartingWith(@Param("userId") int userId, @Param("prefix") String prefix);
+
+	@Query(value = "SELECT f FROM FoodCommonEntity f WHERE " + IS_ORIGINAL)
+	List<FoodCommonEntity> findOrg(@Param("userId") int userId);
+
+	@Query(value = "SELECT f FROM FoodCommonEntity f WHERE " + IS_ORIGINAL + " AND deleted = false")
+	List<FoodCommonEntity> findOrgByDeletedIsFalse(@Param("userId") int userId);
+
+	@Query(value = "SELECT f FROM FoodCommonEntity f WHERE " + IS_ORIGINAL + " AND deleted = false AND name LIKE %:filter%")
+	List<FoodCommonEntity> findOrgByDeletedIsFalseAndNameContaining(@Param("userId") int userId, @Param("filter") String filter);
+
+	@Query(value = "SELECT f FROM FoodCommonEntity f WHERE " + IS_ORIGINAL + " AND id LIKE :prefix%")
+	List<FoodCommonEntity> findOrgByIdStartingWith(@Param("userId") int userId, @Param("prefix") String prefix);
+
+	@Query(value = "SELECT f FROM FoodCommonEntity f WHERE " + IS_ORIGINAL + " AND lastModified >= :since")
+	List<FoodCommonEntity> findOrgByLastModifiedIsGreaterThanEqual(@Param("userId") int userId, @Param("since") Date since);
 
 	List<FoodCommonEntity> findByDeletedIsFalse();
 
