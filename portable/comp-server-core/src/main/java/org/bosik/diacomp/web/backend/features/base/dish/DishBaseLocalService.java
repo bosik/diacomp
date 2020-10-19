@@ -265,19 +265,4 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 
 		return s.toString();
 	}
-
-	public void validate()
-	{
-		repository.findAll().forEach(entity ->
-		{
-			try
-			{
-				new JSONObject(entity.getContent());
-			}
-			catch (Exception e)
-			{
-				System.out.println(entity.getId() + "\t" + entity.getUserId() + "\t" + entity.getContent());
-			}
-		});
-	}
 }

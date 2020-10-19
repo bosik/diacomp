@@ -1,0 +1,42 @@
+[
+  {
+    "id": "f906b4341cc54a59acf23ed0108164f0",
+    "userId": 1,
+    "timeStamp": "2020-10-10T01:55:15.659+0000",
+    "hash": "7c47e50757a14528a2b0b6896cb03432",
+    "version": 1,
+    "deleted": false,
+    "content": "{\"finger\":7,\"time\":\"2020-04-01 08:41:34\",\"type\":\"blood\",\"value\":5.6}",
+    "timeCache": "2020-04-01T08:41:34.000+0000"
+  },
+  {
+    "id": "5e2d537c5110494d90d7f5277f4367ca",
+    "userId": 1,
+    "timeStamp": "2020-10-10T01:55:15.659+0000",
+    "hash": "821818e3ef4f41e3bcb3893364b38835",
+    "version": 1,
+    "deleted": false,
+    "content": "{\"time\":\"2020-04-01 09:00:36\",\"type\":\"ins\",\"value\":12}",
+    "timeCache": "2020-04-01T09:00:36.000+0000"
+  },
+  {
+    "id": "f9455692ef294608a85c1d7d52fb6956",
+    "userId": 1,
+    "timeStamp": "2020-10-10T01:55:15.659+0000",
+    "hash": "d6704d5506ab4104a5a5cab720af8736",
+    "version": 2,
+    "deleted": true,
+    "content": "{\"time\":\"2020-03-30 01:15:40\",\"type\":\"ins\",\"value\":7}",
+    "timeCache": "2020-03-30T01:15:40.000+0000"
+  },
+  {
+    "id": "5e20de21655447ce849e42a1c51db615",
+    "userId": 2,
+    "timeStamp": "2020-10-10T01:55:15.660+0000",
+    "hash": "684ad8d6363b4c1bbdb9e74b9472adc6",
+    "version": 1,
+    "deleted": false,
+    "content": "{\"time\":\"2020-03-26 21:47:00\",\"text\":\"test\",\"type\":\"note\"}",
+    "timeCache": "2020-03-26T21:47:00.000+0000"
+  }
+]
