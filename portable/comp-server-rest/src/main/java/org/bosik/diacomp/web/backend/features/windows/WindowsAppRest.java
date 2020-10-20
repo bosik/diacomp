@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,7 +58,9 @@ public class WindowsAppRest
 		try
 		{
 			final InputStream inputStream = service.getFileStream(fileName);
-			return ResponseEntity.ok(new InputStreamResource(inputStream));
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+					.body(new InputStreamResource(inputStream));
 		}
 		catch (FileNotFoundException e)
 		{

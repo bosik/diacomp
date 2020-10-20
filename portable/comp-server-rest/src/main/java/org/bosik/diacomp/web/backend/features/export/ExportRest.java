@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,9 @@ public class ExportRest extends UserRest
 		entries.add(new Entry(ExportAPI.JSON_PREFERENCES, getBytes(prefService.exportJson(userId))));
 
 		final InputStreamResource data = new InputStreamResource(ZipUtils.zip(entries));
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, HEADER_DISPOSITION).body(data);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, HEADER_DISPOSITION)
+				.body(data);
 	}
 
 	@GetMapping(path = "/plain", produces = "application/zip")
@@ -90,6 +91,8 @@ public class ExportRest extends UserRest
 		entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, getBytes(prefService.exportPlain(userId))));
 
 		final InputStreamResource data = new InputStreamResource(ZipUtils.zip(entries));
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, HEADER_DISPOSITION).body(data);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, HEADER_DISPOSITION)
+				.body(data);
 	}
 }
