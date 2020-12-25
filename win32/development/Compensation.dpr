@@ -74,39 +74,6 @@ uses
       CreateDirectory(PChar(WORK_FOLDER + FOLDER_BASES), nil);
   end;
 
-  // максимум 1 Мб
-  function CheckFile(const LocalFileName, URL: string; Crytical, NeedRestart: boolean; var FlagRestart, FlagModificated: boolean): Boolean;
-  begin
-    Result := True;
-
-    if (not FileExists(LocalFileName)) then
-    begin
-      if (GetInetFile(URL, LocalFileName, 1024 * 1024)) and
-         (FileExists(LocalFileName)) then
-      begin
-        FlagModificated := True;
-        if (NeedRestart) then
-          FlagRestart := True;
-      end else
-      begin
-        if (Crytical) then
-          ErrorMessage(
-            'Файл "' + LocalFileName + '" не найден'#13 +
-            'Загрузка с сервера по адресу "' + URL + '" не удалась'#13 +
-            'Приложение завершает свою работу, всё тлен :(');
-        Result := False;
-      end;
-    end;
-  end;
-
-  procedure Restart();
-  const
-    RESTARTER = 'restart.exe';
-  begin
-    ShellExecute(0, 'open', PChar(WORK_FOLDER + RESTARTER), PChar('"' + Application.ExeName + '" 6000'), nil, SW_SHOWNORMAL);
-    Halt;
-  end;
-
   function IsWin64(): Boolean;
   var
     IsWow64Process: function(hProcess : THandle; var Wow64Process : BOOL): BOOL; stdcall;
@@ -176,25 +143,6 @@ begin
     begin
       Log(ERROR, E.Message);
       ErrorMessage('Некоторые строковые ресурсы отсутствуют');
-    end;
-  end;
-
-  if (FlagModificated) then
-  begin
-    if (FlagRestart) then
-    begin
-      if CheckFile(WORK_FOLDER + 'restart.exe', URL_RESTART, True, True, FlagRestart, FlagModificated) then
-      begin
-        InfoMessage('Некоторые важные файлы были загружены. Для продолжения работы приложение будет перезапущено.');
-        Restart();
-      end else
-      begin
-        InfoMessage('Некоторые важные файлы были загружены. Для продолжения работы запустите приложение ещё раз');
-        Exit;
-      end;
-    end else
-    begin
-      //InfoMessage('Необходимые файлы успешно загружены');
     end;
   end;
 

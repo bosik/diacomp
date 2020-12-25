@@ -100,7 +100,6 @@ const
   URL_SERVER          = 'http://diacomp.net/api/windows/';
 
   URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
-  URL_RESTART         = URL_SERVER + 'file/restart.exe';
   URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
   URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
