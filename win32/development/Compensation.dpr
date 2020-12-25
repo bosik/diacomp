@@ -67,7 +67,7 @@ uses
 
 {$R *.res}
 
-  procedure CheckFolders;
+  procedure CheckFolders();
   begin
     WORK_FOLDER := ExtractFilePath(Application.ExeName);
     if not DirectoryExists(WORK_FOLDER + FOLDER_BASES) then
@@ -99,7 +99,7 @@ uses
     end;
   end;
 
-  procedure Restart;
+  procedure Restart();
   const
     RESTARTER = 'restart.exe';
   begin
@@ -107,21 +107,23 @@ uses
     Halt;
   end;
 
-  function IsWin64: Boolean;
+  function IsWin64(): Boolean;
   var
-    IsWow64Process : function(hProcess : THandle; var Wow64Process : BOOL): BOOL; stdcall;
-    Wow64Process : BOOL;
+    IsWow64Process: function(hProcess : THandle; var Wow64Process : BOOL): BOOL; stdcall;
+    Wow64Process: BOOL;
   begin
     Result := False;
     IsWow64Process := GetProcAddress(GetModuleHandle(Kernel32), 'IsWow64Process');
-    if Assigned(IsWow64Process) then begin
-      if IsWow64Process(GetCurrentProcess, Wow64Process) then begin
+    if Assigned(IsWow64Process) then
+    begin
+      if IsWow64Process(GetCurrentProcess, Wow64Process) then
+      begin
         Result := Wow64Process;
       end;
     end;
   end;
 
-  function CheckRunningInstance: boolean;
+  function CheckRunningInstance(): boolean;
   var
     h: HWND;
     MainClass: string;
@@ -139,6 +141,8 @@ uses
 
   procedure SetApplicationTitle(App: TApplication);
   begin
+    // Delphi doesn't allow direct title change, so we have to wrap it into method:
+    // http://www.delphikingdom.com/asp/viewitem.asp?catalogid=765
     App.Title := APPLICATION_TITLE;
   end;
 
@@ -146,15 +150,14 @@ const
   BIT64VER: array[Boolean] of String = ('32 bit', '64 bit');
   FOLDER_LOGS = 'Logs';
 var
-  tick: cardinal;
-  FlagRestart, FlagModificated: boolean;
+  tick: Cardinal;
 begin
-  tick := GetTickCount;
+  tick := GetTickCount();
 
-  { ПРОВЕРКА НАЛИЧИЯ УЖЕ ЗАПУЩЕННОГО ЭКЗЕМПЛЯРА }
-  if CheckRunningInstance() then Exit;
+  if CheckRunningInstance() then
+    Exit;
 
-  CheckFolders; // before check file!
+  CheckFolders(); // before check file!
   AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
 
   {#}Log(INFO, 'Application started');
@@ -165,7 +168,7 @@ begin
   DiaryCore.Initialize();
 
   { пре-исполнение (LoadSettings не использует WORK_FOLDER)}
-  LoadSettings;
+  LoadSettings();
   try
     LoadStringResources('strings_ru.txt');
   except
@@ -196,7 +199,7 @@ begin
   end;
 
   { общая инициализация } 
-  Application.Initialize;
+  Application.Initialize();
   Application.HintHidePause := 20000;
 
   { основное исполнение }
@@ -220,15 +223,15 @@ begin
   if (Value['FirstStart'] = True) then
   begin
     Value['FirstStart'] := False;
-    SaveSettings;
+    SaveSettings();
     // Application.CreateForm(TFormFirstMan, FormFirstMan);
-    // FormFirstMan.ShowModal;
+    // FormFirstMan.ShowModal();
   end;
 
-  Form1.FullInit;
+  Form1.FullInit();
 
-  Application.Run;
+  Application.Run();
 
-  DiaryCore.Finalize;
-  AutoLog.StopLogger;
+  DiaryCore.Finalize();
+  AutoLog.StopLogger();
 end.
