@@ -131,6 +131,7 @@ type
   function StartsWith(const S: string; C: char): boolean; overload;
   function StartsWith(const S: string; Prefix: string): boolean; overload;
   function UppercaseFirst(const S: string): string;
+  function Split(const S: string; Delimiter: char): TStringArray;
 
   { быстрая сортировка }
   procedure QuickSort(Left, Right: integer; Swap: TSwapProcedure; More: TMoreFunction);
@@ -1025,6 +1026,32 @@ begin
   Result := S;
   if (Result <> '') then
     Result[1] := AnsiUppercase(Result[1])[1];
+end;
+
+{======================================================================================================================}
+function Split(const S: string; Delimiter: char): TStringArray;
+{======================================================================================================================}
+var
+  i, Start: integer;
+begin
+  Start := 1;
+  SetLength(Result, 0);
+
+  for i := 1 to Length(S) do
+  begin
+    if (S[i] = Delimiter) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)] := Copy(S, Start, i - start);
+      Start := i + 1;
+    end;
+  end;
+
+  SetLength(Result, Length(Result) + 1);
+  if (Start <= Length(S)) then
+    Result[High(Result)] := Copy(S, Start, Length(S) - Start + 1)
+  else
+    Result[High(Result)] := '';
 end;
 
 procedure QuickSort(Left, Right: integer; Swap: TSwapProcedure; More: TMoreFunction);

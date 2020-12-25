@@ -26,7 +26,9 @@ type
   public
     Data: string;
 
-    procedure Read(S: string);
+    procedure Read_v4(S: string);
+    procedure Read_v5(S: string);
+    procedure Read_v6(S: string);
     function Write(): string;
     procedure Serialize(Rec: TCustomRecord);
     function Deserialize(): TCustomRecord;
@@ -126,51 +128,54 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TRecordData.Read(S: string);
+procedure TRecordData.Read_v4(S: string);
 {======================================================================================================================}
-
-  // TODO 1: remove this magic after migration
-  function Count(c: char; const s: string): integer;
-  var
-    i: integer;
-  begin
-    Result := 0;
-    for i := 1 to Length(s) do
-    if (s[i] = c) then
-      inc(Result);
-  end;
-  
 var
-  STime: string;
-  STimeStamp: string;
-  SHash: string;
-  SID: string;
-  SVersion: string;
-  SDeleted: string;
+  Columns: TStringArray;
 begin
-  STime := TextBefore(S, #9);      S := TextAfter(S, #9);
-  STimeStamp := TextBefore(S, #9); S := TextAfter(S, #9);
+  Columns := Split(S, #9);
 
-  // TODO 1: remove this magic after migration
-  if (Count(#9, S) = 4) then
-  begin
-    SHash := TextBefore(S, #9);      S := TextAfter(S, #9);
-  end else
-  begin
-    SHash := CreateCompactGUID();
-  end;
+  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
+  TimeStamp := StrToDateTime(Columns[1], STD_DATETIME_FMT);
+  Hash := CreateCompactGUID(); // generate new hash
+  ID := Columns[2];
+  Version := StrToInt(Columns[3]);
+  Deleted := ReadBoolean(Columns[4]);
+  Data := Columns[5];
+end;
 
-  SID := TextBefore(S, #9);        S := TextAfter(S, #9);
-  SVersion := TextBefore(S, #9);   S := TextAfter(S, #9);
-  SDeleted := TextBefore(S, #9);   S := TextAfter(S, #9);
+{======================================================================================================================}
+procedure TRecordData.Read_v5(S: string);
+{======================================================================================================================}
+var
+  Columns: TStringArray;
+begin
+  Columns := Split(S, #9);
 
-  Time := StrToDateTime(STime, STD_DATETIME_FMT);
-  TimeStamp := StrToDateTime(STimeStamp, STD_DATETIME_FMT);
-  Hash := SHash;
-  ID := SID;
-  Version := StrToInt(SVersion);
-  Deleted := ReadBoolean(SDeleted);
-  Data := S;
+  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
+  TimeStamp := StrToDateTime(Columns[1], STD_DATETIME_FMT);
+  Hash := Columns[2];
+  ID := Columns[3];
+  Version := StrToInt(Columns[4]);
+  Deleted := ReadBoolean(Columns[5]);
+  Data := Columns[6];
+end;
+
+{======================================================================================================================}
+procedure TRecordData.Read_v6(S: string);
+{======================================================================================================================}
+var
+  Columns: TStringArray;
+begin
+  Columns := Split(S, #9);
+
+  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
+  ID := Columns[1];
+  TimeStamp := StrToDateTime(Columns[2], STD_DATETIME_FMT);
+  Hash := Columns[3];
+  Version := StrToInt(Columns[4]);
+  Deleted := ReadBoolean(Columns[5]);
+  Data := Columns[6];
 end;
 
 {======================================================================================================================}
@@ -334,41 +339,17 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
   end;     }
 
   procedure Load_v4(S: TStrings);
-
-    function InsertHash(S: string): string;
-    var
-      i, k: integer;
-    begin
-      i := 1;
-      k := 0;
-      while (i <= Length(S)) do
-      begin
-        if (S[i] = #9) then
-        begin
-          inc(k);
-          if (k = 2) then
-            break;
-        end;
-        inc(i);
-      end;
-
-      Insert(CreateCompactGUID() + #9, S, i + 1);
-      Result := S;
-    end;
-
   var
     i, k: integer;
   begin
-    s.Delete(0);
-
-    SetLength(FRecords, S.Count);
+    SetLength(FRecords, S.Count - 1); // skip header
     k := 0;
 
-    for i := 0 to S.Count - 1 do
+    for i := 1 to S.Count - 1 do
     if (S[i] <> '') then
     begin
       FRecords[k] := TRecordData.Create;
-      FRecords[k].Read(InsertHash(S[i]));
+      FRecords[k].Read_v4(S[i]);
       inc(k);
     end;
 
@@ -379,16 +360,32 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
   var
     i, k: integer;
   begin
-    s.Delete(0);
-
-    SetLength(FRecords, S.Count);
+    SetLength(FRecords, S.Count - 1);  // skip header
     k := 0;
 
-    for i := 0 to S.Count - 1 do
+    for i := 1 to S.Count - 1 do
     if (S[i] <> '') then
     begin
       FRecords[k] := TRecordData.Create;
-      FRecords[k].Read(S[i]);
+      FRecords[k].Read_v5(S[i]);
+      inc(k);
+    end;
+
+    SetLength(FRecords, k);
+  end;
+
+  procedure Load_v6(S: TStrings);
+  var
+    i, k: integer;
+  begin
+    SetLength(FRecords, S.Count - 1);  // skip header
+    k := 0;
+
+    for i := 1 to S.Count - 1 do
+    if (S[i] <> '') then
+    begin
+      FRecords[k] := TRecordData.Create;
+      FRecords[k].Read_v6(S[i]);
       inc(k);
     end;
 
@@ -406,12 +403,6 @@ begin
   try
     s.LoadFromFile(FileName);
 
-    // самый старый формат
-   { if (s.Count >= 2) and (s[0] = 'DIARYFMT') then
-    begin
-      Load_v1(s);
-    end else }
-
     // формат с указанием версии
     if (s.Count >= 1) and (pos('VERSION=', s[0]) = 1) then
     begin
@@ -420,25 +411,20 @@ begin
         //3:    Load_v3(s);
         4:    Load_v4(s);
         5:    Load_v5(s);
-        else raise Exception.Create('Unsupported database format');
+        6:    Load_v6(s);
+        else raise Exception.Create('Unsupported database format: VERSION=' + IntToStr(BaseVersion));
       end;
     end else
-
       raise Exception.Create('Unsupported database format');
-
-    // формат без версии - форматируем
-    {begin
-      Load_v2(s);
-    end; }
 
   finally
     s.Free;
   end;
 
   if (baseVersion < CURRENT_VERSION) then
-    SaveToFile(FileName);
+    SaveToFile(FileName); // reformat
 
-  FModified := False;  // да)
+  FModified := False;
 
   {* tree outdated *}
 end;
