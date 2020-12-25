@@ -330,7 +330,10 @@ begin
       Result[i].BSIn   := PrimeList[i].BloodInValue;
       Result[i].BSOut  := PrimeList[i].BloodOutValue;
       Result[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
-      Result[i].Weight := F((PrimeList[i].Date - MinTime) / (MaxTime - MinTime)){ * PrimeList[i].Carbs};
+      if (MaxTime > MinTime) then
+        Result[i].Weight := F((PrimeList[i].Date - MinTime) / (MaxTime - MinTime)){ * PrimeList[i].Carbs}
+      else
+        Result[i].Weight := 1.0;
     end;
 
     //Log(DEBUG, 'Saved', True);

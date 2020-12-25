@@ -3200,7 +3200,10 @@ begin
     LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [AnalyzeResult.Error]);
     LabelWeight.Caption := Format('Вес: %.0f', [AnalyzeResult.Weight * 100]) + '%';
 
-    DrawKoof(ImageLarge, KoofList, AnalyzeResults[0].AnList, GraphTypes[KoofIndex], Value['ShowPoints']);
+    if (Length(AnalyzeResults) > 0) then
+    begin
+      DrawKoof(ImageLarge, KoofList, AnalyzeResults[0].AnList, GraphTypes[KoofIndex], Value['ShowPoints']);
+    end;
     LabelKoofDiscription.Caption := KoofDisc[KoofIndex];
   end;
 

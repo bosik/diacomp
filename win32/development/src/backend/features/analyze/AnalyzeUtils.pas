@@ -358,9 +358,10 @@ begin
 
   for i := Low(Data) to High(Data) do
   begin
-    Average := ApproximatePoint(Remove(Data, i), Factor, Data[i].Time);
+    Average := ApproximatePoint(Data, Factor, Data[i].Time);
 
-    if (abs(Data[i].Value - Average) / Average < Limit) then
+    if (not IsNAN(Average)) and
+       (abs(Data[i].Value - Average) / Average < Limit) then
     begin
       Result[count] := Data[i];
       inc(count);
