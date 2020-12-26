@@ -3461,7 +3461,9 @@ begin
   begin
     IN_IDLE_CheckUpdates := False;
 
-    LatestVersion := GetLatestVersion(Value['ServerURL']);
+    // TODO: duplicate
+    Value['LastUpdateCheck'] := GetTimeUTC();
+    LatestVersion := GetLatestVersion(DiaryCore.WebClient);
     if LatestVersion > PROGRAM_VERSION_CODE then
     begin
       ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
@@ -4008,7 +4010,9 @@ procedure TForm1.ActionCheckUpdateExecute(Sender: TObject);
 var
   Version: integer;
 begin
-  Version := GetLatestVersion(Value['ServerURL']);
+  // TODO: duplicate
+  Value['LastUpdateCheck'] := GetTimeUTC();
+  Version := GetLatestVersion(DiaryCore.WebClient);
 
   if (Version = -1) then
     ErrorMessage(MESSAGE_ERROR_NO_INTERNET) else

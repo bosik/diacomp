@@ -3,27 +3,19 @@ unit InetDownload;
 interface
 
 uses
-  SysUtils, Windows, Wininet;
+  Windows,
+  WinInet;
 
 type
   TCallBackProcedure = procedure;
 
-  function GetRandomFileName(): String;
   function GetInetFile(const URL, FileName: String; MaxSize: Int64 = 0; CallBack: TCallBackProcedure = nil): boolean;
-  function DoGet(const URL: String; MaxSize: Int64; CallBack: TCallBackProcedure; out Response: String): boolean;
 
 implementation
 
 const
   DOWNLOAD_APP_NAME             = 'DiaryCore';
   CONNECTION_TIME_OUT: Cardinal = 10000;
-
-{======================================================================================================================}
-function GetRandomFileName(): String;
-{======================================================================================================================}
-begin
-  Result := Format('download.%d.tmp', [Random(1000000)])
-end;
 
 {======================================================================================================================}
 function GetInetFile(const URL, FileName: String; MaxSize: Int64 = 0; CallBack: TCallBackProcedure = nil): boolean;
@@ -69,28 +61,4 @@ begin
   end;
 end;
 
-{======================================================================================================================}
-function DoGet(const URL: String; MaxSize: Int64; CallBack: TCallBackProcedure; out Response: String): boolean;
-{======================================================================================================================}
-var
-  f: TextFile;
-  TempFile: String;
-begin
-  Result := False;
-  TempFile := GetRandomFileName();
-
-  if GetInetFile(URL, TempFile, MaxSize, CallBack) then
-  begin
-    AssignFile(f, TempFile);
-    Reset(f);
-    Readln(f, Response);
-    CloseFile(f);
-    DeleteFile(PChar(TempFile));
-
-    Result := True;
-  end;
-end;
-
-initialization
-  Randomize();
 end.
