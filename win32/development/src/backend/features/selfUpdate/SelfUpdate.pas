@@ -54,25 +54,38 @@ begin
   begin
     if (ExecInfo.hProcess <> 0) then
     begin
+      Log(INFO, 'Updater ran OK');
       ReturnCode := WaitForSingleObject(ExecInfo.hProcess, 60 * 1000);
       CloseHandle(ExecInfo.hProcess);
+      Log(INFO, 'Updater exited with code ' + IntToStr(ReturnCode));
 
       case ReturnCode of
         WAIT_OBJECT_0:
           begin
+            Log(INFO, 'Update done OK');
             MessageDlg('Обновление установлено. Перезапустите приложение, чтобы изменения вступили в силу', mtInformation, [mbOK], 0);
           end;
         WAIT_TIMEOUT:
           begin
+            Log(ERROR, 'Update failed due to timeout');
             MessageDlg('Время ожидания истекло. Похоже, приложение не было обновлено', mtWarning, [mbOK], 0);
           end;
 
         else
           begin
+            Log(ERROR, 'Update failed due to unexpected error');
             MessageDlg('Ошибка установки', mtError, [mbOK], 0);
           end;
       end;
+    end else
+    begin
+      Log(ERROR, 'Failed to start updater process');
+      MessageDlg('Не удалось запустить процесс ' + FileName, mtError, [mbOK], 0);
     end;
+  end else
+  begin
+    Log(ERROR, 'Failed to run updater');
+    MessageDlg('Не удалось запустить ' + FileName, mtError, [mbOK], 0);
   end;
 end;
 
@@ -85,12 +98,14 @@ var
 begin
   if (not FileExists(FILE_LOADER)) then
   begin
+    Log(ERROR, 'Can''t find loader file: ' + FILE_LOADER);
     MessageDlg('Загрузочный файл ' + FILE_LOADER + ' не найден', mtError, [mbOK], 0); // i18n
     Exit;
   end;
 
   SourceURL := Client.GetApiURL + URL_APP;
   TargetFile := ParamStr(0);
+  Log(INFO, 'Update: downloading ' + SourceURL + ' to ' + TargetFile);
 
   RunAsAdminAndWaitForCompletion(
     ParentHandle,
