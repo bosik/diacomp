@@ -48,7 +48,6 @@ type
   function IdentifyItem(const ItemName: string; out Item: TVersioned): TItemType;
 
   { web }
-  function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
 
   function ExportKoofs(Plain: boolean): string;
@@ -93,14 +92,12 @@ const
   SEARCH_INTERVAL       = 14;      // for time left
 
   { Параметры подключения }
-  MAX_FOODBASE_SIZE   = 500 * 1024; // byte
   MAX_DISHBASE_SIZE   = 500 * 1024; // byte
 
   { URL's }
   URL_SERVER          = 'http://diacomp.net/api/windows/';
 
   URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
-  URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
   URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }
@@ -184,14 +181,6 @@ function DownloadDishBaseSample(): boolean;
 {======================================================================================================================}
 begin
   Result := GetInetFile(URL_DISHBASE_SAMPLE, WORK_FOLDER + DishBase_FileName, MAX_DISHBASE_SIZE);
-  raise Exception.Create('Not implemented: regenerate all IDs');
-end;
-
-{======================================================================================================================}
-function DownloadFoodBaseSample(): boolean;
-{======================================================================================================================}
-begin
-  Result := GetInetFile(URL_FOODBASE_SAMPLE, WORK_FOLDER + FoodBase_FileName, MAX_FOODBASE_SIZE);
   raise Exception.Create('Not implemented: regenerate all IDs');
 end;
 
