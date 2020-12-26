@@ -4001,7 +4001,7 @@ procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
 {======================================================================================================================}
 begin
   Value['UpdatedVersion'] := ExpectedVersion;
-  DownloadAndRunUpdater(Form1.Handle);
+  RunLoader(DiaryCore.WebClient, Form1.Handle);
 end;
 
 {======================================================================================================================}

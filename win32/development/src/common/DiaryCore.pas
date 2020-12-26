@@ -95,9 +95,7 @@ const
   MAX_DISHBASE_SIZE   = 500 * 1024; // byte
 
   { URL's }
-  URL_SERVER          = 'http://diacomp.net/api/windows/';
-
-  URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
+  URL_SERVER          = 'http://diacomp.net/api/windows/'; // FIXME: use value for Settings instead
   URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }

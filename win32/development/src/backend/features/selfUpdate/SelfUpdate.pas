@@ -7,20 +7,16 @@ uses
   ShellApi,
   Windows,
   Dialogs,
-
-  DiaryRoutines,
-  DiaryCore,
-  InetDownload,
-  SettingsINI,
   DiaryWeb,
   AutoLog;
 
   function GetLatestVersion(Client: TDiacompClient): integer;
-  procedure DownloadAndRunUpdater(ParentHandle: HWND);
+  procedure RunLoader(Client: TDiacompClient; ParentHandle: HWND);
 
 const
+  FILE_LOADER = 'Diacomp_upd.exe';
   URL_VERINFO = 'windows/version';
-  URL_UPDATER = 'api/windows/file/updater.exe';
+  URL_APP     = 'windows/file/compensation.exe';
 
 implementation
 
@@ -31,8 +27,8 @@ var
   Response: String;
 begin
   Log(DEBUG, 'Checking for app updates...');
-
   Response := Client.DoGetSmart(Client.GetApiURL + URL_VERINFO).Response;
+
   Log(DEBUG, 'Server response: ' + Response);
   Result := StrToInt(Response);
 end;
@@ -81,34 +77,26 @@ begin
 end;
 
 {======================================================================================================================}
-procedure DownloadAndRunUpdater(ParentHandle: HWND);
+procedure RunLoader(Client: TDiacompClient; ParentHandle: HWND);
 {======================================================================================================================}
-
-  function GetTempDirectory: String;
-  var
-    tempFolder: array[0..MAX_PATH] of Char;
+var
+  SourceURL: String;
+  TargetFile: String;
+begin
+  if (not FileExists(FILE_LOADER)) then
   begin
-    GetTempPath(MAX_PATH, @tempFolder);
-    Result := StrPas(tempFolder);
+    MessageDlg('Загрузочный файл ' + FILE_LOADER + ' не найден', mtError, [mbOK], 0); // i18n
+    Exit;
   end;
 
-const
-  FILE_UPDATER = 'diacomp-update.exe';
-var
-  Command: String;
-  Params: String;
-begin
-  Command := GetTempDirectory + FILE_UPDATER;
+  SourceURL := Client.GetApiURL + URL_APP;
+  TargetFile := ParamStr(0);
 
-  if GetInetFile(Value['ServerURL'] + URL_UPDATER, Command, 10 * 1024 * 1024) and
-     FileExists(Command) and
-     (FileSize(Command) > 10 * 1024) then
-  begin
-    Params := '"' + ParamStr(0) + '" ' + IntToStr(PROGRAM_VERSION_CODE);
-    RunAsAdminAndWaitForCompletion(ParentHandle, Command, Params);
-    SysUtils.DeleteFile(Command);
-  end else
-    MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0); // i18n
+  RunAsAdminAndWaitForCompletion(
+    ParentHandle,
+    FILE_LOADER,
+    Format('"%s" "%s"', [SourceURL, TargetFile])
+  );
 end;
 
 end.
