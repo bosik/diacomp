@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  ShellApi, 
+  ShellApi,
   Windows,
   Dialogs,
 
@@ -38,7 +38,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure RunAsAdminAndWaitForCompletion(hWnd: HWND; filename: string; Parameters: string);
+procedure RunAsAdminAndWaitForCompletion(hWnd: HWND; FileName: String; Parameters: String);
 {======================================================================================================================}
 var
   info: TShellExecuteInfo;
@@ -49,9 +49,9 @@ begin
   info.Wnd := hwnd;
   info.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI or SEE_MASK_NOCLOSEPROCESS;
   info.lpVerb := PChar('runas');
-  info.lpFile := PChar(Filename);
-  if parameters <> '' then
-    info.lpParameters := PChar(parameters);
+  info.lpFile := PChar(FileName);
+  if (Parameters <> '') then
+    info.lpParameters := PChar(Parameters);
   info.nShow := SW_SHOW;
 
   if ShellExecuteEx(@info) then
@@ -68,7 +68,7 @@ begin
           end;
         WAIT_TIMEOUT:
           begin
-            MessageDlg('Время ожидания истекло. Похоже, приложение не было обновлено.', mtWarning, [mbOK], 0);
+            MessageDlg('Время ожидания истекло. Похоже, приложение не было обновлено', mtWarning, [mbOK], 0);
           end;
 
         else
