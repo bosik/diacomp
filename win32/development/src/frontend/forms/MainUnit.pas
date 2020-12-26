@@ -470,7 +470,7 @@ type
   end;
 
   { обновление }
-  procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
+  procedure SetupUpdate(const ExpectedVersion: integer);
 
 var
   { ========================== И Н Т Е Р Ф Е Й С ============================= }
@@ -3724,7 +3724,7 @@ end;
 procedure TForm1.BalloonAction_StartUpdate;
 {======================================================================================================================}
 begin
-  SetupUpdate(True, LatestVersion);
+  SetupUpdate(LatestVersion);
 end;
 
 {======================================================================================================================}
@@ -3997,7 +3997,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
+procedure SetupUpdate(const ExpectedVersion: integer);
 {======================================================================================================================}
 begin
   Value['UpdatedVersion'] := ExpectedVersion;
@@ -4022,7 +4022,7 @@ begin
   begin
     // i18n
     if (MessageDlg('Найдена новая версия: '+ IntToStr(Version) + #13'Установить сейчас?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-      SetupUpdate(False, Version);
+      SetupUpdate(Version);
   end else
     ShowMessage('Dev Mode!');
 end;
