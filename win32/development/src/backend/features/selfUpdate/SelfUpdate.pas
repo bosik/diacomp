@@ -14,7 +14,7 @@ uses
   procedure RunLoader(Client: TDiacompClient; ParentHandle: HWND);
 
 const
-  FILE_LOADER = 'Diacomp_upd.exe';
+  FILE_LOADER = 'loader.exe';
   URL_VERINFO = 'windows/version';
   URL_APP     = 'windows/file/compensation.exe';
 

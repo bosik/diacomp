@@ -9,7 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Compensation.exe CompensationTest.exe Diacomp_upd.exe
+PROJECTS = Compensation.exe CompensationTest.exe Loader.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Compensation.exe: Compensation.dpr
 CompensationTest.exe: src\test\CompensationTest.dpr
   $(DCC)
 
-Diacomp_upd.exe: Diacomp_upd.dpr
+Loader.exe: Loader.dpr
   $(DCC)
 
 
