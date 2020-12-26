@@ -37,25 +37,25 @@ end;
 procedure RunAsAdminAndWaitForCompletion(hWnd: HWND; FileName: String; Parameters: String);
 {======================================================================================================================}
 var
-  info: TShellExecuteInfo;
+  ExecInfo: TShellExecuteInfo;
   ReturnCode: Cardinal;
 begin
-  ZeroMemory(@info, SizeOf(info));
-  info.cbSize := SizeOf(TShellExecuteInfo);
-  info.Wnd := hwnd;
-  info.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI or SEE_MASK_NOCLOSEPROCESS;
-  info.lpVerb := PChar('runas');
-  info.lpFile := PChar(FileName);
+  ZeroMemory(@ExecInfo, SizeOf(ExecInfo));
+  ExecInfo.cbSize := SizeOf(TShellExecuteInfo);
+  ExecInfo.Wnd := hwnd;
+  ExecInfo.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI or SEE_MASK_NOCLOSEPROCESS;
+  ExecInfo.lpVerb := PChar('runas');
+  ExecInfo.lpFile := PChar(FileName);
   if (Parameters <> '') then
-    info.lpParameters := PChar(Parameters);
-  info.nShow := SW_SHOW;
+    ExecInfo.lpParameters := PChar(Parameters);
+  ExecInfo.nShow := SW_SHOW;
 
-  if ShellExecuteEx(@info) then
+  if ShellExecuteEx(@ExecInfo) then
   begin
-    if (info.hProcess <> 0) then
+    if (ExecInfo.hProcess <> 0) then
     begin
-      ReturnCode := WaitForSingleObject(info.hProcess, 60 * 1000);
-      CloseHandle(info.hProcess);
+      ReturnCode := WaitForSingleObject(ExecInfo.hProcess, 60 * 1000);
+      CloseHandle(ExecInfo.hProcess);
 
       case ReturnCode of
         WAIT_OBJECT_0:
