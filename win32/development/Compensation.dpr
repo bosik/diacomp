@@ -67,61 +67,30 @@ uses
 
 {$R *.res}
 
-  procedure CheckFolders;
+  procedure CheckFolders();
   begin
     WORK_FOLDER := ExtractFilePath(Application.ExeName);
     if not DirectoryExists(WORK_FOLDER + FOLDER_BASES) then
       CreateDirectory(PChar(WORK_FOLDER + FOLDER_BASES), nil);
   end;
 
-  // максимум 1 Мб
-  function CheckFile(const LocalFileName, URL: string; Crytical, NeedRestart: boolean; var FlagRestart, FlagModificated: boolean): Boolean;
-  begin
-    Result := True;
-
-    if (not FileExists(LocalFileName)) then
-    begin
-      if (GetInetFile(URL, LocalFileName, 1024 * 1024)) and
-         (FileExists(LocalFileName)) then
-      begin
-        FlagModificated := True;
-        if (NeedRestart) then
-          FlagRestart := True;
-      end else
-      begin
-        if (Crytical) then
-          ErrorMessage(
-            'Файл "' + LocalFileName + '" не найден'#13 +
-            'Загрузка с сервера по адресу "' + URL + '" не удалась'#13 +
-            'Приложение завершает свою работу, всё тлен :(');
-        Result := False;
-      end;
-    end;
-  end;
-
-  procedure Restart;
-  const
-    RESTARTER = 'restart.exe';
-  begin
-    ShellExecute(0, 'open', PChar(WORK_FOLDER + RESTARTER), PChar('"' + Application.ExeName + '" 6000'), nil, SW_SHOWNORMAL);
-    Halt;
-  end;
-
-  function IsWin64: Boolean;
+  function IsWin64(): Boolean;
   var
-    IsWow64Process : function(hProcess : THandle; var Wow64Process : BOOL): BOOL; stdcall;
-    Wow64Process : BOOL;
+    IsWow64Process: function(hProcess : THandle; var Wow64Process : BOOL): BOOL; stdcall;
+    Wow64Process: BOOL;
   begin
     Result := False;
     IsWow64Process := GetProcAddress(GetModuleHandle(Kernel32), 'IsWow64Process');
-    if Assigned(IsWow64Process) then begin
-      if IsWow64Process(GetCurrentProcess, Wow64Process) then begin
+    if Assigned(IsWow64Process) then
+    begin
+      if IsWow64Process(GetCurrentProcess, Wow64Process) then
+      begin
         Result := Wow64Process;
       end;
     end;
   end;
 
-  function CheckRunningInstance: boolean;
+  function CheckRunningInstance(): boolean;
   var
     h: HWND;
     MainClass: string;
@@ -139,6 +108,8 @@ uses
 
   procedure SetApplicationTitle(App: TApplication);
   begin
+    // Delphi doesn't allow direct title change, so we have to wrap it into method:
+    // http://www.delphikingdom.com/asp/viewitem.asp?catalogid=765
     App.Title := APPLICATION_TITLE;
   end;
 
@@ -146,15 +117,14 @@ const
   BIT64VER: array[Boolean] of String = ('32 bit', '64 bit');
   FOLDER_LOGS = 'Logs';
 var
-  tick: cardinal;
-  FlagRestart, FlagModificated: boolean;
+  tick: Cardinal;
 begin
-  tick := GetTickCount;
+  tick := GetTickCount();
 
-  { ПРОВЕРКА НАЛИЧИЯ УЖЕ ЗАПУЩЕННОГО ЭКЗЕМПЛЯРА }
-  if CheckRunningInstance() then Exit;
+  if CheckRunningInstance() then
+    Exit;
 
-  CheckFolders; // before check file!
+  CheckFolders(); // before check file!
   AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
 
   {#}Log(INFO, 'Application started');
@@ -165,7 +135,7 @@ begin
   DiaryCore.Initialize();
 
   { пре-исполнение (LoadSettings не использует WORK_FOLDER)}
-  LoadSettings;
+  LoadSettings();
   try
     LoadStringResources('strings_ru.txt');
   except
@@ -176,27 +146,8 @@ begin
     end;
   end;
 
-  if (FlagModificated) then
-  begin
-    if (FlagRestart) then
-    begin
-      if CheckFile(WORK_FOLDER + 'restart.exe', URL_RESTART, True, True, FlagRestart, FlagModificated) then
-      begin
-        InfoMessage('Некоторые важные файлы были загружены. Для продолжения работы приложение будет перезапущено.');
-        Restart();
-      end else
-      begin
-        InfoMessage('Некоторые важные файлы были загружены. Для продолжения работы запустите приложение ещё раз');
-        Exit;
-      end;
-    end else
-    begin
-      //InfoMessage('Необходимые файлы успешно загружены');
-    end;
-  end;
-
   { общая инициализация } 
-  Application.Initialize;
+  Application.Initialize();
   Application.HintHidePause := 20000;
 
   { основное исполнение }
@@ -220,15 +171,15 @@ begin
   if (Value['FirstStart'] = True) then
   begin
     Value['FirstStart'] := False;
-    SaveSettings;
+    SaveSettings();
     // Application.CreateForm(TFormFirstMan, FormFirstMan);
-    // FormFirstMan.ShowModal;
+    // FormFirstMan.ShowModal();
   end;
 
-  Form1.FullInit;
+  Form1.FullInit();
 
-  Application.Run;
+  Application.Run();
 
-  DiaryCore.Finalize;
-  AutoLog.StopLogger;
+  DiaryCore.Finalize();
+  AutoLog.StopLogger();
 end.

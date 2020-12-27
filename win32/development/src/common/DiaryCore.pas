@@ -29,10 +29,7 @@ uses
   AnalyzeInterface,
   DiaryAnalyze,
   AutoLog,
-  SettingsINI,
-
-  // службы
-  InetDownload;
+  SettingsINI;
 
 type
   TItemType = (itUnknown, itFood, itDish);
@@ -46,10 +43,6 @@ type
   procedure SaveExpander; deprecated;
 
   function IdentifyItem(const ItemName: string; out Item: TVersioned): TItemType;
-
-  { web }
-  function DownloadFoodBaseSample: boolean;
-  function DownloadDishBaseSample: boolean;
 
   function ExportKoofs(Plain: boolean): string;
   function GetKoof(Time: integer): TKoof;
@@ -91,18 +84,6 @@ const
   BLOOD_ACTUALITY_TIME  = 120;     // minutes
   INS_ACTUALITY_TIME    = 4 * 60;  // minutes
   SEARCH_INTERVAL       = 14;      // for time left
-
-  { Параметры подключения }
-  MAX_FOODBASE_SIZE   = 500 * 1024; // byte
-  MAX_DISHBASE_SIZE   = 500 * 1024; // byte
-
-  { URL's }
-  URL_SERVER          = 'http://diacomp.net/api/windows/';
-
-  URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
-  URL_RESTART         = URL_SERVER + 'file/restart.exe';
-  URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
-  URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }
 
@@ -178,22 +159,6 @@ function GetKoof(Time: integer): TKoof;
 {======================================================================================================================}
 begin
   Result := AvgAnalyzeResult.KoofList[Time];
-end;
-
-{======================================================================================================================}
-function DownloadDishBaseSample(): boolean;
-{======================================================================================================================}
-begin
-  Result := GetInetFile(URL_DISHBASE_SAMPLE, WORK_FOLDER + DishBase_FileName, MAX_DISHBASE_SIZE);
-  raise Exception.Create('Not implemented: regenerate all IDs');
-end;
-
-{======================================================================================================================}
-function DownloadFoodBaseSample(): boolean;
-{======================================================================================================================}
-begin
-  Result := GetInetFile(URL_FOODBASE_SAMPLE, WORK_FOLDER + FoodBase_FileName, MAX_FOODBASE_SIZE);
-  raise Exception.Create('Not implemented: regenerate all IDs');
 end;
 
 {======================================================================================================================}

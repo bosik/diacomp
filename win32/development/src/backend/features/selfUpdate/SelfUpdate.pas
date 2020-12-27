@@ -7,123 +7,111 @@ uses
   ShellApi,
   Windows,
   Dialogs,
-  
-  DiaryRoutines,
-  DiaryCore,
-  InetDownload,
-  SettingsINI,
+  DiaryWeb,
   AutoLog;
 
-  function GetLatestVersion(const ServerURL: string): integer;
-  procedure DownloadAndRunUpdater(ParentHandle: HWND);
+  function GetLatestVersion(Client: TDiacompClient): integer;
+  procedure RunLoader(Client: TDiacompClient; ParentHandle: HWND);
 
 const
-  URL_VERINFO         = 'api/windows/version';
-  URL_UPDATER         = 'api/windows/file/updater.exe';
+  FILE_LOADER = 'loader.exe';
+  URL_VERINFO = 'windows/version';
+  URL_APP     = 'windows/file/compensation.exe';
 
 implementation
 
 {======================================================================================================================}
-function GetLatestVersion(const ServerURL: string): integer;
+function GetLatestVersion(Client: TDiacompClient): integer;
 {======================================================================================================================}
 var
   Response: String;
 begin
-  Result := -1;
   Log(DEBUG, 'Checking for app updates...');
+  Response := Client.DoGetSmart(Client.GetApiURL + URL_VERINFO).Response;
 
-  // TODO: move outside
-  Value['LastUpdateCheck'] := GetTimeUTC();
-
-  try
-    if DoGet(ServerURL + URL_VERINFO, 1024, nil, Response) then
-    begin
-      Log(DEBUG, 'Server response: ' + Response);
-      Result := StrToInt(Response);
-    end else
-    begin
-      Log(ERROR, 'Failed to request ' + URL_VERINFO);
-    end;
-  except
-    on e: Exception do
-    begin
-      Log(ERROR, 'Checking failed: ' + e.Message);
-    end;
-  end;
+  Log(DEBUG, 'Server response: ' + Response);
+  Result := StrToInt(Response);
 end;
 
 {======================================================================================================================}
-procedure RunAsAdminAndWaitForCompletion(hWnd: HWND; filename: string; Parameters: string);
+procedure RunAsAdminAndWaitForCompletion(hWnd: HWND; FileName: String; Parameters: String);
 {======================================================================================================================}
 var
-  info: TShellExecuteInfo;
+  ExecInfo: TShellExecuteInfo;
   ReturnCode: Cardinal;
 begin
-  ZeroMemory(@info, SizeOf(info));
-  info.cbSize := SizeOf(TShellExecuteInfo);
-  info.Wnd := hwnd;
-  info.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI or SEE_MASK_NOCLOSEPROCESS;
-  info.lpVerb := PChar('runas');
-  info.lpFile := PChar(Filename);
-  if parameters <> '' then
-    info.lpParameters := PChar(parameters);
-  info.nShow := SW_SHOW;
+  ZeroMemory(@ExecInfo, SizeOf(ExecInfo));
+  ExecInfo.cbSize := SizeOf(TShellExecuteInfo);
+  ExecInfo.Wnd := hwnd;
+  ExecInfo.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI or SEE_MASK_NOCLOSEPROCESS;
+  ExecInfo.lpVerb := PChar('runas');
+  ExecInfo.lpFile := PChar(FileName);
+  if (Parameters <> '') then
+    ExecInfo.lpParameters := PChar(Parameters);
+  ExecInfo.nShow := SW_SHOW;
 
-  if ShellExecuteEx(@info) then
+  if ShellExecuteEx(@ExecInfo) then
   begin
-    if (info.hProcess <> 0) then
+    if (ExecInfo.hProcess <> 0) then
     begin
-      ReturnCode := WaitForSingleObject(info.hProcess, 60 * 1000);
-      CloseHandle(info.hProcess);
+      Log(INFO, 'Updater ran OK');
+      ReturnCode := WaitForSingleObject(ExecInfo.hProcess, 60 * 1000);
+      CloseHandle(ExecInfo.hProcess);
+      Log(INFO, 'Updater exited with code ' + IntToStr(ReturnCode));
 
       case ReturnCode of
         WAIT_OBJECT_0:
           begin
+            Log(INFO, 'Update done OK');
             MessageDlg('Обновление установлено. Перезапустите приложение, чтобы изменения вступили в силу', mtInformation, [mbOK], 0);
           end;
         WAIT_TIMEOUT:
           begin
-            MessageDlg('Время ожидания истекло. Похоже, приложение не было обновлено.', mtWarning, [mbOK], 0);
+            Log(ERROR, 'Update failed due to timeout');
+            MessageDlg('Время ожидания истекло. Похоже, приложение не было обновлено', mtWarning, [mbOK], 0);
           end;
 
         else
           begin
+            Log(ERROR, 'Update failed due to unexpected error');
             MessageDlg('Ошибка установки', mtError, [mbOK], 0);
           end;
       end;
+    end else
+    begin
+      Log(ERROR, 'Failed to start updater process');
+      MessageDlg('Не удалось запустить процесс ' + FileName, mtError, [mbOK], 0);
     end;
+  end else
+  begin
+    Log(ERROR, 'Failed to run updater');
+    MessageDlg('Не удалось запустить ' + FileName, mtError, [mbOK], 0);
   end;
 end;
 
 {======================================================================================================================}
-procedure DownloadAndRunUpdater(ParentHandle: HWND);
+procedure RunLoader(Client: TDiacompClient; ParentHandle: HWND);
 {======================================================================================================================}
-
-  function GetTempDirectory: String;
-  var
-    tempFolder: array[0..MAX_PATH] of Char;
+var
+  SourceURL: String;
+  TargetFile: String;
+begin
+  if (not FileExists(FILE_LOADER)) then
   begin
-    GetTempPath(MAX_PATH, @tempFolder);
-    Result := StrPas(tempFolder);
+    Log(ERROR, 'Can''t find loader file: ' + FILE_LOADER);
+    MessageDlg('Загрузочный файл ' + FILE_LOADER + ' не найден', mtError, [mbOK], 0); // i18n
+    Exit;
   end;
 
-const
-  FILE_UPDATER = 'diacomp-update.exe';
-var
-  Command: String;
-  Params: String;
-begin
-  Command := GetTempDirectory + FILE_UPDATER;
+  SourceURL := Client.GetApiURL + URL_APP;
+  TargetFile := ParamStr(0);
+  Log(INFO, 'Update: downloading ' + SourceURL + ' to ' + TargetFile);
 
-  if GetInetFile(Value['ServerURL'] + URL_UPDATER, Command, 10 * 1024 * 1024) and
-     FileExists(Command) and
-     (FileSize(Command) > 10 * 1024) then
-  begin
-    Params := '"' + ParamStr(0) + '" ' + IntToStr(PROGRAM_VERSION_CODE);
-    RunAsAdminAndWaitForCompletion(ParentHandle, Command, Params);
-    SysUtils.DeleteFile(Command);
-  end else
-    MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0); // i18n
+  RunAsAdminAndWaitForCompletion(
+    ParentHandle,
+    FILE_LOADER,
+    Format('"%s" "%s"', [SourceURL, TargetFile])
+  );
 end;
 
 end.

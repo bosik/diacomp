@@ -470,7 +470,7 @@ type
   end;
 
   { обновление }
-  procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
+  procedure SetupUpdate(const ExpectedVersion: integer);
 
 var
   { ========================== И Н Т Е Р Ф Е Й С ============================= }
@@ -3461,7 +3461,9 @@ begin
   begin
     IN_IDLE_CheckUpdates := False;
 
-    LatestVersion := GetLatestVersion(Value['ServerURL']);
+    // TODO: duplicate
+    Value['LastUpdateCheck'] := GetTimeUTC();
+    LatestVersion := GetLatestVersion(DiaryCore.WebClient);
     if LatestVersion > PROGRAM_VERSION_CODE then
     begin
       ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
@@ -3722,7 +3724,7 @@ end;
 procedure TForm1.BalloonAction_StartUpdate;
 {======================================================================================================================}
 begin
-  SetupUpdate(True, LatestVersion);
+  SetupUpdate(LatestVersion);
 end;
 
 {======================================================================================================================}
@@ -3995,11 +3997,11 @@ begin
 end;
 
 {======================================================================================================================}
-procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
+procedure SetupUpdate(const ExpectedVersion: integer);
 {======================================================================================================================}
 begin
   Value['UpdatedVersion'] := ExpectedVersion;
-  DownloadAndRunUpdater(Form1.Handle);
+  RunLoader(DiaryCore.WebClient, Form1.Handle);
 end;
 
 {======================================================================================================================}
@@ -4008,7 +4010,9 @@ procedure TForm1.ActionCheckUpdateExecute(Sender: TObject);
 var
   Version: integer;
 begin
-  Version := GetLatestVersion(Value['ServerURL']);
+  // TODO: duplicate
+  Value['LastUpdateCheck'] := GetTimeUTC();
+  Version := GetLatestVersion(DiaryCore.WebClient);
 
   if (Version = -1) then
     ErrorMessage(MESSAGE_ERROR_NO_INTERNET) else
@@ -4018,7 +4022,7 @@ begin
   begin
     // i18n
     if (MessageDlg('Найдена новая версия: '+ IntToStr(Version) + #13'Установить сейчас?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
-      SetupUpdate(False, Version);
+      SetupUpdate(Version);
   end else
     ShowMessage('Dev Mode!');
 end;

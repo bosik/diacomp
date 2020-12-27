@@ -93,7 +93,7 @@ begin
 
   { тексты }
   LabelTitle.Caption := ProductName + ' ' + PROGRAM_VERSION;
-  LabelDate.Caption := 'Дата выпуска: ' + PROGRAM_DATE;
+  LabelDate.Caption := 'Дата выпуска: ' + PROGRAM_DATE + ' / ' + IntToStr(PROGRAM_VERSION_CODE);
   LabelCopyright.Caption := MyCopyright;
   EditGroup.Text := MyGroup;
 
