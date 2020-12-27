@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Компенсация"
-#define MyAppVersion "2.07"
+#define MyAppVersion "2.08"
 #define MyAppPublisher "Nikita Bosik"
 #define MyAppURL "http://diacomp.net/"
 #define MyAppExeName "Compensation.exe"
