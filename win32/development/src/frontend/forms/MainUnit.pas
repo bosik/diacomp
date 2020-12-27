@@ -4071,7 +4071,7 @@ begin
     Temp.CopyFrom(FoodList[n]);
     Temp.ID := CreateCompactGUID();
     Temp.Name := NewName;
-    Temp.ID := CreateCompactGUID;
+    Temp.Hash := CreateCompactGUID();
     FoodBaseLocal.Save(Temp);
 
     EventFoodbaseChanged(True);
@@ -4105,6 +4105,7 @@ begin
     Temp.CopyFrom(DishList[n]);
     Temp.ID := CreateCompactGUID();
     Temp.Name := NewName;
+    Temp.Hash := CreateCompactGUID();
     DishBaseLocal.Save(Temp);
 
     // TODO: rough
