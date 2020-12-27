@@ -29,10 +29,7 @@ uses
   AnalyzeInterface,
   DiaryAnalyze,
   AutoLog,
-  SettingsINI,
-
-  // службы
-  InetDownload;
+  SettingsINI;
 
 type
   TItemType = (itUnknown, itFood, itDish);
@@ -46,9 +43,6 @@ type
   procedure SaveExpander; deprecated;
 
   function IdentifyItem(const ItemName: string; out Item: TVersioned): TItemType;
-
-  { web }
-  function DownloadDishBaseSample: boolean;
 
   function ExportKoofs(Plain: boolean): string;
   function GetKoof(Time: integer): TKoof;
@@ -90,13 +84,6 @@ const
   BLOOD_ACTUALITY_TIME  = 120;     // minutes
   INS_ACTUALITY_TIME    = 4 * 60;  // minutes
   SEARCH_INTERVAL       = 14;      // for time left
-
-  { Параметры подключения }
-  MAX_DISHBASE_SIZE   = 500 * 1024; // byte
-
-  { URL's }
-  URL_SERVER          = 'http://diacomp.net/api/windows/'; // FIXME: use value for Settings instead
-  URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }
 
@@ -172,14 +159,6 @@ function GetKoof(Time: integer): TKoof;
 {======================================================================================================================}
 begin
   Result := AvgAnalyzeResult.KoofList[Time];
-end;
-
-{======================================================================================================================}
-function DownloadDishBaseSample(): boolean;
-{======================================================================================================================}
-begin
-  Result := GetInetFile(URL_DISHBASE_SAMPLE, WORK_FOLDER + DishBase_FileName, MAX_DISHBASE_SIZE);
-  raise Exception.Create('Not implemented: regenerate all IDs');
 end;
 
 {======================================================================================================================}
