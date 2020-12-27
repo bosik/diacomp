@@ -1263,8 +1263,9 @@ begin
     Exit;
   end;
 
-  Item := FoodList[Index];
-  OldName := FoodList[Index].Name;
+  Item := TFoodItem.Create();
+  Item.CopyFrom(FoodList[Index]);
+  OldName := Item.Name;
 
   if FormFood.OpenFoodEditor(Item, False, FoodEditorRect) then
   begin
@@ -1296,8 +1297,9 @@ begin
     Exit;
   end;
 
-  Item := DishList[Index];
-  OldName := DishList[Index].Name;
+  Item := TDishItem.Create();
+  Item.CopyFrom(DishList[Index]);
+  OldName := Item.Name;
 
   if FormDish.OpenDishEditor(Item, False, DishEditorRect) then
   begin
