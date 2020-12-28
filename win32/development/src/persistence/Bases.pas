@@ -822,7 +822,7 @@ procedure TDishBase.LoadFromFile_XML(const FileName: string);
   var
     ItemNode: IXMLNODE;
     Food: TFoodMassed;
-    i: integer;     
+    i: integer;
   begin
     Result := TDishItem.Create();
     if DishNode.HasAttribute(FIELD_DISH_ID) then
