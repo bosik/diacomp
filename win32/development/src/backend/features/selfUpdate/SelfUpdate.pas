@@ -99,7 +99,7 @@ begin
   if (not FileExists(FILE_LOADER)) then
   begin
     Log(ERROR, 'Can''t find loader file: ' + FILE_LOADER);
-    MessageDlg('Загрузочный файл ' + FILE_LOADER + ' не найден', mtError, [mbOK], 0); // i18n
+    MessageDlg('Загрузочный файл ' + FILE_LOADER + ' не найден. Рекомендуется переустановить приложение', mtError, [mbOK], 0); // i18n
     Exit;
   end;
 
