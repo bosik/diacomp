@@ -477,7 +477,7 @@ const
       Result.ID := CreateCompactGUID();
 
     if FoodNode.HasAttribute(FIELD_FOOD_TIMESTAMP) then
-      Result.TimeStamp := StrToDateTime(FoodNode.Attributes[FIELD_FOOD_TIMESTAMP])
+      Result.TimeStamp := StrToDateTime(FoodNode.Attributes[FIELD_FOOD_TIMESTAMP])  // #timefmt
     else
       Result.TimeStamp := GetTimeUTC();
 
@@ -774,7 +774,7 @@ begin
     if (s[i][1] = '%') then
     begin
       buf := Copy(s[i], 4, length(s[i]) - 3);
-      Items[n].TimeStamp := StrToDateTime(buf);
+      Items[n].TimeStamp := StrToDateTime(buf);     // #timefmt
     end else
     if (s[i][1] <> '=') then
     begin
@@ -836,9 +836,7 @@ procedure TDishBase.LoadFromFile_XML(const FileName: string);
       Result.Hash := CreateCompactGUID();
 
     if DishNode.HasAttribute(FIELD_DISH_TIMESTAMP) then
-      Result.TimeStamp := StrToDateTime(DishNode.Attributes[FIELD_DISH_TIMESTAMP]) else
-    if DishNode.HasAttribute('time') then
-      Result.TimeStamp := StrToDateTime(DishNode.Attributes['time'])
+      Result.TimeStamp := StrToDateTime(DishNode.Attributes[FIELD_DISH_TIMESTAMP])  // #timefmt
     else
       Result.TimeStamp := GetTimeUTC();
 
