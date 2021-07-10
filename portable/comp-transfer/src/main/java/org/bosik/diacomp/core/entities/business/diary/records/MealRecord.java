@@ -154,6 +154,11 @@ public class MealRecord extends DiaryRecord
 		return items.get(index);
 	}
 
+	public List<FoodMassed> getItems()
+	{
+		return items;
+	}
+
 	public int count()
 	{
 		return items.size();
