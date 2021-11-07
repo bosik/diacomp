@@ -4984,11 +4984,10 @@ begin
     Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
     ImageIndex := Byte(FoodList[i].FromTable);
 
-    // TODO: COLUMNS CHECKING DISABLED
-    if True  then SubItems.Add(RealToStr(FoodList[i].RelProts));
-    if True  then SubItems.Add(RealToStr(FoodList[i].RelFats));
-    if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
-    if True  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
+    if Value['FoodP'] then SubItems.Add(RealToStr(FoodList[i].RelProts));
+    if Value['FoodF'] then SubItems.Add(RealToStr(FoodList[i].RelFats));
+    if Value['FoodC'] then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
+    if Value['FoodV'] then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
   end;
 end;
 
@@ -5014,13 +5013,12 @@ begin
     Caption := DishList[i].Name;//+' ['+IntToStr(DishBase[i].Tag)+']';;
     ImageIndex := 2;
 
-    // TODO: COLUMNS CHECKING DISABLED
-    if True  then SubItems.Add(RealToStr(DishList[i].RealMass));
-    if True  then SubItems.Add(RealToStr(DishList[i].RelProts));
-    if True  then SubItems.Add(RealToStr(DishList[i].RelFats));
-    if True  then SubItems.Add(RealToStr(DishList[i].RelCarbs));
-    if True  then SubItems.Add(IntToStr(Round(DishList[i].RelValue)));
-    if True  then SubItems.Add(MyTimeToStr(DishList[i].TimeStamp)); 
+    if Value['DishM'] then SubItems.Add(RealToStr(DishList[i].RealMass));
+    if Value['DishP'] then SubItems.Add(RealToStr(DishList[i].RelProts));
+    if Value['DishF'] then SubItems.Add(RealToStr(DishList[i].RelFats));
+    if Value['DishC'] then SubItems.Add(RealToStr(DishList[i].RelCarbs));
+    if Value['DishV'] then SubItems.Add(IntToStr(Round(DishList[i].RelValue)));
+    if Value['DishD'] then SubItems.Add(MyTimeToStr(DishList[i].TimeStamp));
   end;
 end;
 
