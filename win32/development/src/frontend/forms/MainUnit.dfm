@@ -2392,6 +2392,11 @@ object Form1: TForm1
       Caption = #1050#1072#1083#1086#1088#1080#1081#1085#1086#1089#1090#1100
       OnClick = Item_BaseColClick
     end
+    object Item_FoodD: TMenuItem
+      Tag = 5
+      Caption = #1044#1072#1090#1072
+      OnClick = Item_BaseColClick
+    end
   end
   object PopupDishCol: TPopupActionBarEx
     Left = 292

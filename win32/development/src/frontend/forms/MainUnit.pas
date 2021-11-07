@@ -264,6 +264,7 @@ type
     EditBaseFoodSearch: TEdit;
     ActionViewLogs: TAction;
     ButtonAddNote: TSpeedButton;
+    Item_FoodD: TMenuItem;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -4176,11 +4177,11 @@ begin
 
   TMenuItem(Sender).Checked := Val;
   case TMenuItem(Sender).Tag of
-    1: Value['FoodP']  := Val;
-    2: Value['FoodF']  := Val;
-    3: Value['FoodC']  := Val;
-    4: Value['FoodV']  := Val;
-    5: Value['FoodGI'] := Val;
+    1: Value['FoodP'] := Val;
+    2: Value['FoodF'] := Val;
+    3: Value['FoodC'] := Val;
+    4: Value['FoodV'] := Val;
+    5: Value['FoodD'] := Val;
 
     -1: Value['DishM'] := Val;
     -2: Value['DishP'] := Val;
@@ -4570,6 +4571,7 @@ begin
   Item_FoodF.Checked  := Value['FoodF'];
   Item_FoodC.Checked  := Value['FoodC'];
   Item_FoodV.Checked  := Value['FoodV'];
+  Item_FoodD.Checked  := Value['FoodD'];
 
   Item_DishM.Checked := Value['DishM'];
   Item_DishP.Checked := Value['DishP'];
@@ -4593,12 +4595,13 @@ procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boole
 
   procedure UpdateFoodTableHeaders();
   const
-    COL_CAPTIONS: array[0..4] of string = (
+    COL_CAPTIONS: array[0..5] of string = (
       'Наименование',
       'Б',
       'Ж',
       'У',
-      'ккал'
+      'ккал',
+      'Дата'
     );
   begin
     with ListFood do
@@ -4616,6 +4619,12 @@ procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boole
       if Value['FoodF'] then Columns.Add.Caption := COL_CAPTIONS[2];
       if Value['FoodC'] then Columns.Add.Caption := COL_CAPTIONS[3];
       if Value['FoodV'] then Columns.Add.Caption := COL_CAPTIONS[4];
+      if Value['FoodD'] then with Columns.Add do
+      begin
+        Caption := COL_CAPTIONS[5];
+        MinWidth := 80;
+        Width := 80;
+      end;
     end;
   end;
 
@@ -5033,6 +5042,16 @@ begin
 end;
 
 {======================================================================================================================}
+function MyTimeToStr(Date: TDateTime): string;
+{======================================================================================================================}
+begin
+  if (Date <> 0) then
+    Result := DateToStr(Date)
+  else
+    Result := '---';
+end;
+
+{======================================================================================================================}
 procedure TForm1.ListFoodData(Sender: TObject; Item: TListItem);
 {======================================================================================================================}
 var
@@ -5049,21 +5068,13 @@ begin
     if Value['FoodF'] then SubItems.Add(RealToStr(FoodList[i].RelFats));
     if Value['FoodC'] then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
     if Value['FoodV'] then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
+    if Value['FoodD'] then SubItems.Add(MyTimeToStr(FoodList[i].TimeStamp));
   end;
 end;
 
 {======================================================================================================================}
 procedure TForm1.ListDishData(Sender: TObject; Item: TListItem);
 {======================================================================================================================}
-
-  function MyTimeToStr(Date: TDateTime): string;
-  begin
-    if (Date <> 0) then
-      Result := DateToStr(Date)
-    else
-      Result := '---';
-  end;
-
 var
   i: integer;
 begin
@@ -5089,7 +5100,7 @@ procedure TForm1.ListFoodColumnClick(Sender: TObject; Column: TListColumn);
 begin
   case Column.Index of
     0: FoodBaseSort := smName;
-    6: FoodBaseSort := smDate;
+    5: FoodBaseSort := smDate;
   end;
 
   UpdateFoodbaseFilter();

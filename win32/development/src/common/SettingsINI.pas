@@ -322,7 +322,7 @@ begin
     Add(Part_BaseCols, 'FoodF',  rtBoolean, True);
     Add(Part_BaseCols, 'FoodC',  rtBoolean, True);
     Add(Part_BaseCols, 'FoodV',  rtBoolean, True);
-    //Add(Part_BaseCols, 'FoodGI', rtBoolean, False);
+    Add(Part_BaseCols, 'FoodD',  rtBoolean, True);
     Add(Part_BaseCols, 'DishM',  rtBoolean, False);
     Add(Part_BaseCols, 'DishP',  rtBoolean, True);
     Add(Part_BaseCols, 'DishF',  rtBoolean, True);
