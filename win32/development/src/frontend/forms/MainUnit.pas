@@ -4620,18 +4620,11 @@ procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boole
   end;
 
 var
-  //i: integer;
   SavedIndex: integer;
-
-  FoodP: boolean;
-  FoodF: boolean;
-  FoodC: boolean;
-  FoodV: boolean;
 begin
   StartProc('UpdateFoodTable()');
 
   LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
-  //Application.ProcessMessages;
 
   with ListFood do
   begin
@@ -4644,7 +4637,6 @@ begin
 
     if FullUpdate then
     begin
-
       { «¿√ŒÀŒ¬ » }
       if (UpdateHeaders) then
       begin
