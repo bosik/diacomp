@@ -76,6 +76,8 @@ const
 type
   TBalloonAction = procedure of object;
 
+  TSortMode = (smName, smDate);
+
   TForm1 = class(TAutosetupForm)
     TimerTimeLeft: TTimer;
     MenuHidden: TMainMenu;
@@ -385,6 +387,8 @@ type
     procedure ListDishData(Sender: TObject; Item: TListItem);
     procedure ActionViewLogsExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ListFoodColumnClick(Sender: TObject; Column: TListColumn);
+    procedure ListDishColumnClick(Sender: TObject; Column: TListColumn);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -486,6 +490,9 @@ var
   // required to store TListView's projection
   FoodList: TFoodItemList;
   DishList: TDishItemList;
+
+  FoodBaseSort: TSortMode = smName;
+  DishBaseSort: TSortMode = smName;
 
   { ============================ П Р О Ч Е Е ================================= }
 
@@ -4858,6 +4865,25 @@ begin
   FormMisc.ShowModal;
 end;
 
+  procedure ExchFood(n1, n2: integer);
+  var
+    temp: TFoodItem;
+  begin
+    temp := FoodList[n1];
+    FoodList[n1] := FoodList[n2];
+    FoodList[n2] := temp;
+  end;
+
+  function MoreFoodName(n1, n2: integer): boolean;
+  begin
+    Result := AnsiUpperCase(FoodList[n1].Name) > AnsiUpperCase(FoodList[n2].Name);
+  end;
+
+  function MoreFoodDate(n1, n2: integer): boolean;
+  begin
+    Result := FoodList[n1].TimeStamp < FoodList[n2].TimeStamp;
+  end;
+
 {======================================================================================================================}
 procedure TForm1.UpdateFoodbaseFilter();
 {======================================================================================================================}
@@ -4874,7 +4900,37 @@ begin
   begin
     FoodList := FoodBaseLocal.FindAny(Filter);
   end;
+
+  case FoodBaseSort of
+    smName:
+      begin
+        QuickSort(0, High(FoodList), ExchFood, MoreFoodName);
+      end;
+    smDate:
+      begin
+        QuickSort(0, High(FoodList), ExchFood, MoreFoodDate);
+      end;
+  end;
 end;
+
+  procedure ExchDish(n1, n2: integer);
+  var
+    temp: TDishItem;
+  begin
+    temp := DishList[n1];
+    DishList[n1] := DishList[n2];
+    DishList[n2] := temp;
+  end;
+
+  function MoreDishName(n1, n2: integer): boolean;
+  begin
+    Result := AnsiUpperCase(DishList[n1].Name) > AnsiUpperCase(DishList[n2].Name);
+  end;
+
+  function MoreDishDate(n1, n2: integer): boolean;
+  begin
+    Result := DishList[n1].TimeStamp < DishList[n2].TimeStamp;
+  end;
 
 {======================================================================================================================}
 procedure TForm1.UpdateDishbaseFilter;
@@ -4891,6 +4947,17 @@ begin
   end else
   begin
     DishList := DishBaseLocal.FindAny(Filter);
+  end;
+
+  case DishBaseSort of
+    smName:
+      begin
+        QuickSort(0, High(DishList), ExchDish, MoreDishName);
+      end;
+    smDate:
+      begin
+        QuickSort(0, High(DishList), ExchDish, MoreDishDate);
+      end;
   end;
 end;
 
@@ -5027,6 +5094,32 @@ begin
     if Value['DishV'] then SubItems.Add(IntToStr(Round(DishList[i].RelValue)));
     if Value['DishD'] then SubItems.Add(MyTimeToStr(DishList[i].TimeStamp));
   end;
+end;
+
+{======================================================================================================================}
+procedure TForm1.ListFoodColumnClick(Sender: TObject; Column: TListColumn);
+{======================================================================================================================}
+begin
+  case Column.Index of
+    0: FoodBaseSort := smName;
+    6: FoodBaseSort := smDate;
+  end;
+
+  UpdateFoodbaseFilter();
+  ListFood.Repaint();
+end;
+
+{======================================================================================================================}
+procedure TForm1.ListDishColumnClick(Sender: TObject; Column: TListColumn);
+{======================================================================================================================}
+begin
+  case Column.Index of
+    0: DishBaseSort := smName;
+    6: DishBaseSort := smDate;
+  end;
+
+  UpdateDishbaseFilter();
+  ListDish.Repaint();
 end;
 
 {======================================================================================================================}

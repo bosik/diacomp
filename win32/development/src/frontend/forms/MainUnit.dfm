@@ -1127,6 +1127,7 @@ object Form1: TForm1
             SmallImages = DataInterface.Images_BaseContent
             TabOrder = 0
             ViewStyle = vsReport
+            OnColumnClick = ListFoodColumnClick
             OnColumnRightClick = ListBaseColumnRightClick
             OnData = ListFoodData
             OnDblClick = ListFoodDblClick
@@ -1263,6 +1264,7 @@ object Form1: TForm1
             SmallImages = DataInterface.Images_BaseContent
             TabOrder = 1
             ViewStyle = vsReport
+            OnColumnClick = ListDishColumnClick
             OnColumnRightClick = ListBaseColumnRightClick
             OnData = ListDishData
             OnDblClick = ListDishDblClick
