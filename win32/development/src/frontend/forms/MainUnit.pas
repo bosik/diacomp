@@ -4595,7 +4595,7 @@ var
   FoodF: boolean;
   FoodC: boolean;
   FoodV: boolean;
-begin                                              
+begin
   StartProc('UpdateFoodTable()');
 
   LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
@@ -4630,10 +4630,10 @@ begin
           MinWidth := 150;
         end;
 
-        if FoodP  then Columns.Add.Caption := COL_CAPTIONS[1];
-        if FoodF  then Columns.Add.Caption := COL_CAPTIONS[2];
-        if FoodC  then Columns.Add.Caption := COL_CAPTIONS[3];
-        if FoodV  then Columns.Add.Caption := COL_CAPTIONS[4];
+        if FoodP then Columns.Add.Caption := COL_CAPTIONS[1];
+        if FoodF then Columns.Add.Caption := COL_CAPTIONS[2];
+        if FoodC then Columns.Add.Caption := COL_CAPTIONS[3];
+        if FoodV then Columns.Add.Caption := COL_CAPTIONS[4];
       end;
 
       Height := Height + 1;
@@ -4860,7 +4860,7 @@ var
   Filter: string;
 begin
   BusinessObjects.Free(FoodList);
-  
+
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
   begin
@@ -4871,7 +4871,9 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 procedure TForm1.UpdateDishbaseFilter;
+{======================================================================================================================}
 var
   Filter: string;
 begin
@@ -4981,7 +4983,7 @@ begin
   if (i >= 0) and (i <= High(FoodList)) then
   with Item do
   begin
-    Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
+    Caption := FoodList[i].Name;
     ImageIndex := Byte(FoodList[i].FromTable);
 
     if Value['FoodP'] then SubItems.Add(RealToStr(FoodList[i].RelProts));
