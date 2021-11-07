@@ -4078,7 +4078,7 @@ begin
 
   Item.ID := CreateCompactGUID();
   Item.Name := NewName;
-  Item.Hash := CreateCompactGUID();
+  Item.Modified();
   FoodBaseLocal.Save(Item);
 
   EventFoodbaseChanged(True);
@@ -4113,7 +4113,7 @@ begin
 
   Item.ID := CreateCompactGUID();
   Item.Name := NewName;
-  Item.Hash := CreateCompactGUID();
+  Item.Modified();
   DishBaseLocal.Save(Item);
 
   // TODO: rough
