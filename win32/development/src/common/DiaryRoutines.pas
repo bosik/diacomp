@@ -64,8 +64,11 @@ type
 
   TDate = type integer; // yao ming ;D
 
-  TSwapProcedure = procedure(Index1, Index2: integer) of object;
-  TMoreFunction = function(Index1,Index2: integer): boolean of object;
+  TSwapClassProcedure = procedure(Index1, Index2: integer) of object;
+  TMoreClassFunction = function(Index1, Index2: integer): boolean of object;
+  TSwapSimpleProcedure = procedure(Index1, Index2: integer);
+  TMoreSimpleFunction = function(Index1, Index2: integer): boolean;
+
   TGetterFunction = function(Index: integer): Variant of object;
   TCallbackProgress = procedure(Progress: integer);
 
@@ -134,7 +137,8 @@ type
   function Split(const S: string; Delimiter: char): TStringArray;
 
   { быстрая сортировка }
-  procedure QuickSort(Left, Right: integer; Swap: TSwapProcedure; More: TMoreFunction);
+  procedure QuickSort(Left, Right: integer; Swap: TSwapClassProcedure; More: TMoreClassFunction); overload;
+  procedure QuickSort(Left, Right: integer; Swap: TSwapSimpleProcedure; More: TMoreSimpleFunction); overload;
   { быстрый поиск }
   function BinarySearch(Value: Variant; Left, Right: integer; Getter: TGetterFunction): integer;
 
@@ -1054,7 +1058,46 @@ begin
     Result[High(Result)] := '';
 end;
 
-procedure QuickSort(Left, Right: integer; Swap: TSwapProcedure; More: TMoreFunction);
+{======================================================================================================================}
+procedure QuickSort(Left, Right: integer; Swap: TSwapClassProcedure; More: TMoreClassFunction); overload;
+{======================================================================================================================}
+
+  procedure qsort(l,r: integer);
+  var
+    i, j: integer;
+    x: integer;
+  begin
+    i := l;
+    j := r;
+    x := (l+r) div 2;
+    repeat
+      while More(x, i) do inc(i);
+      while More(j, x) do dec(j);
+      if (i <= j) then
+      begin
+        if More(i, j) or More(j, i) then
+        begin
+          Swap(i, j);
+          { необходимо, если X - это индекс }
+          if x = i then x := j else
+          if x = j then x := i;
+        end;
+        inc(i);
+        dec(j);
+      end;
+    until i > j;
+    if l < j then qsort(l, j);
+    if i < r then qsort(i, r);
+  end;
+
+begin
+  if Left <= Right then
+    qsort(Left, Right);
+end;
+
+{======================================================================================================================}
+procedure QuickSort(Left, Right: integer; Swap: TSwapSimpleProcedure; More: TMoreSimpleFunction); overload;
+{======================================================================================================================}
 
   procedure qsort(l,r: integer);
   var
