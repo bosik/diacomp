@@ -483,6 +483,7 @@ var
   MaxDishTag: real;
   //FoodBaseMap: TIndexList;
 
+  // required to store TListView's projection
   FoodList: TFoodItemList;
   DishList: TDishItemList;
 
@@ -1263,8 +1264,7 @@ begin
     Exit;
   end;
 
-  Item := TFoodItem.Create();
-  Item.CopyFrom(FoodList[Index]);
+  Item := FoodBaseLocal.FindById(FoodList[Index].ID) as TFoodItem;
   OldName := Item.Name;
 
   if FormFood.OpenFoodEditor(Item, False, FoodEditorRect) then
@@ -1297,8 +1297,7 @@ begin
     Exit;
   end;
 
-  Item := TDishItem.Create();
-  Item.CopyFrom(DishList[Index]);
+  Item := DishBaseLocal.FindById(DishList[Index].ID) as TDishItem;
   OldName := Item.Name;
 
   if FormDish.OpenDishEditor(Item, False, DishEditorRect) then
@@ -1337,6 +1336,7 @@ procedure TForm1.RemoveFood(Index: integer);
   end;
 
 var
+  Item: TFoodItem;
   DishNumber: integer;
 begin
   if (Index < 0) or (Index > High(FoodList)) then
@@ -1348,11 +1348,12 @@ begin
   // TODO 1: RF: checking dishes on removing food
   DishNumber := -1;//DishBase.UsedFood(FoodList[Index].Name);
 
+  Item := FoodList[Index];
+
   if //((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
-     ((DishNumber = -1)and(AskConfirm(FoodList[Index]))) then
+     ((DishNumber = -1) and (AskConfirm(Item))) then
   begin
-    { порядок в базе и таблице совпадают }
-    FoodBaseLocal.Delete(FoodList[Index].ID);
+    FoodBaseLocal.Delete(Item.ID);
 
     UpdateFoodbaseFilter();
     UpdateFoodTable(False, True, False);
@@ -1379,6 +1380,7 @@ procedure TForm1.RemoveDish(Index: integer);
   end;
 
 var
+  Item: TDishItem;
   DishNumber: integer;
 begin
   // TODO: update
@@ -1391,11 +1393,12 @@ begin
   // TODO 1: RF: checking dishes on removing dish
   DishNumber := -1;//DishBase.UsedDish(DishList[Index].Name);
 
+  Item := DishList[Index];
+
   if //((DishNumber > -1)and(AskWarning(DishList[Index], DishBase[DishNumber])))or
-     ((DishNumber = -1)and(AskConfirm(DishList[Index]))) then
+     ((DishNumber = -1)and(AskConfirm(Item))) then
   begin
-    { порядок в базе и таблице совпадают }
-    DishBaseLocal.Delete(DishList[Index].ID);
+    DishBaseLocal.Delete(Item.ID);
 
     UpdateDishbaseFilter();
     // TODO: check args
@@ -4054,69 +4057,71 @@ end;
 procedure TForm1.ItemCopyFoodClick(Sender: TObject);
 {======================================================================================================================}
 var
-  Temp: TFoodItem;
-  n,i: integer;
+  Item: TFoodItem;
+  n, i: integer;
   OldName: string;
   NewName: string;
 begin
   n := ListFood.ItemIndex;
-  if (n <> -1) then
+  if (n < 0) or (n > High(FoodList)) then
   begin
-    OldName := FoodList[n].Name;
-    i := 1;
-    repeat
-      inc(i);
-      NewName := Format('%s (%d)', [OldName, i]);
-    until FoodBaseLocal.FindOne(NewName) = nil;
-
-    Temp := TFoodItem.Create;
-    Temp.CopyFrom(FoodList[n]);
-    Temp.ID := CreateCompactGUID();
-    Temp.Name := NewName;
-    Temp.Hash := CreateCompactGUID();
-    FoodBaseLocal.Save(Temp);
-
-    EventFoodbaseChanged(True);
-
-    //ShowTableItem(ListFood, n);
-    ListFood.SetFocus;
-    // TODO 5: RF: selecting copied food disabled
+    Exit;
   end;
+
+  Item := FoodBaseLocal.FindById(FoodList[n].ID) as TFoodItem;
+  OldName := Item.Name;
+  i := 1;
+  repeat
+    inc(i);
+    NewName := Format('%s (%d)', [OldName, i]);
+  until FoodBaseLocal.FindOne(NewName) = nil;
+
+  Item.ID := CreateCompactGUID();
+  Item.Name := NewName;
+  Item.Hash := CreateCompactGUID();
+  FoodBaseLocal.Save(Item);
+
+  EventFoodbaseChanged(True);
+
+  //ShowTableItem(ListFood, n);
+  ListFood.SetFocus;
+  // TODO 5: RF: selecting copied food disabled
 end;
 
 {======================================================================================================================}
 procedure TForm1.ItemCopyDishClick(Sender: TObject);
 {======================================================================================================================}
 var
-  Temp: TDishItem;
-  n,i: integer;
+  Item: TDishItem;
+  n, i: integer;
   OldName: string;
   NewName: string;
 begin
   n := ListDish.ItemIndex;
-  if (n <> -1) then
+  if (n < 0) or (n > High(DishList)) then
   begin
-    OldName := DishList[n].Name;
-    i := 1;
-    repeat
-      inc(i);
-      NewName := Format('%s (%d)', [OldName, i]);
-    until DishBaseLocal.FindOne(NewName) = nil;
-
-    Temp := TDishItem.Create;
-    Temp.CopyFrom(DishList[n]);
-    Temp.ID := CreateCompactGUID();
-    Temp.Name := NewName;
-    Temp.Hash := CreateCompactGUID();
-    DishBaseLocal.Save(Temp);
-
-    // TODO: rough
-    EventDishbaseChanged(True, True);
-
-    //ShowTableItem(ListDish, n);
-    ListDish.SetFocus;
-    // TODO 5: RF: selecting copied food disabled
+    Exit;
   end;
+
+  Item := DishBaseLocal.FindByID(DishList[n].ID) as TDishItem;
+  OldName := Item.Name;
+  i := 1;
+  repeat
+    inc(i);
+    NewName := Format('%s (%d)', [OldName, i]);
+  until DishBaseLocal.FindOne(NewName) = nil;
+
+  Item.ID := CreateCompactGUID();
+  Item.Name := NewName;
+  Item.Hash := CreateCompactGUID();
+  DishBaseLocal.Save(Item);
+
+  // TODO: rough
+  EventDishbaseChanged(True, True);
+
+  //ShowTableItem(ListDish, n);
+  ListDish.SetFocus;
+  // TODO 5: RF: selecting copied food disabled
 end;
 
 {======================================================================================================================}
