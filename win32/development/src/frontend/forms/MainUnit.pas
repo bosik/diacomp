@@ -450,6 +450,8 @@ type
     procedure UpdateMealStatistics;
     procedure UpdateMealDose;
     procedure UpdateCombos;
+    procedure UpdateFoodTableHeaders();
+    procedure UpdateDishTableHeaders();
     procedure UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
     procedure UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
     procedure UpdateFoodbaseFilter();
@@ -4590,44 +4592,90 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
+procedure TForm1.UpdateFoodTableHeaders();
 {======================================================================================================================}
-
-  procedure UpdateFoodTableHeaders();
-  const
-    COL_CAPTIONS: array[0..5] of string = (
-      'Наименование',
-      'Б',
-      'Ж',
-      'У',
-      'ккал',
-      'Дата'
-    );
+const
+  COL_CAPTIONS: array[0..5] of string = (
+    'Наименование',
+    'Б',
+    'Ж',
+    'У',
+    'ккал',
+    'Дата'
+  );
+begin
+  with ListFood do
   begin
-    with ListFood do
+    Columns.Clear;
+
+    with Columns.Add do
     begin
-      Columns.Clear;
+      Caption := COL_CAPTIONS[0];
+      AutoSize := True;
+      MinWidth := 150;
+    end;
 
-      with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[0];
-        AutoSize := True;
-        MinWidth := 150;
-      end;
-
-      if Value['FoodP'] then Columns.Add.Caption := COL_CAPTIONS[1];
-      if Value['FoodF'] then Columns.Add.Caption := COL_CAPTIONS[2];
-      if Value['FoodC'] then Columns.Add.Caption := COL_CAPTIONS[3];
-      if Value['FoodV'] then Columns.Add.Caption := COL_CAPTIONS[4];
-      if Value['FoodD'] then with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[5];
-        MinWidth := 80;
-        Width := 80;
-      end;
+    if Value['FoodP'] then Columns.Add.Caption := COL_CAPTIONS[1];
+    if Value['FoodF'] then Columns.Add.Caption := COL_CAPTIONS[2];
+    if Value['FoodC'] then Columns.Add.Caption := COL_CAPTIONS[3];
+    if Value['FoodV'] then Columns.Add.Caption := COL_CAPTIONS[4];
+    if Value['FoodD'] then with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[5];
+      MinWidth := 80;
+      Width := 80;
     end;
   end;
+end;
 
+{======================================================================================================================}
+procedure TForm1.UpdateDishTableHeaders();
+{======================================================================================================================}
+const
+  COL_CAPTIONS: array[0..6] of string = (
+    'Наименование',
+    'Масса',
+    'Б',
+    'Ж',
+    'У',
+    'ккал',
+    'Дата'
+  );
+begin
+  with ListDish do
+  begin
+    Columns.Clear;
+
+    with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[0];
+      AutoSize := True;
+      MinWidth := 150;
+    end;
+
+    if Value['DishM'] then with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[1];
+      MinWidth := 50;
+      Width := 60;
+    end;
+
+    if Value['DishP'] then Columns.Add.Caption := COL_CAPTIONS[2];
+    if Value['DishF'] then Columns.Add.Caption := COL_CAPTIONS[3];
+    if Value['DishC'] then Columns.Add.Caption := COL_CAPTIONS[4];
+    if Value['DishV'] then Columns.Add.Caption := COL_CAPTIONS[5];
+    if Value['DishD'] then with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[6];
+      MinWidth := 80;
+      Width := 80;
+    end;
+  end;
+end;
+
+{======================================================================================================================}
+procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
+{======================================================================================================================}
 var
   SavedIndex: integer;
 begin
@@ -4674,50 +4722,6 @@ end;
 {======================================================================================================================}
 procedure TForm1.UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
 {======================================================================================================================}
-
-  procedure UpdateDishTableHeaders();
-  const
-    COL_CAPTIONS: array[0..6] of string = (
-      'Наименование',
-      'Масса',
-      'Б',
-      'Ж',
-      'У',
-      'ккал',
-      'Дата'
-    );
-  begin
-    with ListDish do
-    begin
-      Columns.Clear;
-
-      with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[0];
-        AutoSize := True;
-        MinWidth := 150;
-      end;
-
-      if Value['DishM'] then with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[1];
-        MinWidth := 50;
-        Width := 60;
-      end;
-
-      if Value['DishP'] then Columns.Add.Caption := COL_CAPTIONS[2];
-      if Value['DishF'] then Columns.Add.Caption := COL_CAPTIONS[3];
-      if Value['DishC'] then Columns.Add.Caption := COL_CAPTIONS[4];
-      if Value['DishV'] then Columns.Add.Caption := COL_CAPTIONS[5];
-      if Value['DishD'] then with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[6];
-        MinWidth := 80;
-        Width := 80;
-      end;
-    end;
-  end;
-
 var
   SavedIndex: integer;
 begin
