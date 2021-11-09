@@ -452,10 +452,8 @@ type
     procedure UpdateCombos;
     procedure UpdateFoodTableHeaders();
     procedure UpdateDishTableHeaders();
-    procedure UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
-    procedure UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
-    procedure UpdateFoodbaseFilter();
-    procedure UpdateDishbaseFilter();
+    procedure UpdateFoodTable();
+    procedure UpdateDishTable();
 
     { Информационные события }
     procedure EventFoodbaseChanged(CountChanged: boolean);
@@ -1364,9 +1362,7 @@ begin
      ((DishNumber = -1) and (AskConfirm(Item))) then
   begin
     FoodBaseLocal.Delete(Item.ID);
-
-    UpdateFoodbaseFilter();
-    UpdateFoodTable(False, True, False);
+    UpdateFoodTable();
     {*}UpdateCombos;
   end;
 end;
@@ -1409,10 +1405,7 @@ begin
      ((DishNumber = -1)and(AskConfirm(Item))) then
   begin
     DishBaseLocal.Delete(Item.ID);
-
-    UpdateDishbaseFilter();
-    // TODO: check args
-    UpdateDishTable(False, True, False);
+    UpdateDishTable();
     {*}UpdateCombos;
   end;
 end;
@@ -3458,11 +3451,11 @@ begin
   begin
     ON_IDLE_ShowBases := False;
 
-    UpdateFoodbaseFilter();
-    UpdateDishbaseFilter();
+    UpdateFoodTableHeaders();
+    UpdateFoodTable();
 
-    UpdateFoodTable(True, True, False);
-    UpdateDishTable(True, True, False);
+    UpdateDishTableHeaders();
+    UpdateDishTable();
 
     { после Maximize }
     //ListFood.Columns[0].Width := ListFood.Columns[0].Width - 30;
@@ -4194,9 +4187,19 @@ begin
   end;
 
   if TMenuItem(Sender).Tag in [1..5] then
-    UpdateFoodTable(True, True, True) else
+  begin
+    UpdateFoodTableHeaders();
+    // make it resize
+    ListFood.Height := ListFood.Height + 1;
+    ListFood.Height := ListFood.Height - 1;
+  end else
   if -TMenuItem(Sender).Tag in [1..6] then
-    UpdateDishTable(True, True, True);
+  begin
+    UpdateDishTableHeaders();
+    // make it resize
+    ListDish.Height := ListDish.Height + 1;
+    ListDish.Height := ListDish.Height - 1;
+  end;
 end;
 
 {======================================================================================================================}
@@ -4592,177 +4595,196 @@ begin
 end;
 
 {======================================================================================================================}
+procedure SetColumn(Columns: TListColumns; var Index: integer;
+  Caption: String; AutoSize: boolean; MinWidth: integer; Width: integer);
+{======================================================================================================================}
+begin
+  inc(Index);
+  with Columns do
+  begin
+    while (Count < Index) do Add();
+
+    Items[Index - 1].Caption := Caption;
+    Items[Index - 1].AutoSize := AutoSize;
+    Items[Index - 1].MinWidth := MinWidth;
+    if (not AutoSize) then
+      Items[Index - 1].Width := Width;
+  end;
+end;
+
+{======================================================================================================================}
 procedure TForm1.UpdateFoodTableHeaders();
 {======================================================================================================================}
-const
-  COL_CAPTIONS: array[0..5] of string = (
-    'Наименование',
-    'Б',
-    'Ж',
-    'У',
-    'ккал',
-    'Дата'
-  );
+var
+  n: integer;
 begin
-  with ListFood do
-  begin
-    Columns.Clear;
+  n := 0;
 
-    with Columns.Add do
-    begin
-      Caption := COL_CAPTIONS[0];
-      AutoSize := True;
-      MinWidth := 150;
-    end;
+  if True           then SetColumn(ListFood.Columns, n, 'Наименование', True, 150, 150);
+  if Value['FoodP'] then SetColumn(ListFood.Columns, n, 'Б',            False, 50, 50);
+  if Value['FoodF'] then SetColumn(ListFood.Columns, n, 'Ж',            False, 50, 50);
+  if Value['FoodC'] then SetColumn(ListFood.Columns, n, 'У',            False, 50, 50);
+  if Value['FoodV'] then SetColumn(ListFood.Columns, n, 'ккал',         False, 50, 50);
+  if Value['FoodD'] then SetColumn(ListFood.Columns, n, 'Дата',         False, 80, 80);
 
-    if Value['FoodP'] then Columns.Add.Caption := COL_CAPTIONS[1];
-    if Value['FoodF'] then Columns.Add.Caption := COL_CAPTIONS[2];
-    if Value['FoodC'] then Columns.Add.Caption := COL_CAPTIONS[3];
-    if Value['FoodV'] then Columns.Add.Caption := COL_CAPTIONS[4];
-    if Value['FoodD'] then with Columns.Add do
-    begin
-      Caption := COL_CAPTIONS[5];
-      MinWidth := 80;
-      Width := 80;
-    end;
-  end;
+  with ListFood.Columns do
+  while (Count > n) do
+    Delete(Count - 1);
 end;
 
 {======================================================================================================================}
 procedure TForm1.UpdateDishTableHeaders();
 {======================================================================================================================}
-const
-  COL_CAPTIONS: array[0..6] of string = (
-    'Наименование',
-    'Масса',
-    'Б',
-    'Ж',
-    'У',
-    'ккал',
-    'Дата'
-  );
+var
+  n: integer;
 begin
-  with ListDish do
-  begin
-    Columns.Clear;
+  n := 0;
 
-    with Columns.Add do
-    begin
-      Caption := COL_CAPTIONS[0];
-      AutoSize := True;
-      MinWidth := 150;
-    end;
+  if True           then SetColumn(ListDish.Columns, n, 'Наименование', True, 150, 150);
+  if Value['DishM'] then SetColumn(ListDish.Columns, n, 'Масса',        False, 50, 60);
+  if Value['DishP'] then SetColumn(ListDish.Columns, n, 'Б',            False, 50, 50);
+  if Value['DishF'] then SetColumn(ListDish.Columns, n, 'Ж',            False, 50, 50);
+  if Value['DishC'] then SetColumn(ListDish.Columns, n, 'У',            False, 50, 50);
+  if Value['DishV'] then SetColumn(ListDish.Columns, n, 'ккал',         False, 50, 50);
+  if Value['DishD'] then SetColumn(ListDish.Columns, n, 'Дата',         False, 80, 80);
 
-    if Value['DishM'] then with Columns.Add do
-    begin
-      Caption := COL_CAPTIONS[1];
-      MinWidth := 50;
-      Width := 60;
-    end;
-
-    if Value['DishP'] then Columns.Add.Caption := COL_CAPTIONS[2];
-    if Value['DishF'] then Columns.Add.Caption := COL_CAPTIONS[3];
-    if Value['DishC'] then Columns.Add.Caption := COL_CAPTIONS[4];
-    if Value['DishV'] then Columns.Add.Caption := COL_CAPTIONS[5];
-    if Value['DishD'] then with Columns.Add do
-    begin
-      Caption := COL_CAPTIONS[6];
-      MinWidth := 80;
-      Width := 80;
-    end;
-  end;
+  with ListDish.Columns do
+  while (Count > n) do
+    Delete(Count - 1);
 end;
 
+  function MoreFoodName(n1, n2: integer): boolean;
+  begin
+    Result := AnsiUpperCase(FoodList[n1].Name) > AnsiUpperCase(FoodList[n2].Name);
+  end;
+
+  function MoreFoodDate(n1, n2: integer): boolean;
+  begin
+    Result := FoodList[n1].TimeStamp < FoodList[n2].TimeStamp;
+  end;
+
+  procedure ExchFood(n1, n2: integer);
+  var
+    temp: TFoodItem;
+  begin
+    temp := FoodList[n1];
+    FoodList[n1] := FoodList[n2];
+    FoodList[n2] := temp;
+  end;
+
 {======================================================================================================================}
-procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
+procedure TForm1.UpdateFoodTable();
 {======================================================================================================================}
-var
-  SavedIndex: integer;
+
+  procedure UpdateFoodbaseFilter();
+  var
+    Filter: string;
+  begin
+    BusinessObjects.Free(FoodList);
+
+    Filter := EditBaseFoodSearch.Text;
+    if (Trim(Filter) = '') then
+    begin
+      FoodList := FoodBaseLocal.FindAll(false);
+    end else
+    begin
+      FoodList := FoodBaseLocal.FindAny(Filter);
+    end;
+
+    case FoodBaseSort of
+      smName:
+        begin
+          QuickSort(0, High(FoodList), ExchFood, MoreFoodName);
+        end;
+      smDate:
+        begin
+          QuickSort(0, High(FoodList), ExchFood, MoreFoodDate);
+        end;
+    end;
+  end;
+
 begin
   StartProc('UpdateFoodTable()');
 
+  UpdateFoodbaseFilter();
+
   LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
+  ListFood.Items.Count := Length(FoodList);
 
-  with ListFood do
+  if (Length(FoodList) <> 0) then
   begin
-    if SaveItemIndex or (not FullUpdate) then
-      SavedIndex := ItemIndex
-    else
-      SavedIndex := -1; // для компилятора
-
-    ListFood.Items.Count := Length(FoodList);
-
-    if FullUpdate then
-    begin
-      { ЗАГОЛОВКИ }
-      if (UpdateHeaders) then
-      begin
-        UpdateFoodTableHeaders();
-      end;
-
-      Height := Height + 1;
-      Height := Height - 1;
-      if Columns[0].Width > 10 then
-        Columns[0].Width := Columns[0].Width - 10;
-    end else
-    { not FullUpdate }
-    begin
-      if (Length(FoodList) <> Items.Count) then
-        UpdateFoodTable(UpdateHeaders, True, SaveItemIndex);
-    end;
-
-    if SaveItemIndex or (not FullUpdate) then
-      ShowTableItem(ListFood, SavedIndex);
+    ShowTableItem(ListFood, 0);
   end;
 
-  ListFood.Repaint;
-  FinishProc;
+  ListFood.Repaint();
+  FinishProc();
 end;
 
+  procedure ExchDish(n1, n2: integer);
+  var
+    temp: TDishItem;
+  begin
+    temp := DishList[n1];
+    DishList[n1] := DishList[n2];
+    DishList[n2] := temp;
+  end;
+
+  function MoreDishName(n1, n2: integer): boolean;
+  begin
+    Result := AnsiUpperCase(DishList[n1].Name) > AnsiUpperCase(DishList[n2].Name);
+  end;
+
+  function MoreDishDate(n1, n2: integer): boolean;
+  begin
+    Result := DishList[n1].TimeStamp < DishList[n2].TimeStamp;
+  end;
+
 {======================================================================================================================}
-procedure TForm1.UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
+procedure TForm1.UpdateDishTable();
 {======================================================================================================================}
-var
-  SavedIndex: integer;
+
+  procedure UpdateDishbaseFilter();
+  var
+    Filter: string;
+  begin
+    BusinessObjects.Free(DishList);
+
+    Filter := EditBaseFoodSearch.Text;
+    if (Trim(Filter) = '') then
+    begin
+      DishList := DishBaseLocal.FindAll(false);
+    end else
+    begin
+      DishList := DishBaseLocal.FindAny(Filter);
+    end;
+
+    case DishBaseSort of
+      smName:
+        begin
+          QuickSort(0, High(DishList), ExchDish, MoreDishName);
+        end;
+      smDate:
+        begin
+          QuickSort(0, High(DishList), ExchDish, MoreDishDate);
+        end;
+    end;
+  end;
+
 begin
   StartProc('UpdateDishTable()');
 
+  UpdateDishbaseFilter();
+
   LabelDishBase.Caption := Format(MAIN_BASES_DISH_TITLE, [Length(DishList)]);
+  ListDish.Items.Count := Length(DishList);
 
-  with ListDish do
+  if (Length(DishList) <> 0) then
   begin
-    if SaveItemIndex or (not FullUpdate) then
-      SavedIndex := ItemIndex
-    else
-      SavedIndex := -1; // для компилятора
-
-    ListDish.Items.Count := Length(DishList);
-
-    if FullUpdate then
-    begin
-      { ЗАГОЛОВКИ }
-      if (UpdateHeaders) then
-      begin
-        UpdateDishTableHeaders();
-      end;
-
-      Height := Height + 1;
-      Height := Height - 1;
-      if Columns[0].Width > 10 then
-        Columns[0].Width := Columns[0].Width - 10;
-    end else
-    { not FullUpdate }
-    begin
-     if (Length(DishList) <> Items.Count) then
-        UpdateDishTable(UpdateHeaders, True, SaveItemIndex);
-    end;
-
-    if SaveItemIndex or (not FullUpdate) then
-      ShowTableItem(ListDish, SavedIndex);
+    ShowTableItem(ListDish, 0);
   end;
 
-  ListDish.Repaint;
-  FinishProc;
+  ListDish.Repaint();
+  FinishProc();
 end;
 
 procedure TForm1.EventDiaryChanged;
@@ -4780,8 +4802,7 @@ begin
   // TODO: i18n
   Form1.StatusBar.Panels[3].Text := 'Изменено';
 
-  UpdateDishbaseFilter();
-  UpdateDishTable(False, True, False);
+  UpdateDishTable();
   UpdateCombos;
 
   FinishProc;
@@ -4796,8 +4817,7 @@ begin
   // TODO: i18n
   Form1.StatusBar.Panels[3].Text := 'Изменено';
 
-  UpdateFoodbaseFilter();
-  UpdateFoodTable(False, True, False);
+  UpdateFoodTable();
   UpdateCombos;
 
   FinishProc;
@@ -4865,132 +4885,24 @@ begin
   FormMisc.ShowModal;
 end;
 
-  procedure ExchFood(n1, n2: integer);
-  var
-    temp: TFoodItem;
-  begin
-    temp := FoodList[n1];
-    FoodList[n1] := FoodList[n2];
-    FoodList[n2] := temp;
-  end;
-
-  function MoreFoodName(n1, n2: integer): boolean;
-  begin
-    Result := AnsiUpperCase(FoodList[n1].Name) > AnsiUpperCase(FoodList[n2].Name);
-  end;
-
-  function MoreFoodDate(n1, n2: integer): boolean;
-  begin
-    Result := FoodList[n1].TimeStamp < FoodList[n2].TimeStamp;
-  end;
-
-{======================================================================================================================}
-procedure TForm1.UpdateFoodbaseFilter();
-{======================================================================================================================}
-var
-  Filter: string;
-begin
-  BusinessObjects.Free(FoodList);
-
-  Filter := EditBaseFoodSearch.Text;
-  if (Trim(Filter) = '') then
-  begin
-    FoodList := FoodBaseLocal.FindAll(false);
-  end else
-  begin
-    FoodList := FoodBaseLocal.FindAny(Filter);
-  end;
-
-  case FoodBaseSort of
-    smName:
-      begin
-        QuickSort(0, High(FoodList), ExchFood, MoreFoodName);
-      end;
-    smDate:
-      begin
-        QuickSort(0, High(FoodList), ExchFood, MoreFoodDate);
-      end;
-  end;
-end;
-
-  procedure ExchDish(n1, n2: integer);
-  var
-    temp: TDishItem;
-  begin
-    temp := DishList[n1];
-    DishList[n1] := DishList[n2];
-    DishList[n2] := temp;
-  end;
-
-  function MoreDishName(n1, n2: integer): boolean;
-  begin
-    Result := AnsiUpperCase(DishList[n1].Name) > AnsiUpperCase(DishList[n2].Name);
-  end;
-
-  function MoreDishDate(n1, n2: integer): boolean;
-  begin
-    Result := DishList[n1].TimeStamp < DishList[n2].TimeStamp;
-  end;
-
-{======================================================================================================================}
-procedure TForm1.UpdateDishbaseFilter;
-{======================================================================================================================}
-var
-  Filter: string;
-begin
-  BusinessObjects.Free(DishList);
-
-  Filter := EditBaseFoodSearch.Text;
-  if (Trim(Filter) = '') then
-  begin
-    DishList := DishBaseLocal.FindAll(false);
-  end else
-  begin
-    DishList := DishBaseLocal.FindAny(Filter);
-  end;
-
-  case DishBaseSort of
-    smName:
-      begin
-        QuickSort(0, High(DishList), ExchDish, MoreDishName);
-      end;
-    smDate:
-      begin
-        QuickSort(0, High(DishList), ExchDish, MoreDishDate);
-      end;
-  end;
-end;
-
 {======================================================================================================================}
 procedure TForm1.EditBaseFoodSearchChange(Sender: TObject);
 {======================================================================================================================}
 begin
-  UpdateFoodbaseFilter();
-  UpdateFoodTable(False, True, False);
-  if (ListFood.Items.Count > 0) then
-  begin
-    ListFood.Items[0].Selected := True;
-    ListFood.Items[0].Focused := True;
-  end;
-
-  UpdateDishbaseFilter();
-  UpdateDishTable(False, True, False);
-  if (ListDish.Items.Count > 0) then
-  begin
-    ListDish.Items[0].Selected := True;
-    ListDish.Items[0].Focused := True;
-  end;
+  UpdateFoodTable();
+  UpdateDishTable();
 end;
 
 {======================================================================================================================}
 procedure TForm1.ButtonBasesFilterResetClick(Sender: TObject);
 {======================================================================================================================}
 begin
+  // FIXME: unused method?
+
   if (not TSpeedButton(Sender).Down) then
     EditBaseFoodSearch.Text := '';
 
-  UpdateFoodbaseFilter();
-  UpdateFoodTable(False, True, False);
+  UpdateFoodTable();
   if (ListFood.Items.Count > 0) then
   begin
     ListFood.Items[0].Selected := True;
@@ -5107,8 +5019,7 @@ begin
     5: FoodBaseSort := smDate;
   end;
 
-  UpdateFoodbaseFilter();
-  ListFood.Repaint();
+  UpdateFoodTable();
 end;
 
 {======================================================================================================================}
@@ -5120,8 +5031,7 @@ begin
     6: DishBaseSort := smDate;
   end;
 
-  UpdateDishbaseFilter();
-  ListDish.Repaint();
+  UpdateDishTable();
 end;
 
 {======================================================================================================================}
