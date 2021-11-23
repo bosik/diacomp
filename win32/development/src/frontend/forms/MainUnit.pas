@@ -1317,9 +1317,8 @@ begin
     FoodBaseLocal.Save(Item);
     EventFoodbaseChanged(False);
 
-    // TODO 5: RF: selecting edited food
-    //ShowTableItem(ListFood, Index);
-    ListFood.SetFocus;
+    ShowTableItem(ListFood, GetFoodIndex(Item.ID));
+    ListFood.SetFocus();
   end;
 end;
 
@@ -1351,9 +1350,8 @@ begin
     EventDishbaseChanged(False, True);
     // TODO: rough
 
-    // TODO 5: RF: selecting edited dish
-    //ShowTableItem(ListDish, Index);
-    ListDish.SetFocus;
+    ShowTableItem(ListDish, GetDishIndex(Item.ID));
+    ListDish.SetFocus();
   end;
 end;
 
@@ -4743,11 +4741,6 @@ begin
   LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
   ListFood.Items.Count := Length(FoodList);
 
-  if (Length(FoodList) <> 0) then
-  begin
-    ShowTableItem(ListFood, 0);
-  end;
-
   ListFood.Repaint();
   FinishProc();
 end;
@@ -4809,11 +4802,6 @@ begin
 
   LabelDishBase.Caption := Format(MAIN_BASES_DISH_TITLE, [Length(DishList)]);
   ListDish.Items.Count := Length(DishList);
-
-  if (Length(DishList) <> 0) then
-  begin
-    ShowTableItem(ListDish, 0);
-  end;
 
   ListDish.Repaint();
   FinishProc();
@@ -4923,6 +4911,16 @@ procedure TForm1.EditBaseFoodSearchChange(Sender: TObject);
 begin
   UpdateFoodTable();
   UpdateDishTable();
+
+  if (Length(FoodList) > 0) then
+  begin
+    ShowTableItem(ListFood, 0);
+  end;
+
+  if (Length(DishList) > 0) then
+  begin
+    ShowTableItem(ListDish, 0);
+  end;
 end;
 
 {======================================================================================================================}
