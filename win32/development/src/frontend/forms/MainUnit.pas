@@ -4810,7 +4810,7 @@ end;
 
 procedure TForm1.EventFoodbaseChanged(CountChanged: boolean);
 begin
-  StartProc('EventFoodbaseChenged');
+  StartProc('EventFoodbaseChanged');
 
   // TODO: make it handler for DAO-generated event; don't call it manually
 
