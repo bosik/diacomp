@@ -1224,6 +1224,21 @@ end;
 {======================================================================================================================}
 procedure TForm1.CreateFood();
 {======================================================================================================================}
+
+  function FindIndex(ID: TCompactGUID): integer;
+  var
+    i: integer;
+  begin
+    for i := 0 to High(FoodList) do
+    if (FoodList[i].ID = ID) then
+    begin
+      Result := i;
+      Exit;
+    end;
+
+    Result := -1;
+  end;
+
 var
   Item: TFoodItem;
 begin
@@ -1234,8 +1249,8 @@ begin
     FoodBaseLocal.Save(Item);
     {#}EventFoodbaseChanged(True);
 
-    //ShowTableItem(ListFood, n);
-    ListFood.SetFocus;
+    ShowTableItem(ListFood, FindIndex(Item.ID));
+    ListFood.SetFocus();
   end else
     Item.Free;
 end;
@@ -1243,6 +1258,21 @@ end;
 {======================================================================================================================}
 procedure TForm1.CreateDish;
 {======================================================================================================================}
+
+  function FindIndex(ID: TCompactGUID): integer;
+  var
+    i: integer;
+  begin
+    for i := 0 to High(DishList) do
+    if (DishList[i].ID = ID) then
+    begin
+      Result := i;
+      Exit;
+    end;
+
+    Result := -1;
+  end;
+
 var
   Item: TDishItem;
 begin
@@ -1253,8 +1283,8 @@ begin
     DishBaseLocal.Save(Item);
     {#}EventDishbaseChanged(True, True);
 
-    //ShowTableItem(ListDish, n);
-    ListDish.SetFocus;
+    ShowTableItem(ListDish, FindIndex(Item.ID));
+    ListDish.SetFocus();
   end else
     Item.Free;
 end;
