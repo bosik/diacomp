@@ -1222,23 +1222,40 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TForm1.CreateFood();
+function GetFoodIndex(ID: TCompactGUID): integer;
 {======================================================================================================================}
-
-  function FindIndex(ID: TCompactGUID): integer;
-  var
-    i: integer;
+var
+  i: integer;
+begin
+  for i := 0 to High(FoodList) do
+  if (FoodList[i].ID = ID) then
   begin
-    for i := 0 to High(FoodList) do
-    if (FoodList[i].ID = ID) then
-    begin
-      Result := i;
-      Exit;
-    end;
-
-    Result := -1;
+    Result := i;
+    Exit;
   end;
 
+  Result := -1;
+end;
+
+{======================================================================================================================}
+function GetDishIndex(ID: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(DishList) do
+  if (DishList[i].ID = ID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+
+  Result := -1;
+end;
+
+{======================================================================================================================}
+procedure TForm1.CreateFood();
+{======================================================================================================================}
 var
   Item: TFoodItem;
 begin
@@ -1249,30 +1266,15 @@ begin
     FoodBaseLocal.Save(Item);
     {#}EventFoodbaseChanged(True);
 
-    ShowTableItem(ListFood, FindIndex(Item.ID));
+    ShowTableItem(ListFood, GetFoodIndex(Item.ID));
     ListFood.SetFocus();
   end else
     Item.Free;
 end;
 
 {======================================================================================================================}
-procedure TForm1.CreateDish;
+procedure TForm1.CreateDish();
 {======================================================================================================================}
-
-  function FindIndex(ID: TCompactGUID): integer;
-  var
-    i: integer;
-  begin
-    for i := 0 to High(DishList) do
-    if (DishList[i].ID = ID) then
-    begin
-      Result := i;
-      Exit;
-    end;
-
-    Result := -1;
-  end;
-
 var
   Item: TDishItem;
 begin
@@ -1283,7 +1285,7 @@ begin
     DishBaseLocal.Save(Item);
     {#}EventDishbaseChanged(True, True);
 
-    ShowTableItem(ListDish, FindIndex(Item.ID));
+    ShowTableItem(ListDish, GetDishIndex(Item.ID));
     ListDish.SetFocus();
   end else
     Item.Free;
