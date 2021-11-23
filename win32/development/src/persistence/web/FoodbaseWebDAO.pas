@@ -175,7 +175,7 @@ function TFoodbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 var
   Response: TStdResponse;
 begin
-  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + FormatDateTime(Since));
   try
     Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
   finally

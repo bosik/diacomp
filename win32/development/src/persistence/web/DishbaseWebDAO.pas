@@ -175,7 +175,7 @@ function TDishbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 var
   Response: TStdResponse;
 begin
-  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/changes/?since=' + FormatDateTime(Since));
   try
     Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
   finally

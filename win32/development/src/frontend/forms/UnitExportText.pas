@@ -172,25 +172,25 @@ begin
         if (Recs[j].RecType = TBloodRecord) and (IncBS) then
         begin
           CheckBreak(Recs[j]);
-          Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB + RealToStrZero(TBloodRecord(Recs[j]).Value)
+          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + RealToStrZero(TBloodRecord(Recs[j]).Value)
           +' ммоль/л');
         end  else
 
         if (Recs[j].RecType = TInsRecord) and (IncIns) then
         begin
           CheckBreak(Recs[j]);
-          Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB + '['+RealToStr(TInsRecord(Recs[j]).Value) + ' ЕД]');
+          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + '['+RealToStr(TInsRecord(Recs[j]).Value) + ' ЕД]');
         end else
 
         if (Recs[j].RecType = TMealRecord) and (IncMeal) then
         begin
           CheckBreak(Recs[j]);
           case MealInfo of
-            mtBU:         Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB +
+            mtBU:         Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
                             RealToStr(TMealRecord(Recs[j]).Carbs/12)+' ХЕ');
-            mtCarbs:      Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB +
+            mtCarbs:      Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
                             IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл.');
-            mtCarbsProts: Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB +
+            mtCarbsProts: Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
                             IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл., '+
                             IntToStr(Round(TMealRecord(Recs[j]).Prots))+'г белков');
           end;
@@ -203,7 +203,7 @@ begin
         if (Recs[j].RecType = TNoteRecord) and (IncNote) then
         begin
           CheckBreak(Recs[j]);
-          Add(DateTimeToStr(UTCToLocal(Recs[j].Time), STD_DATETIME_FMT) + BREAK_SYMB + TNoteRecord(Recs[j]).Text);
+          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + TNoteRecord(Recs[j]).Text);
         end; 
       end;
     end;

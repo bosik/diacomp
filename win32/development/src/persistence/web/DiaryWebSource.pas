@@ -131,7 +131,7 @@ function TDiaryWebSource.FindChanged(Since: TDateTime): TVersionedList;
 var
   Query, Resp: string;
 begin
-  Query := FClient.GetApiURL() + 'diary/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT);
+  Query := FClient.GetApiURL() + 'diary/changes/?since=' + FormatDateTime(Since);
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
 
@@ -147,8 +147,8 @@ var
 begin
   Query :=
     FClient.GetApiURL() + 'diary/period/?show_rem=0' +
-    '&start_time=' + DateTimeToStr(TimeFrom, STD_DATETIME_FMT) +
-    '&end_time=' + DateTimeToStr(TimeTo, STD_DATETIME_FMT);
+    '&start_time=' + FormatDateTime(TimeFrom) +
+    '&end_time=' + FormatDateTime(TimeTo);
 
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');

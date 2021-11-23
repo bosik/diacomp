@@ -135,8 +135,8 @@ var
 begin
   Columns := Split(S, #9);
 
-  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
-  TimeStamp := StrToDateTime(Columns[1], STD_DATETIME_FMT);
+  Time := ParseDateTime(Columns[0]);
+  TimeStamp := ParseDateTime(Columns[1]);
   Hash := CreateCompactGUID(); // generate new hash
   ID := Columns[2];
   Version := StrToInt(Columns[3]);
@@ -152,8 +152,8 @@ var
 begin
   Columns := Split(S, #9);
 
-  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
-  TimeStamp := StrToDateTime(Columns[1], STD_DATETIME_FMT);
+  Time := ParseDateTime(Columns[0]);
+  TimeStamp := ParseDateTime(Columns[1]);
   Hash := Columns[2];
   ID := Columns[3];
   Version := StrToInt(Columns[4]);
@@ -169,9 +169,9 @@ var
 begin
   Columns := Split(S, #9);
 
-  Time := StrToDateTime(Columns[0], STD_DATETIME_FMT);
+  Time := ParseDateTime(Columns[0]);
   ID := Columns[1];
-  TimeStamp := StrToDateTime(Columns[2], STD_DATETIME_FMT);
+  TimeStamp := ParseDateTime(Columns[2]);
   Hash := Columns[3];
   Version := StrToInt(Columns[4]);
   Deleted := ReadBoolean(Columns[5]);
@@ -184,8 +184,8 @@ function TRecordData.Write(): string;
 begin
   Result := Format('%s'#9'%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
     [
-      DateTimeToStr(Time, STD_DATETIME_FMT),
-      DateTimeToStr(TimeStamp, STD_DATETIME_FMT),
+      FormatDateTime(Time),
+      FormatDateTime(TimeStamp),
       Hash,
       ID,
       Version,
@@ -562,8 +562,8 @@ begin
   end;
 
   Log(VERBOUS, Format('Extracting diary records between %s and %s; %d items found', [
-    DateTimeToStr(TimeFrom, STD_DATETIME_FMT),
-    DateTimeToStr(TimeTo, STD_DATETIME_FMT),
+    FormatDateTime(TimeFrom),
+    FormatDateTime(TimeTo),
     Length(Result)]));
 end;
 

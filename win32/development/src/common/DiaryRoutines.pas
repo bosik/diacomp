@@ -105,11 +105,13 @@ type
   function TimeToMStr(Time: TDateTime): string; overload;
   function TimeSaveSecToStr(Time: integer): string;
   function TimeTrncSecToStr(Time: integer): string;
+  function FormatDateTime(const Time: TDateTime): string;
 
   { парсинг }
   function StrToTimeQuick(const Str: string): integer;
   function TryStrToTime(Str: string; var T: integer): boolean;
   function TryToCalculate(const S: string; var R: Extended): boolean;
+  function ParseDateTime(const S: string): TDateTime;
 
   { проверки }
   function CorrectTime(Time: integer): boolean;
@@ -146,9 +148,6 @@ type
 
 var
   Decimal: char;
-
-var
-  STD_DATETIME_FMT: TFormatSettings;
 
 const
   SecPerMin     = 60; // TODO: хочу капс-константы. Все.
@@ -1156,6 +1155,21 @@ end;
 
 var
   Temp: TFormatSettings;
+  STD_DATETIME_FMT: TFormatSettings;
+  
+{======================================================================================================================}
+function FormatDateTime(const Time: TDateTime): string;
+{======================================================================================================================}
+begin
+  DateTimeToString(Result, 'yyyy-mm-dd hh:nn:ss', Time);
+end;
+
+{======================================================================================================================}
+function ParseDateTime(const S: string): TDateTime;
+{======================================================================================================================}
+begin
+  Result := StrToDateTime(S, STD_DATETIME_FMT);
+end;
 
 initialization
   // DateToStr(Date, Fmt);          - ShortDateFormat
