@@ -382,7 +382,6 @@ type
     procedure EditBaseFoodSearchChange(Sender: TObject);
     procedure EditBaseFoodSearchKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure ButtonBasesFilterResetClick(Sender: TObject);
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
     procedure ListFoodData(Sender: TObject; Item: TListItem);
     procedure ListDishData(Sender: TObject; Item: TListItem);
@@ -4918,23 +4917,6 @@ begin
   if (Length(DishList) > 0) then
   begin
     ShowTableItem(ListDish, 0);
-  end;
-end;
-
-{======================================================================================================================}
-procedure TForm1.ButtonBasesFilterResetClick(Sender: TObject);
-{======================================================================================================================}
-begin
-  // FIXME: unused method?
-
-  if (not TSpeedButton(Sender).Down) then
-    EditBaseFoodSearch.Text := '';
-
-  UpdateFoodTable();
-  if (ListFood.Items.Count > 0) then
-  begin
-    ListFood.Items[0].Selected := True;
-    ListFood.Items[0].Focused := True;
   end;
 end;
 
