@@ -4116,9 +4116,8 @@ begin
 
   EventFoodbaseChanged(True);
 
-  //ShowTableItem(ListFood, n);
-  ListFood.SetFocus;
-  // TODO 5: RF: selecting copied food disabled
+  ShowTableItem(ListFood, GetFoodIndex(Item.ID));
+  ListFood.SetFocus();
 end;
 
 {======================================================================================================================}
@@ -4152,9 +4151,8 @@ begin
   // TODO: rough
   EventDishbaseChanged(True, True);
 
-  //ShowTableItem(ListDish, n);
-  ListDish.SetFocus;
-  // TODO 5: RF: selecting copied food disabled
+  ShowTableItem(ListDish, GetDishIndex(Item.ID));
+  ListDish.SetFocus();
 end;
 
 {======================================================================================================================}
