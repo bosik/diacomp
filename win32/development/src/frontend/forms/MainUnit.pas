@@ -4716,6 +4716,10 @@ procedure TForm1.UpdateFoodTable();
     end else
     begin
       FoodList := FoodBaseLocal.FindAny(Filter);
+      if (Length(FoodList) = 0) then
+      begin
+        FoodList := FoodBaseLocal.FindAny(SwitchLanguage(Filter));
+      end;
     end;
 
     case FoodBaseSort of
@@ -4778,6 +4782,10 @@ procedure TForm1.UpdateDishTable();
     end else
     begin
       DishList := DishBaseLocal.FindAny(Filter);
+      if (Length(DishList) = 0) then
+      begin
+        DishList := DishBaseLocal.FindAny(SwitchLanguage(Filter));
+      end;
     end;
 
     case DishBaseSort of

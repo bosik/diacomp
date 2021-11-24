@@ -3,7 +3,8 @@ unit ACCombo;
 interface
 
 uses
-  SysUtils, Windows, Messages, Classes, Controls, StdCtrls, Math, Graphics, Forms;
+  SysUtils, Windows, Messages, Classes, Controls, StdCtrls, Math, Graphics, Forms,
+  DiaryRoutines;
 
 type
   {  ласс, реализующий выпадающее окно автозавершени€ }
@@ -253,31 +254,6 @@ end;
 function CheckStringSubString(const EditText, S: String): boolean;
 begin
   Result := pos(AnsiUpperCase(EditText), AnsiUpperCase(S))<>0;
-end;
-
-const
-  CHARS_EN = 'f,dult`;pbqrkvyjghcnea[wxio]sm''.zF<DULT~:PBQRKVYJGHCNEA{WXIO}SM">Z';
-  CHARS_RU = 'абвгдеЄжзийклмнопрстуфхцчшщъыьэю€јЅ¬√ƒ≈®∆«»… ЋћЌќѕ–—“”‘’÷„ЎўЏџ№Ёёя';
-
-function SwitchLanguage(s: String): String;
-var
-  i, k: integer;
-begin
-  Result := '';
-
-  for i := 1 to Length(S) do
-  begin
-    k := pos(S[i], CHARS_EN);
-    if (k > 0) then
-      Result := Result + CHARS_RU[k] else
-    begin
-      k := pos(S[i], CHARS_RU);
-      if (k > 0) then
-        Result := Result + CHARS_EN[k]
-      else
-        Result := Result + S[i];
-    end;
-  end;
 end;
 
 function CheckStringWord({const} EditText, S: String): boolean;

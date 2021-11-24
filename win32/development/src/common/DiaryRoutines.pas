@@ -137,6 +137,7 @@ type
   function StartsWith(const S: string; Prefix: string): boolean; overload;
   function UppercaseFirst(const S: string): string;
   function Split(const S: string; Delimiter: char): TStringArray;
+  function SwitchLanguage(s: String): String;
 
   { áûñòðàÿ ñîðòèðîâêà }
   procedure QuickSort(Left, Right: integer; Swap: TSwapClassProcedure; More: TMoreClassFunction); overload;
@@ -1055,6 +1056,32 @@ begin
     Result[High(Result)] := Copy(S, Start, Length(S) - Start + 1)
   else
     Result[High(Result)] := '';
+end;
+
+{======================================================================================================================}
+function SwitchLanguage(s: String): String;
+{======================================================================================================================}
+const
+  CHARS_EN = 'f,dult`;pbqrkvyjghcnea[wxio]sm''.zF<DULT~:PBQRKVYJGHCNEA{WXIO}SM">Z';
+  CHARS_RU = 'àáâãäå¸æçèéêëìíîïðñòóôõö÷øùúûüýþÿÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞß';
+var
+  i, k: integer;
+begin
+  Result := '';
+
+  for i := 1 to Length(S) do
+  begin
+    k := pos(S[i], CHARS_EN);
+    if (k > 0) then
+      Result := Result + CHARS_RU[k] else
+    begin
+      k := pos(S[i], CHARS_RU);
+      if (k > 0) then
+        Result := Result + CHARS_EN[k]
+      else
+        Result := Result + S[i];
+    end;
+  end;
 end;
 
 {======================================================================================================================}
