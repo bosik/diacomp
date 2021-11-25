@@ -3,8 +3,8 @@ unit UnitDataInterface;
 interface
 
 uses
-  SysUtils, Classes, ExtCtrls, ImgList, Controls, Menus,
-  ActnPopupCtrl,  ThreadExecutor, XPMan, DiaryRecords;
+  SysUtils, Classes, ExtCtrls, ImgList, Controls, Menus, ActnPopupCtrl, XPMan,
+  DiaryRecords, BusinessObjects;
 
 type
   TDataInterface = class(TDataModule)
@@ -73,11 +73,11 @@ uses MainUnit;
 procedure TDataInterface.PopupDiaryMealPopup(Sender: TObject);
 {======================================================================================================================}
 var
-  Rec: TCustomRecord;
+  Rec: TVersioned;
 begin
   Rec := Form1.SelectedRecord();
-  if (Rec is TMealRecord) then
-    Form1.ActionShortMeal.Checked := TMealRecord(Rec).ShortMeal;
+  if (Rec <> nil) and (Rec.Data is TMealRecord) then
+    Form1.ActionShortMeal.Checked := TMealRecord(Rec.Data).ShortMeal;
 end;
 
 end.

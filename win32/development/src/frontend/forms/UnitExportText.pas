@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Buttons,
-  DiaryPage, DiaryRecords, DiaryRoutines, DiaryInterface, DiaryCore;
+  DiaryPage, DiaryRecords, DiaryRoutines, DiaryInterface, DiaryCore, BusinessObjects;
 
 type
   TFormExportText = class(TAutosetupForm)
@@ -70,42 +70,102 @@ const
 var
   IncBreaks: boolean;
   LastEventTime: TDateTime;
-
-  procedure CheckBreak(Rec: TCustomRecord);
-  begin
-    if IncBreaks then
-    begin
-      if (Rec.Time - LastEventTime >= BREAK_TIME) then
-        MemoOut.Lines.Add('');
-      LastEventTime := Rec.Time;
-    end;
-  end;
-
-var
   IncBS: boolean;
   IncIns: boolean;
   IncMeal: boolean;
   IncCont: boolean;
   IncNote: boolean;
-  MealInfo: TMealType;
 
-  Recs: TRecordList;
-  j, k: integer;
+  procedure CheckBreak(Rec: TCustomRecord);
+  begin
+    if IncBreaks then
+    begin
+      if (LastEventTime > 0) and (Rec.Time - LastEventTime >= BREAK_TIME) then
+        MemoOut.Lines.Add('');
+      LastEventTime := Rec.Time;
+    end;
+  end;
 
-  function CheckedCount(Recs: TRecordList): integer;
+  function CheckedCount(Recs: TVersionedList): integer;
   var
     i: integer;
+    Rec: TCustomRecord;
   begin
     Result := 0;
     for i := 0 to High(Recs) do
     begin
-      if (Recs[i].RecType = TBloodRecord) and IncBS   then inc(Result) else
-      if (Recs[i].RecType = TInsRecord)   and IncIns  then inc(Result) else
-      if (Recs[i].RecType = TMealRecord)  and IncMeal then inc(Result) else
-      if (Recs[i].RecType = TNoteRecord)  and IncNote then inc(Result);
+      Rec := TCustomRecord(Recs[i].Data);
+
+      if (Rec.RecType = TBloodRecord) and IncBS   then inc(Result) else
+      if (Rec.RecType = TInsRecord)   and IncIns  then inc(Result) else
+      if (Rec.RecType = TMealRecord)  and IncMeal then inc(Result) else
+      if (Rec.RecType = TNoteRecord)  and IncNote then inc(Result);
     end;
   end;
-  
+
+  procedure WriteBlood(Output: TStrings; Rec: TVersioned);
+  var
+    Item: TBloodRecord;
+  begin
+    Item := TBloodRecord(Rec.Data);
+    CheckBreak(Item);
+    Output.Add(FormatDateTime(UTCToLocal(Item.Time)) + BREAK_SYMB + RealToStrZero(Item.Value) + ' ммоль/л');
+  end;
+
+  procedure WriteIns(Output: TStrings; Rec: TVersioned);
+  var
+    Item: TInsRecord;
+  begin
+    Item := TInsRecord(Rec.Data);
+    CheckBreak(Item);
+    Output.Add(FormatDateTime(UTCToLocal(Item.Time)) + BREAK_SYMB + '['+ RealToStr(Item.Value) + ' ЕД]');
+  end;
+
+  procedure WriteMeal(Output: TStrings; Rec: TVersioned; Mode: TMealType; IncludeContent: boolean);
+  var
+    Item: TMealRecord;
+    k: integer;
+  begin
+    Item := TMealRecord(Rec.Data);
+    CheckBreak(Item);
+
+    case Mode of
+      mtBU:         Output.Add(Format('%s' + BREAK_SYMB + '%s ХЕ', [
+                      FormatDateTime(UTCToLocal(Item.Time)),
+                      RealToStr(Item.Carbs / 12)
+                    ]));
+      mtCarbs:      Output.Add(Format('%s' + BREAK_SYMB + '%.0f г угл.', [
+                      FormatDateTime(UTCToLocal(Item.Time)),
+                      Item.Carbs
+                    ]));
+      mtCarbsProts: Output.Add(Format('%s' + BREAK_SYMB + '%.0f г угл., %.0f г белков', [
+                      FormatDateTime(UTCToLocal(Item.Time)),
+                      Item.Carbs,
+                      Item.Prots
+                    ]));
+    end;
+
+    if IncludeContent then
+    begin
+      for k := 0 to Item.Count - 1 do
+        Output.Add('   ' + Item.Food[k].Name + ' (' + RealToStr(Item.Food[k].Mass)+')');
+    end;
+  end;
+
+  procedure WriteNote(Output: TStrings; Rec: TVersioned);
+  var
+    Item: TNoteRecord;
+  begin
+    Item := TNoteRecord(Rec.Data);
+    CheckBreak(Item);
+    Output.Add(FormatDateTime(UTCToLocal(Item.Time)) + BREAK_SYMB + Item.Text);
+  end;
+
+var
+  MealInfo: TMealType;
+  Recs: TVersionedList;
+  Rec: TCustomRecord;
+  j, k: integer;
 begin
   // при настройке интерфейса трогаются галки этого окна
   if not visible then Exit;
@@ -123,42 +183,21 @@ begin
   if RadioMealCarbs.Checked then
     MealInfo := mtCarbs else
   if RadioMealCarbsProts.Checked then
-    MealInfo := mtCarbsProts else
+    MealInfo := mtCarbsProts
+  else
     MealInfo := mtCarbs;
 
   MemoOut.Clear;
 
   if Picker1.Date > Picker2.Date then
   begin
-    {TempDate := Picker1.Date;
-    Picker1.Date := Picker2.Date;
-    Picker2.Date := TempDate; }
     Exit;
   end;
-
-  //n1 := Form1.DiaryBase.FindPage(Picker1.Date);
-  //n2 := Form1.DiaryBase.FindPage(Picker2.Date);
-
-  { на всякий случай оставим }
-  {if (n1>n2)and(n1<>-1)and(n2<>-1) then
-  begin
-    n1 := n1 xor n2;
-    n2 := n1 xor n2;
-    n1 := n1 xor n2;
-  end; }
-
-  { заполнение }
-  {if (n1=-1) and (n2>-1) then
-    n1 := 0 else
-  if (n1<>-1) and (n2=-1) then
-    n2 := Form1.DiaryBase.Count-1 else
-  if (n1=-1) and (n2=-1) then
-    Exit;    }
 
   Recs := LocalSource.FindPeriod(Trunc(Picker1.Date), Trunc(Picker2.Date) + 1);
 
   try
-    LastEventTime := MinPerDay;
+    LastEventTime := 0;
     if (CheckedCount(Recs) > 0) then
     for j := Low(Recs) to High(Recs) do
     begin
@@ -169,41 +208,30 @@ begin
   //      Add('====== ' + DateToStr(Date) + ' ======');
         MemoOut.SelAttributes.Style := [];
 
-        if (Recs[j].RecType = TBloodRecord) and (IncBS) then
-        begin
-          CheckBreak(Recs[j]);
-          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + RealToStrZero(TBloodRecord(Recs[j]).Value)
-          +' ммоль/л');
-        end  else
+        Rec := TCustomRecord(Recs[j].Data);
 
-        if (Recs[j].RecType = TInsRecord) and (IncIns) then
+        if (Rec.RecType = TBloodRecord) then
         begin
-          CheckBreak(Recs[j]);
-          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + '['+RealToStr(TInsRecord(Recs[j]).Value) + ' ЕД]');
+          if (IncBS) then
+            WriteBlood(MemoOut.Lines, Recs[j]);
         end else
 
-        if (Recs[j].RecType = TMealRecord) and (IncMeal) then
+        if (Rec.RecType = TInsRecord) then
         begin
-          CheckBreak(Recs[j]);
-          case MealInfo of
-            mtBU:         Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
-                            RealToStr(TMealRecord(Recs[j]).Carbs/12)+' ХЕ');
-            mtCarbs:      Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
-                            IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл.');
-            mtCarbsProts: Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB +
-                            IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл., '+
-                            IntToStr(Round(TMealRecord(Recs[j]).Prots))+'г белков');
-          end;
-          if IncCont then
-          for k := 0 to TMealRecord(Recs[j]).Count - 1 do
-            Add('   '+TMealRecord(Recs[j]).Food[k].Name+' ('+
-            RealToStr(TMealRecord(Recs[j]).Food[k].Mass)+')');
+          if (IncIns) then
+            WriteIns(MemoOut.Lines, Recs[j]);
         end else
 
-        if (Recs[j].RecType = TNoteRecord) and (IncNote) then
+        if (Rec.RecType = TMealRecord) then
         begin
-          CheckBreak(Recs[j]);
-          Add(FormatDateTime(UTCToLocal(Recs[j].Time)) + BREAK_SYMB + TNoteRecord(Recs[j]).Text);
+          if (IncMeal) then
+            WriteMeal(MemoOut.Lines, Recs[j], MealInfo, IncCont);
+        end else
+
+        if (Rec.RecType = TNoteRecord) then
+        begin
+          if (IncNote) then
+            WriteNote(MemoOut.Lines, Recs[j]);
         end; 
       end;
     end;

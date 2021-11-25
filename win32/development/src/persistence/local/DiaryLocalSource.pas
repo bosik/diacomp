@@ -21,28 +21,25 @@ uses
   MerkleTree;
 
 type
-  // частично распарсенна€ запись
-  TRecordData = class (TCustomRecord)
-  public
-    Data: string;
+  TDiaryEntity = record
+    ID: TCompactGUID;
+    TimeStamp: TDateTime;
+    Hash: TCompactGUID;
+    Version: integer;
+    Deleted: boolean;
 
-    procedure Read_v4(S: string);
-    procedure Read_v5(S: string);
-    procedure Read_v6(S: string);
-    function Write(): string;
-    procedure Serialize(Rec: TCustomRecord);
-    function Deserialize(): TCustomRecord;
+    Data: String;
+    TimeCache: TDateTime;
   end;
 
-  TRecordDataList = array of TRecordData;
+  TDiaryEntityList = array of TDiaryEntity;
 
   TDiaryLocalSource = class (TDiaryDAO)
   private
-    FRecords: TRecordDataList;
-    FModified: boolean;
+    FRecords: TDiaryEntityList;
     FBaseFileName: string;
 
-    function AddToInternal(Rec: TCustomRecord): integer;
+    function AddToInternal(Rec: TVersioned): integer;
     procedure Clear;
     function GetRecordIndex(ID: TCompactGUID): integer;
     procedure LoadFromFile(const FileName: string);
@@ -54,7 +51,7 @@ type
     destructor Destroy; override;
     procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
-    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
+    function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
     function GetHashTree(): THashTree; override;
@@ -79,118 +76,119 @@ const
 { TRecordData }
 
 {======================================================================================================================}
-function TRecordData.Deserialize(): TCustomRecord;
+function Deserialize(Entity: TDiaryEntity): TVersioned;
 {======================================================================================================================}
 var
   json: TlkJSONobject;
 begin
-  json := TlkJSON.ParseText(Data) as TlkJSONobject;
+  json := TlkJSON.ParseText(Entity.Data) as TlkJSONobject;
 
   if Assigned(json) then
   try
-    Result := DiaryPageSerializer.ParseDiaryRecord(json);
+    Result := TVersioned.Create();
 
-    Result.Time := Time;
-    Result.TimeStamp := TimeStamp;
-    Result.Hash := Hash;
-    Result.ID := ID;
-    Result.Version := Version;
-    Result.Deleted := Deleted;
+    Result.ID := Entity.ID;
+    Result.TimeStamp := Entity.TimeStamp;
+    Result.Hash := Entity.Hash;
+    Result.Version := Entity.Version;
+    Result.Deleted := Entity.Deleted;
+    Result.Data := DiaryPageSerializer.ParseDiaryRecord(json);
   finally
     json.Free;
   end else
   begin
-    raise Exception.Create('Invalid JSON: ' + Data);
+    raise Exception.Create('Invalid JSON: ' + Entity.Data);
   end;
 end;
 
 {======================================================================================================================}
-procedure TRecordData.Serialize(Rec: TCustomRecord);
+function Serialize(Rec: TVersioned): TDiaryEntity;
 {======================================================================================================================}
 var
   Json: TlkJSONobject;
 begin
   try
-    Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
+    Json := DiaryPageSerializer.SerializeDiaryRecord(Rec.Data as TCustomRecord);
 
-    ID := Rec.ID;
-    Hash := Rec.Hash;
-    TimeStamp := Rec.TimeStamp;
-    Version := Rec.Version;
-    Deleted := Rec.Deleted;
-    Data := TlkJSON.GenerateText(Json);
+    Result.ID := Rec.ID;
+    Result.TimeStamp := Rec.TimeStamp;
+    Result.Hash := Rec.Hash;
+    Result.Version := Rec.Version;
+    Result.Deleted := Rec.Deleted;
+    Result.Data := TlkJSON.GenerateText(Json);
 
     // cache
-    Time := Rec.Time;
+    Result.TimeCache := (Rec.Data as TCustomRecord).Time;
   finally
     Json.Free;
   end;
 end;
 
 {======================================================================================================================}
-procedure TRecordData.Read_v4(S: string);
+function Read_v4(S: string): TDiaryEntity;
 {======================================================================================================================}
 var
   Columns: TStringArray;
 begin
   Columns := Split(S, #9);
 
-  Time := ParseDateTime(Columns[0]);
-  TimeStamp := ParseDateTime(Columns[1]);
-  Hash := CreateCompactGUID(); // generate new hash
-  ID := Columns[2];
-  Version := StrToInt(Columns[3]);
-  Deleted := ReadBoolean(Columns[4]);
-  Data := Columns[5];
+  Result.TimeCache := ParseDateTime(Columns[0]);
+  Result.TimeStamp := ParseDateTime(Columns[1]);
+  Result.Hash := CreateCompactGUID(); // generate new hash
+  Result.ID := Columns[2];
+  Result.Version := StrToInt(Columns[3]);
+  Result.Deleted := ReadBoolean(Columns[4]);
+  Result.Data := Columns[5];
 end;
 
 {======================================================================================================================}
-procedure TRecordData.Read_v5(S: string);
+function Read_v5(S: string): TDiaryEntity;
 {======================================================================================================================}
 var
   Columns: TStringArray;
 begin
   Columns := Split(S, #9);
 
-  Time := ParseDateTime(Columns[0]);
-  TimeStamp := ParseDateTime(Columns[1]);
-  Hash := Columns[2];
-  ID := Columns[3];
-  Version := StrToInt(Columns[4]);
-  Deleted := ReadBoolean(Columns[5]);
-  Data := Columns[6];
+  Result.TimeCache := ParseDateTime(Columns[0]);
+  Result.TimeStamp := ParseDateTime(Columns[1]);
+  Result.Hash := Columns[2];
+  Result.ID := Columns[3];
+  Result.Version := StrToInt(Columns[4]);
+  Result.Deleted := ReadBoolean(Columns[5]);
+  Result.Data := Columns[6];
 end;
 
 {======================================================================================================================}
-procedure TRecordData.Read_v6(S: string);
+function Read_v6(S: string): TDiaryEntity;
 {======================================================================================================================}
 var
   Columns: TStringArray;
 begin
   Columns := Split(S, #9);
 
-  Time := ParseDateTime(Columns[0]);
-  ID := Columns[1];
-  TimeStamp := ParseDateTime(Columns[2]);
-  Hash := Columns[3];
-  Version := StrToInt(Columns[4]);
-  Deleted := ReadBoolean(Columns[5]);
-  Data := Columns[6];
+  // represents next format (normalized order), not in use
+  Result.TimeCache := ParseDateTime(Columns[0]);
+  Result.ID := Columns[1];
+  Result.TimeStamp := ParseDateTime(Columns[2]);
+  Result.Hash := Columns[3];
+  Result.Version := StrToInt(Columns[4]);
+  Result.Deleted := ReadBoolean(Columns[5]);
+  Result.Data := Columns[6];
 end;
 
 {======================================================================================================================}
-function TRecordData.Write(): string;
+function Write(Entity: TDiaryEntity): string;
 {======================================================================================================================}
 begin
   Result := Format('%s'#9'%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
     [
-      FormatDateTime(Time),
-      FormatDateTime(TimeStamp),
-      Hash,
-      ID,
-      Version,
-      WriteBoolean(Deleted),
-      Data
+      FormatDateTime(Entity.TimeCache),
+      FormatDateTime(Entity.TimeStamp),
+      Entity.Hash,
+      Entity.ID,
+      Entity.Version,
+      WriteBoolean(Entity.Deleted),
+      Entity.Data
     ]
   );
 end;
@@ -198,7 +196,7 @@ end;
 { TDiaryLocalSource }
 
 {======================================================================================================================}
-function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord): integer;
+function TDiaryLocalSource.AddToInternal(Rec: TVersioned): integer;
 {======================================================================================================================}
 begin
   // 1. ѕроверка дублей
@@ -209,10 +207,9 @@ begin
   begin
     Result := Length(FRecords);
     SetLength(FRecords, Length(FRecords) + 1);
-    FRecords[Result] := TRecordData.Create;
   end;
 
-  FRecords[Result].Serialize(Rec);
+  FRecords[Result] := Serialize(Rec);
   Result := Trace(Result);
 
   {* tree outdated *}
@@ -221,16 +218,8 @@ end;
 {======================================================================================================================}
 procedure TDiaryLocalSource.Clear;
 {======================================================================================================================}
-var
-  i: integer;
 begin
   { вызываетс€ в деструкторе и перед загрузкой из файла }
-
-  if (Length(FRecords) > 0) then
-    FModified := True;
-
-  for i := 0 to High(FRecords) do
-    FreeAndNil(FRecords[i]);
   SetLength(FRecords, 0);
 end;
 
@@ -250,7 +239,6 @@ end;
 constructor TDiaryLocalSource.Create(const BaseFileName: string);
 {======================================================================================================================}
 begin
-  FModified := False;
   FBaseFileName := BaseFileName;
 
   if (FileExists(BaseFileName)) then
@@ -297,47 +285,6 @@ end;
 procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
 {======================================================================================================================}
 
-  {procedure Load_v1(S: TStrings);
-  var
-    Pages: TPageDataList;
-    i: integer;
-  begin
-    s.Delete(0);
-    s.Delete(0);
-    TPageData.Read(S, LocalFmt, Pages);
-
-    // дл€ проверки сортировки и дублей используем вспомогательный список
-    for i := 0 to High(Pages) do
-      Add(Pages[i]);
-  end;
-
-  procedure Load_v2(S: TStrings);
-  var
-    Pages: TPageDataList;
-    i: integer;
-  begin
-    TPageData.Read(S, LocalFmt, Pages);
-    for i := 0 to High(Pages) do
-      Pages[i].TimeStamp := LocalToUTC(Pages[i].TimeStamp);
-
-    // дл€ проверки сортировки и дублей используем вспомогательный список
-    for i := 0 to High(Pages) do
-      Add(Pages[i]);
-  end;
-
-  procedure Load_v3(S: TStrings);
-  var
-    Pages: TPageDataList;
-    i: integer;
-  begin
-    s.Delete(0);
-    TPageData.Read(S, LocalFmt, Pages);
-
-    // дл€ проверки сортировки и дублей используем вспомогательный список
-    for i := 0 to High(Pages) do
-      Add(Pages[i]);
-  end;     }
-
   procedure Load_v4(S: TStrings);
   var
     i, k: integer;
@@ -348,8 +295,7 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
     for i := 1 to S.Count - 1 do
     if (S[i] <> '') then
     begin
-      FRecords[k] := TRecordData.Create;
-      FRecords[k].Read_v4(S[i]);
+      FRecords[k] := Read_v4(S[i]);
       inc(k);
     end;
 
@@ -366,8 +312,7 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
     for i := 1 to S.Count - 1 do
     if (S[i] <> '') then
     begin
-      FRecords[k] := TRecordData.Create;
-      FRecords[k].Read_v5(S[i]);
+      FRecords[k] := Read_v5(S[i]);
       inc(k);
     end;
 
@@ -384,8 +329,7 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
     for i := 1 to S.Count - 1 do
     if (S[i] <> '') then
     begin
-      FRecords[k] := TRecordData.Create;
-      FRecords[k].Read_v6(S[i]);
+      FRecords[k] := Read_v6(S[i]);
       inc(k);
     end;
 
@@ -424,8 +368,6 @@ begin
   if (baseVersion < CURRENT_VERSION) then
     SaveToFile(FileName); // reformat
 
-  FModified := False;
-
   {* tree outdated *}
 end;
 
@@ -433,7 +375,6 @@ end;
 procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 {======================================================================================================================}
 var
-  DataLine: string;
   i: integer;
   DS: char;
   S: TStrings;
@@ -448,13 +389,11 @@ begin
     for i := 0 to High(FRecords) do
     begin
       //SysUtils.DecimalSeparator := '.';
-      DataLine := FRecords[i].Write();
-      S.Add(DataLine);
+      S.Add(Write(FRecords[i]));
       //SysUtils.DecimalSeparator := DS;
     end;
 
     S.SaveToFile(FileName);
-    FModified := False;
   finally
     SysUtils.DecimalSeparator := DS;
     S.Free;
@@ -464,35 +403,31 @@ end;
 {======================================================================================================================}
 function TDiaryLocalSource.Trace(Index: integer): integer;
 {======================================================================================================================}
-var
-  Temp: TRecordData;
-  Changed: boolean;
+
+  procedure Swap(var A, B: TDiaryEntity);
+  var
+    C: TDiaryEntity;
+  begin
+    C := A;
+    A := B;
+    B := C;
+  end;
+
 begin
   Result := Index;
-  if (Index >= 0) and (Index <= High(FRecords)) then
+
+  { прогон вверх }
+  while (Result > 0)and(FRecords[Result - 1].TimeCache > FRecords[Result].TimeCache) do
   begin
-    Temp := FRecords[Result];
-    Changed := False;
+    Swap(FRecords[Result], FRecords[Result - 1]);
+    dec(Result);
+  end;
 
-    { прогон вверх }
-    while (Result > 0)and(FRecords[Result - 1].Time > Temp.Time) do
-    begin
-      FRecords[Result] := FRecords[Result - 1];
-      dec(Result);
-      Changed := True;
-    end;
-
-    { прогон вниз }
-    while (Result < High(FRecords))and(FRecords[Result + 1].Time < Temp.Time) do
-    begin
-      FRecords[Result] := FRecords[Result + 1];
-      inc(Result);
-      Changed := True;
-    end;
-
-    { запись }
-    if Changed then
-      FRecords[Result] := Temp;
+  { прогон вниз }
+  while (Result < High(FRecords))and(FRecords[Result + 1].TimeCache < FRecords[Result].TimeCache) do
+  begin
+    Swap(FRecords[Result], FRecords[Result + 1]);
+    inc(Result);
   end;
 end;
 
@@ -505,7 +440,7 @@ begin
   for i := 0 to High(FRecords) do
   if (FRecords[i].ID = ID) then
   begin
-    Result := FRecords[i].Deserialize;
+    Result := Deserialize(FRecords[i]);
     Exit;
   end;
 
@@ -524,7 +459,7 @@ begin
   if (FRecords[i].TimeStamp >= Since) then
   begin
     SetLength(Result, Length(Result) + 1);
-    Result[High(Result)] := FRecords[i].Deserialize;
+    Result[High(Result)] := Deserialize(FRecords[i]);
   end;
 end;
 
@@ -540,12 +475,12 @@ begin
   if (StartsWith(FRecords[i].ID, Prefix)) then
   begin
     SetLength(Result, Length(Result) + 1);
-    Result[High(Result)] := FRecords[i].Deserialize;
+    Result[High(Result)] := Deserialize(FRecords[i]);
   end;
 end;
 
 {======================================================================================================================}
-function TDiaryLocalSource.FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList;
+function TDiaryLocalSource.FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList;
 {======================================================================================================================}
 var
   i: integer;
@@ -554,11 +489,11 @@ begin
 
   for i := 0 to High(FRecords) do
   if (not FRecords[i].Deleted) and
-     (FRecords[i].Time >= TimeFrom) and
-     (FRecords[i].Time <= TimeTo) then
+     (FRecords[i].TimeCache >= TimeFrom) and
+     (FRecords[i].TimeCache <= TimeTo) then
   begin
     SetLength(Result, Length(Result) + 1);
-    Result[High(Result)] := FRecords[i].Deserialize;
+    Result[High(Result)] := Deserialize(FRecords[i]);
   end;
 
   Log(VERBOUS, Format('Extracting diary records between %s and %s; %d items found', [
@@ -577,8 +512,13 @@ begin
   if (FRecords[i].ID = ID) then
   begin
     FRecords[i].Deleted := True;
-    FRecords[i].Modified();
-    FModified := True;
+
+    //FRecords[i].Modified();
+    // TODO: check if this must be here
+    FRecords[i].Version := FRecords[i].Version + 1;
+    FRecords[i].TimeStamp := GetTimeUTC();
+    FRecords[i].Hash := CreateCompactGUID();
+
     SaveToFile(FBaseFileName);
 
     {* tree outdated *}
@@ -601,62 +541,20 @@ begin
   end;
 
   Tree.UpdateHash();
-  Result := Tree;
+  Result := Tree; // TMerkleTree is child of THashTree
 end;
 
 {======================================================================================================================}
 procedure TDiaryLocalSource.Save(const Recs: TVersionedList);
 {======================================================================================================================}
-
- function PureLength(const S: string): integer;
-  var
-    i: integer;
-  begin
-    Result := Length(S);
-    for i := 1 to Length(S) do
-      if (S[i] = #10) or (S[i] = #13) then
-        dec(Result);
-  end;
-
-  {function Worry(PageOld, PageNew: TPageData): boolean;
-  var
-    Msg: string;
-    MsgType: TMsgDlgType;
-  begin
-    Msg := '';
-    MsgType := mtConfirmation;
-
-    if (PageOld.Version > PageNew.Version) then
-    begin
-      MsgType := mtWarning;
-      Msg := Msg + '* ¬ерси€: ' + IntToStr(PageOld.Version) + ' --> ' + IntToStr(PageNew.Version) + #13;
-    end;
-
-    if (PageOld.TimeStamp > PageNew.TimeStamp) then
-      Msg := Msg + '* ¬рем€: ' + DateTimeToStr(PageOld.TimeStamp) + ' --> ' + DateTimeToStr(PageNew.TimeStamp) + #13;
-
-    if (PureLength(PageNew.Page) - PureLength(PageOld.Page) < -20) then
-      Msg := Msg + '* –азмер: ' + IntToStr(Length(PageOld.Page)) + ' --> ' + IntToStr(Length(PageNew.Page)) + #13;
-
-    Result :=
-      (Msg <> '') and
-      (MessageDlg(
-        '—траница ' + DateToStr(PageOld.Date)+' будет перезаписана.'+#13+
-        'ќбнаружены подозрени€:' + #13 +
-        Msg + #13+
-        'ѕродолжить?',
-         MsgType, [mbYes,mbNo],0) <> 6); // mrYes
-  end; }
-
 var
   i: integer;
 begin
   if (Length(Recs) > 0) then
   begin
     for i := 0 to High(Recs) do
-      AddToInternal(Recs[i] as TCustomRecord);
+      AddToInternal(Recs[i]);
 
-    FModified := True;
     SaveToFile(FBaseFileName);
 
     {* tree outdated *}

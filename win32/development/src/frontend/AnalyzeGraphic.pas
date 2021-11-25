@@ -57,7 +57,7 @@ type
     MaxValue: real;
   end;
 
-  procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
+  procedure DrawBS(Recs: TVersionedList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
   procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
   procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
@@ -337,21 +337,21 @@ begin
 end;
 
 {======================================================================================================================}
-procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
+procedure DrawBS(Recs: TVersionedList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
 {======================================================================================================================}
 
-  function FetchBloodRecords(Recs: TRecordList; BaseDate: TDateTime): TBSPointList;
+  function FetchBloodRecords(Recs: TVersionedList; BaseDate: TDateTime): TBSPointList;
   var
     i: integer;
   begin
     SetLength(Result, 0);
 
     for i := 0 to High(Recs) do
-    if (recs[i].RecType = TBloodRecord) then
+    if (TCustomRecord(Recs[i].Data).RecType = TBloodRecord) then
     begin
       SetLength(Result, Length(Result) + 1);
-      Result[High(Result)].Time := (Recs[i].Time - BaseDate) * HoursPerDay;
-      Result[High(Result)].Value := (Recs[i] as TBloodRecord).Value;
+      Result[High(Result)].Time := (TCustomRecord(Recs[i].Data).Time - BaseDate) * HoursPerDay;
+      Result[High(Result)].Value := TBloodRecord(Recs[i].Data).Value;
     end;
   end;
 

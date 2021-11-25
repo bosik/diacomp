@@ -884,7 +884,8 @@ var
   end;
 
 var
-  Recs: TRecordList;
+  Recs: TVersionedList;
+  Rec: TCustomRecord;
   buf: TStringArray;
   Nodes: array of TNode;
   MealTime: TDateTime;
@@ -898,20 +899,22 @@ begin
   try
     for i := Low(Recs) to High(Recs) do
     begin
-      if (Recs[i].RecType = TMealRecord) then
+      Rec := Recs[i].Data as TCustomRecord;
+
+      if (Rec.RecType = TMealRecord) then
       begin
-        buf := ExtractNames(TMealRecord(Recs[i]));
-        MealTime := Recs[i].Time;
+        buf := ExtractNames(TMealRecord(Rec));
+        MealTime := Rec.Time;
       end else
-      if (Recs[i].RecType = TBloodRecord) and
-         (Recs[i].Time - MealTime > MIN_INTERVAL) and
-         (Recs[i].Time - MealTime < MAX_INTERVAL) then
+      if (Rec.RecType = TBloodRecord) and
+         (Rec.Time - MealTime > MIN_INTERVAL) and
+         (Rec.Time - MealTime < MAX_INTERVAL) then
       begin
         SetLength(Nodes, Length(Nodes) + 1);
         with Nodes[High(Nodes)] do
         begin
           Items := buf;
-          BS := TBloodRecord(Recs[i]).Value;
+          BS := TBloodRecord(Rec).Value;
         end;
       end;
     end;
@@ -1130,7 +1133,7 @@ end;
 procedure TFormMisc.ButtonTestAnalyzerClick(Sender: TObject);
 var
   Par: TRealArray;
-  Items: TRecordList;
+  Items: TVersionedList;
   AnalyzeResult: TAnalyzeResult;
 
   TimeFrom, TimeTo: TDateTime;

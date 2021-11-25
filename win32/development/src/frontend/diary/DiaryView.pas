@@ -81,14 +81,14 @@ type
   { события }
   TClickEvent = procedure(Sender: TObject; Index: integer; Place: TClickPlace) of object;
   TFoodShowEvent = procedure(Sender: TObject; Index,Line: integer; var Text: string) of object;
-  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TRecordList;
-    RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
+  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TVersionedList;
+    RecClass: TClassCustomRecord; RecInstance: TVersioned) of object;
 
   TDiaryView = class(TGraphicControl)
   private
     { data }
     FBitMap: Graphics.TBitMap;
-    FItems: TRecordList;
+    FItems: TVersionedList;
 
     PanelRects: array of TPanelRect;
     FSelID: TCompactGUID;
@@ -151,7 +151,7 @@ type
     procedure SetPopupFood(Value: TPopupMenu);
     procedure SetPopupNote(Value: TPopupMenu);
 
-    function SelectedRecord: TCustomRecord;
+    function SelectedRecord: TVersioned;
   protected
     { обработчики событий }
     procedure DblClick; override;
@@ -160,10 +160,10 @@ type
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); override;
 
     { реакция }
-    procedure HandleBaseChanged(EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord;
-      RecInstance: TCustomRecord); deprecated;
+    procedure HandleBaseChanged(EventType: TPageEventType; Page: TVersionedList; RecClass: TClassCustomRecord;
+      RecInstance: TVersioned); deprecated;
     procedure HandlePageChanged(EventType: TPageEventType; Page: TDiaryPage; // let it [Page] be
-      RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+      RecClass: TClassCustomRecord; RecInstance: TVersioned);
 
     { инициаторы }
     procedure MyPage;
@@ -181,7 +181,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure OpenPage(Items: TRecordList; ForceRepaint: boolean = False); // TODO: rename 'Page'
+    procedure OpenPage(Items: TVersionedList; ForceRepaint: boolean = False); // TODO: rename 'Page'
     procedure Paint; override;
     procedure DrawCurrentPage;
     procedure DeselectAll;
@@ -193,7 +193,7 @@ type
 
     property SelectedRecordID: TCompactGUID read GetSelectedID write SetSelectedID;
     property SelectedLine: integer read FSelLine write SetSelectedLine;
-    property CurrentPage: TRecordList read FItems;
+    property CurrentPage: TVersionedList read FItems;
   published
     property Align;
     property Anchors;
@@ -621,6 +621,7 @@ var
   SavedFontSize: integer;
   StandartTH: integer;
   i: integer;
+  Rec: TCustomRecord;
 begin
   with FBitMap.Canvas do
   begin
@@ -638,10 +639,12 @@ begin
       Result := (FBorder * 2) + 2;
       for i := 0 to High(CurrentPage) do
       begin
-        if (CurrentPage[i].RecType = TBloodRecord) then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
-        if (CurrentPage[i].RecType = TInsRecord)   then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
-        if (CurrentPage[i].RecType = TMealRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH * F(TMealRecord(CurrentPage[i]).Count) - 1 else
-        if (CurrentPage[i].RecType = TNoteRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
+        Rec := CurrentPage[i].Data as TCustomRecord;
+
+        if (Rec.RecType = TBloodRecord) then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
+        if (Rec.RecType = TInsRecord)   then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
+        if (Rec.RecType = TMealRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH * F(TMealRecord(Rec).Count) - 1 else
+        if (Rec.RecType = TNoteRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
       end;
     end;
   end;
@@ -834,7 +837,7 @@ var
   begin
     with FBitMap.Canvas do
     begin
-      Color := PanelColor(CurrentPage[Index], FSelID = FItems[Index].ID, Colors);
+      Color := PanelColor(CurrentPage[Index].Data as TCustomRecord, FSelID = FItems[Index].ID, Colors);
 
       TimeFont := TFont.Create;
       RecsFont := TFont.Create;
@@ -888,13 +891,14 @@ var
 
   function CreateRecsArray(Index: integer): TStringArray;
   var
+    Meal: TMealRecord;
     i: integer;
   begin
-    SetLength(Result,TMealRecord(CurrentPage[Index]).Count);
-    for i := 0 to high(Result) do
-      Result[i] := TMealRecord(CurrentPage[Index]).Food[i].Name + ' (' +
-        RealToStr(TMealRecord(CurrentPage[Index]).Food[i].Mass) + ')' +
-        GetFoodInfo(Index, i);
+    Meal := TMealRecord(CurrentPage[Index].Data);
+
+    SetLength(Result, Meal.Count);
+    for i := 0 to High(Result) do
+      Result[i] := Meal.Food[i].Name + ' (' + RealToStr(Meal.Food[i].Mass) + ')' + GetFoodInfo(Index, i);
   end;
 
 const
@@ -903,6 +907,7 @@ const
 var
   Msg: string;
   TempBlood: TBloodRecord;
+  Rec: TCustomRecord;
 begin
   if (Length(CurrentPage) = 0) then
   with FBitMap.Canvas do
@@ -959,9 +964,11 @@ begin
     { заполнение }
     for i := 0 to High(CurrentPage) do
     begin
-      if (CurrentPage[i].RecType = TBloodRecord) then
+      Rec := CurrentPage[i].Data as TCustomRecord;
+
+      if (Rec.RecType = TBloodRecord) then
       begin
-        TempBlood := TBloodRecord(CurrentPage[i]);
+        TempBlood := TBloodRecord(Rec);
         if (TempBlood.Finger > -1) then
         begin
           Msg := Format('%.1f %s (%s)', [TempBlood.Value, 'ммоль/л', ShortFingerNames[TempBlood.Finger]]);
@@ -970,28 +977,28 @@ begin
           Msg := Format('%.1f %s', [TempBlood.Value, 'ммоль/л']);
         end;
 
-        AddPanel(i, CurrentPage[i].Time, FmtArray(Msg), []);
+        AddPanel(i, Rec.Time, FmtArray(Msg), []);
       end else
 
-      if (CurrentPage[i].RecType = TInsRecord) then
+      if (Rec.RecType = TInsRecord) then
         AddPanel(
                    i,
-                   CurrentPage[i].Time,
-                   FmtArray(RealToStr(TInsRecord(CurrentPage[i]).Value)+' ед'),
+                   Rec.Time,
+                   FmtArray(RealToStr(TInsRecord(Rec).Value)+' ед'),
                    []
                  ) else
-      if (CurrentPage[i].RecType = TMealRecord) then
+      if (Rec.RecType = TMealRecord) then
         AddPanel(
                     i,
-                    CurrentPage[i].Time,
+                    Rec.Time,
                     CreateRecsArray(i),
                     []
                   ) else
-      if (CurrentPage[i].RecType = TNoteRecord) then
+      if (Rec.RecType = TNoteRecord) then
          AddPanel(
                    i,
-                   CurrentPage[i].Time,
-                   FmtArray(TNoteRecord(CurrentPage[i]).Text),
+                   Rec.Time,
+                   FmtArray(TNoteRecord(Rec).Text),
                    [{fsItalic}]
                  );
     end;
@@ -1044,11 +1051,16 @@ end;
 {======================================================================================================================}
 function TDiaryView.IsFoodSelected: boolean;
 {======================================================================================================================}
+var
+  Selected: TVersioned;
 begin
+  Selected := SelectedRecord();
+
   Result :=
-    (SelectedRecord is TMealRecord)and
+    (Selected <> nil) and
+    (Selected.Data is TMealRecord)and
     (FSelLine >= 0)and
-    (FSelLine < TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Count);
+    (FSelLine < TMealRecord(Selected.Data).Count);
 end;
 
 {======================================================================================================================}
@@ -1073,11 +1085,11 @@ begin
   if (FMouseDowned)and
      (FSelLine > -1)and
      (SelectedRecord <> nil) and
-     (SelectedRecord is TMealRecord) then
+     (SelectedRecord.Data is TMealRecord) then
   begin
     GetMousePlace(90, y, ClickInfo);
 
-    Meal := TMealRecord(SelectedRecord);
+    Meal := TMealRecord(SelectedRecord.Data);
 
     if (ClickInfo.Place = cpRec)and
        //(ClickInfo.Index = FSelPanel)and
@@ -1132,7 +1144,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TDiaryView.OpenPage(Items: TRecordList; ForceRepaint: boolean = False);
+procedure TDiaryView.OpenPage(Items: TVersionedList; ForceRepaint: boolean = False);
 {======================================================================================================================}
 begin
   FItems := Items;
@@ -1195,7 +1207,7 @@ begin
   GetCursorPos(Cursor); // для popup'ов
   Popup := pNothing;
   if ClickInfo.Index <> -1 then
-    TagType := CurrentPage[ClickInfo.Index].RecType
+    TagType := TCustomRecord(CurrentPage[ClickInfo.Index].Data).RecType
   else
     TagType := nil;
 
@@ -1410,14 +1422,14 @@ begin
   //Log('SelectedFood()');
 
   if IsFoodSelected then
-    Result := TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Food[FSelLine]
+    Result := TMealRecord(CurrentPage[GetSelectedRecordIndex()].Data).Food[FSelLine]
   else
     //Result := nil;
     raise Exception.Create('SelectedFood: no such record selected');
 end;
 
 {======================================================================================================================}
-function TDiaryView.SelectedRecord(): TCustomRecord;
+function TDiaryView.SelectedRecord(): TVersioned;
 {======================================================================================================================}
 var
   SelectedRecordIndex: integer;
@@ -1562,8 +1574,8 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord;
-  RecInstance: TCustomRecord);
+procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TVersionedList; RecClass: TClassCustomRecord;
+  RecInstance: TVersioned);
 {======================================================================================================================}
 //var
 //  Index: integer;
@@ -1618,13 +1630,14 @@ begin
     end;
 
     DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
-    if Assigned(FOnChange) then FOnChange(Self, EventType, Page, RecClass, RecInstance);
+    if Assigned(FOnChange) then
+      FOnChange(Self, EventType, Page, RecClass, RecInstance);
 //  end;
 end;
 
 {======================================================================================================================}
 procedure TDiaryView.HandlePageChanged(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord;
-  RecInstance: TCustomRecord);
+  RecInstance: TVersioned);
 {======================================================================================================================}
 begin
   if (EventType = etRemove) then
@@ -1650,7 +1663,8 @@ begin
   end;
 
   DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
-  if Assigned(FOnChange) then FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
+  if Assigned(FOnChange) then
+    FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
 end;
 
 {======================================================================================================================}

@@ -10,8 +10,8 @@ uses
 type
   TDiaryDAO = class (TObjectService)
   public
-    procedure Add(const R: TCustomRecord); virtual;
-    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; virtual; abstract;
+    procedure Add(const R: TVersioned); virtual;
+    function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; virtual; abstract;
   end;
 
 implementation
@@ -19,7 +19,7 @@ implementation
 { TDiaryDAO }
 
 {======================================================================================================================}
-procedure TDiaryDAO.Add(const R: TCustomRecord);
+procedure TDiaryDAO.Add(const R: TVersioned);
 {======================================================================================================================}
 var
   Recs: TVersionedList;

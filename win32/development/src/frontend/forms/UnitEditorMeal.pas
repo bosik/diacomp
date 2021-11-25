@@ -46,7 +46,7 @@ class function TFormEditorMeal.Clone(X: TVersioned): TVersioned;
 var
   S: string;
 begin
-  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  S := JsonWrite(SerializeVersionedDiaryRecord(X));
   Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
 end;
 
@@ -107,7 +107,7 @@ end;
 function TFormEditorMeal.Entity: TMealRecord;
 {======================================================================================================================}
 begin
-  Result := TMealRecord(inherited Entity);
+  Result := TMealRecord(inherited Entity.Data);
 end;
 
 {======================================================================================================================}

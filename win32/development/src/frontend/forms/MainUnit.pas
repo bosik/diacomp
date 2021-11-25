@@ -371,8 +371,8 @@ type
     procedure ComboDiaryNewDrawItem(Control: TWinControl;
       Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure DiaryViewChange(Sender: TObject; EventType: TPageEventType;
-      Page: TRecordList; RecClass: TClassCustomRecord;
-      RecInstance: TCustomRecord);
+      Page: TVersionedList; RecClass: TClassCustomRecord;
+      RecInstance: TVersioned);
     procedure FormResize(Sender: TObject);
     procedure SplitterBaseMoved(Sender: TObject);
     procedure ImageMinMaxTimesMouseDown(Sender: TObject;
@@ -423,7 +423,7 @@ type
     procedure ClickMealFoodMassChange();
     procedure ClickMealFoodMassDelta();
 
-    function SelectedRecord(): TCustomRecord;
+    function SelectedRecord(): TVersioned;
 
     { базы }
     function FoodEditorRect: TRect;
@@ -1572,7 +1572,7 @@ var
 
     //Food: TFoodItem;
     //Dish: TDishItem;
-    Recs: TRecordList;
+    Recs: TVersionedList;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
 
@@ -1588,9 +1588,9 @@ var
 
       for i := 0 to High(Recs) do
       begin
-        if (Recs[i].RecType = TMealRecord) then
+        if (TCustomRecord(Recs[i].Data).RecType = TMealRecord) then
         begin
-          Meal := TMealRecord(Recs[i]);
+          Meal := TMealRecord(Recs[i].Data);
           DeltaTag := GetTag(Meal.Time);
           for k := 0 to Meal.Count - 1 do
           begin
@@ -1932,7 +1932,7 @@ procedure TForm1.ImagePreviewDblClick(Sender: TObject);
 {======================================================================================================================}
 var
   Today: TDateTime;
-  Recs: TRecordList;
+  Recs: TVersionedList;
 begin
   ComboKoof.ItemIndex := -1;
   PageControl1.ActivePage := TabAnalyze;
@@ -2015,7 +2015,7 @@ var
   ItemType: TItemType;
   n: integer;
   Mass: Extended;
-  Rec: TCustomRecord;
+  Rec: TVersioned;
   Meal: TMealRecord;
   Item: TVersioned;
 begin
@@ -2023,9 +2023,9 @@ begin
   try
     try
       Rec := SelectedRecord();
-      if ((Rec <> nil) and (Rec is TMealRecord)) then
+      if ((Rec <> nil) and (Rec.Data is TMealRecord)) then
       begin
-        Meal := TMealRecord(Rec);
+        Meal := TMealRecord(Rec.Data);
 
         ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
         EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
@@ -2065,10 +2065,10 @@ begin
               itDish: Meal.Add(TDishItem(Item).AsFoodMassed(Mass));
             end;
 
-            Meal.Modified();
-            LocalSource.Save(Meal);
+            Rec.Modified();
+            LocalSource.Save(Rec);
             DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-            DiaryView.SelectedRecordID := Meal.ID;
+            DiaryView.SelectedRecordID := Rec.ID;
             DiaryView.SelectedLine := Meal.Count - 1;
             UpdateMealStatistics;
             UpdateMealDose;
@@ -2430,7 +2430,7 @@ procedure TForm1.UpdateDayInfo;
   procedure UpdateDayGraph;
   var
     Today: TDateTime;
-    Recs: TRecordList;
+    Recs: TVersionedList;
   begin
     Today := LocalToUTC(Trunc(CalendarDiary.Date));
     Recs := LocalSource.FindPeriod(Today - 1, Today + 2);
@@ -2455,15 +2455,15 @@ procedure TForm1.UpdateMealStatistics;
 const
   CARBS_PER_BU = 12.0;
 var
-  Rec: TCustomRecord;
+  Rec: TVersioned;
   SelMeal: TMealRecord;
 begin
   StartProc('TForm1.UpdateMealStatistic()');
 
   Rec := SelectedRecord();
-  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  if ((Rec <> nil) and (Rec.Data is TMealRecord)) then
   begin
-    SelMeal := TMealRecord(Rec);
+    SelMeal := TMealRecord(Rec.Data);
 
     LabelDiaryMealProts.Font.Color := clWindowText;
     LabelDiaryMealProts.Caption := Format('Белки: %.0f г', [SelMeal.Prots]);
@@ -2513,7 +2513,8 @@ procedure TForm1.UpdateMealDose;
 
   function FindBlood(Time: TDateTime): TBloodRecord;
   var
-    Recs: TRecordList;
+    Recs: TVersionedList;
+    Item: TCustomRecord;
     TimeFrom: TDateTime;
     TimeTo: TDateTIme;
     i: integer;
@@ -2526,18 +2527,38 @@ procedure TForm1.UpdateMealDose;
     UpdatePostprand(Recs, 3.5 / HourPerDay, Value['PostPrandTime'] / MinPerDay, Value['ShortPostPrandTime'] / MinPerDay);
 
     for i := High(Recs) downto 0 do
-    if (abs(Recs[i].Time - Time) <= BLOOD_ACTUALITY_TIME / MinPerDay) then
     begin
-      if (Recs[i].RecType = TBloodRecord) and
-         (not TBloodRecord(Recs[i]).PostPrand) then
+      Item := TCustomRecord(Recs[i].Data);
+      if (abs(Item.Time - Time) <= BLOOD_ACTUALITY_TIME / MinPerDay) then
       begin
-        Result := Recs[i] as TBloodRecord;
-        Exit;
-      end;
-    end else
-      break;
+        if (Item.RecType = TBloodRecord) and
+           (not TBloodRecord(Item).PostPrand) then
+        begin
+          Result := TBloodRecord(Item);
+          Exit;
+        end;
+      end else
+        break;
+    end;
 
     Result := nil;
+  end;
+
+  function FindIns(Time: TDateTime): TInsRecord;
+  var
+    Rec: TVersioned;
+  begin
+    Rec := Diary.FindRecord(
+      TInsRecord,
+      Time,
+      INS_ACTUALITY_TIME,
+      sdAround
+    );
+
+    if (Rec <> nil) then
+      Result := TInsRecord(Rec.Data)
+    else
+      Result := nil;
   end;
 
 var
@@ -2551,28 +2572,19 @@ var
   s: string;
   Koof: TKoof;
   SelMeal: TMealRecord;
-  Rec: TCustomRecord;
+  Rec: TVersioned;
 begin
   StartProc('TForm1.UpdateMealDose()');
 
   Rec := SelectedRecord();
-  
-  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  if ((Rec <> nil) and (Rec.Data is TMealRecord)) then
   // блюдо выбрано, информируем
   begin
     { ищем приём пищи, замер и инъекцию }
-    SelMeal := TMealRecord(Rec);
+    SelMeal := TMealRecord(Rec.Data);
 
     StartBlood := FindBlood(SelMeal.Time);
-
-    Ins := TInsRecord(
-      Diary.FindRecord(
-        TInsRecord,
-        SelMeal.Time,
-        INS_ACTUALITY_TIME,
-        sdAround
-      )
-    );
+    Ins := FindIns(SelMeal.Time);
 
     { Определяем коэффициенты }
     Koof := GetKoof(SelMeal.TimeInMinutes);
@@ -2713,15 +2725,15 @@ end;
 procedure TForm1.ClickBlood(New: boolean);
 {======================================================================================================================}
 
-  function ShowBloodEditor(var Rec: TBloodRecord; New: boolean): boolean;
+  function ShowBloodEditor(var Rec: TVersioned; New: boolean): boolean;
   begin
     Log(DEBUG, 'ShowBloodEditor()');
-    Result := TFormEditorBlood.ShowEditor(TVersioned(Rec), New);
+    Result := TFormEditorBlood.ShowEditor(Rec, New);
   end;
 
 var
   ID: TCompactGUID;
-  Rec: TBloodRecord;
+  Rec: TVersioned;
 begin
   Log(DEBUG, 'TForm1.ClickBlood');
 
@@ -2729,10 +2741,11 @@ begin
   begin
     // определение пальца
     Log(VERBOUS, 'TForm1.ClickBlood: Creating new temp record...');
-    Rec := TBloodRecord.Create();
+    Rec := TVersioned.Create();
+    Rec.Data := TBloodRecord.Create();
 
     Log(VERBOUS, 'TForm1.ClickBlood: Searching for the next finger...');
-    Rec.Finger := Diary.GetNextFinger();
+    TBloodRecord(Rec.Data).Finger := Diary.GetNextFinger();
 
     Log(VERBOUS, 'TForm1.ClickBlood: Showing the editor in modal mode...');
     if ShowBloodEditor(Rec, New) then
@@ -2752,7 +2765,7 @@ begin
   end else
   begin
     ID := DiaryView.SelectedRecordID;
-    Rec := TBloodRecord(LocalSource.FindById(ID));
+    Rec := LocalSource.FindById(ID);
 
     if ShowBloodEditor(Rec, New) then
     begin
@@ -2771,20 +2784,22 @@ end;
 procedure TForm1.ClickIns(New: boolean);
 {======================================================================================================================}
 
-  function ShowInsEditor(var Rec: TInsRecord; New: boolean): boolean;
+  function ShowInsEditor(var Rec: TVersioned; New: boolean): boolean;
   begin
     Log(DEBUG, 'TForm1.ShowInsEditor()');
-    Result := TFormEditorIns.ShowEditor(TVersioned(Rec), New);
+    Result := TFormEditorIns.ShowEditor(Rec, New);
   end;
 
 var
   ID: TCompactGUID;
-  Rec: TInsRecord;
+  Rec: TVersioned;
 begin
   Log(DEBUG, 'TForm1.ClickIns');
   if New then
   begin
-    Rec := TInsRecord.Create();
+    Rec := TVersioned.Create();
+    Rec.Data := TInsRecord.Create();
+
     if ShowInsEditor(Rec, New) then
     begin
       LocalSource.Add(Rec);
@@ -2796,7 +2811,7 @@ begin
   end else
   begin
     ID := DiaryView.SelectedRecordID;
-    Rec := TInsRecord(LocalSource.FindById(ID));
+    Rec := LocalSource.FindById(ID);
 
     if ShowInsEditor(Rec, New) then
     begin
@@ -2813,20 +2828,22 @@ end;
 procedure TForm1.ClickMeal(New: boolean);
 {======================================================================================================================}
 
-  function ShowMealEditor(var Rec: TMealRecord; New: boolean): boolean;
+  function ShowMealEditor(var Rec: TVersioned; New: boolean): boolean;
   begin
     Log(DEBUG, 'TForm1.ShowMealEditor()');
-    Result := TFormEditorMeal.ShowEditor(TVersioned(Rec), New);
+    Result := TFormEditorMeal.ShowEditor(Rec, New);
 end;
 
 var
   ID: TCompactGUID;
-  Rec: TMealRecord;
+  Rec: TVersioned;
 begin
   Log(DEBUG, 'TForm1.ClickMeal');
   if New then
   begin
-    Rec := TMealRecord.Create();
+    Rec := TVersioned.Create();
+    Rec.Data := TMealRecord.Create();
+
     if ShowMealEditor(Rec, New) then
     begin
       LocalSource.Add(Rec);
@@ -2841,7 +2858,7 @@ begin
   end else
   begin
     ID := DiaryView.SelectedRecordID;
-    Rec := TMealRecord(LocalSource.FindById(ID));
+    Rec := LocalSource.FindById(ID);
 
     if ShowMealEditor(Rec, New) then
     begin
@@ -2864,20 +2881,22 @@ end;
 procedure TForm1.ClickNote(New: boolean);
 {======================================================================================================================}
 
-  function ShowNoteEditor(var Rec: TNoteRecord; New: boolean): boolean;
+  function ShowNoteEditor(var Rec: TVersioned; New: boolean): boolean;
   begin
     Log(DEBUG, 'TForm1.ShowNoteEditor()');
-    Result := TFormEditorNote.ShowEditor(TVersioned(Rec), New);
+    Result := TFormEditorNote.ShowEditor(Rec, New);
   end;
   
 var
   ID: TCompactGUID;
-  Rec: TNoteRecord;
+  Rec: TVersioned;
 begin
   Log(DEBUG, 'TForm1.ClickNote');
   if New then
   begin
-    Rec := TNoteRecord.Create();
+    Rec := TVersioned.Create();
+    Rec.Data := TNoteRecord.Create();
+
     if ShowNoteEditor(Rec, New) then
     begin
       LocalSource.Add(Rec);
@@ -2889,7 +2908,7 @@ begin
   end else
   begin
     ID := DiaryView.SelectedRecordID;
-    Rec := TNoteRecord(LocalSource.FindById(ID));
+    Rec := LocalSource.FindById(ID);
 
     if ShowNoteEditor(Rec, New) then
     begin
@@ -2907,22 +2926,22 @@ procedure TForm1.ClickMealFoodMassChange();
 {======================================================================================================================}
 var
   NewMass: real;
-  Rec: TCustomRecord;
+  Rec: TVersioned;
   Meal: TMealRecord;
   Line: integer;
 begin
   Rec := SelectedRecord();
-  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  if ((Rec <> nil) and (Rec.Data is TMealRecord)) then
   begin
-    Meal := TMealRecord(Rec);
+    Meal := TMealRecord(Rec.Data);
     NewMass := Meal[DiaryView.SelectedLine].Mass;
     if (DialogFoodMass(dtChangeMass, DiaryView.SelectedFood.Name, NewMass)) then
     begin
       if (NewMass >= 0) then
       begin
         Meal[DiaryView.SelectedLine].Mass := NewMass;
-        Meal.Modified();
-        LocalSource.Save(Meal);
+        Rec.Modified();
+        LocalSource.Save(Rec);
         UpdateMealStatistics();
         UpdateMealDose();
 
@@ -2942,22 +2961,22 @@ procedure TForm1.ClickMealFoodMassDelta;
 {======================================================================================================================}
 var
   DeltaMass: real;
-  Rec: TCustomRecord;
+  Rec: TVersioned;
   Meal: TMealRecord;
   Line: integer;
 begin
   Rec := SelectedRecord();
-  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  if ((Rec <> nil) and (Rec.Data is TMealRecord)) then
   begin
-    Meal := TMealRecord(Rec);
+    Meal := TMealRecord(Rec.Data);
     DeltaMass := 0;
     if DialogFoodMass(dtDeltaMass, Meal[DiaryView.SelectedLine].Name, DeltaMass) then
     begin
       if (DiaryView.SelectedFood.Mass+DeltaMass >= 0) then
       begin
         Meal[DiaryView.SelectedLine].Mass := Meal[DiaryView.SelectedLine].Mass + DeltaMass;
-        Meal.Modified();
-        LocalSource.Save(Meal);
+        Rec.Modified();
+        LocalSource.Save(Rec);
         UpdateMealStatistics();
         UpdateMealDose();
 
@@ -3041,7 +3060,8 @@ procedure TForm1.UpdateKoofs();
 var
   Par: TRealArray;
   TimeFrom, TimeTo: TDateTime;
-  Items: TRecordList;
+  Items: TVersionedList;
+  Selected: TVersioned;
 begin
   if (Length(Analyzers) = 0) then
   begin
@@ -3079,7 +3099,8 @@ begin
   if (ComboKoof.ItemIndex <> -1) then
     ComboKoofChange(nil);
 
-  if (SelectedRecord() is TMealRecord) then
+  Selected := SelectedRecord();
+  if (Selected <> nil) and (Selected.Data is TMealRecord) then
     UpdateMealDose();
 
   TimerTimeLeft.Enabled := True;
@@ -3094,15 +3115,17 @@ function TForm1.GetCompensationMass(const RelCarbs, RelProts: real): real;
 var
   Kf: TKoof;
   RelBS: real;
+  Selected: TVersioned;
 begin
   Log(DEBUG, 'TForm1.GetCompensationMass()');
 
-  if (SelectedRecord() is TMealRecord) then
+  Selected := SelectedRecord();
+  if (Selected <> nil) and (Selected.Data is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(SelectedRecord()).TimeInMinutes);
-    RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
+    Kf := GetKoof(TMealRecord(Selected.Data).TimeInMinutes);
+    RelBS := (RelCarbs * Kf.k + RelProts * Kf.p) / 100;
     if (RelBS > 0) then
-      Result := CurrentDB/RelBS
+      Result := CurrentDB / RelBS
     else
       Result := 0;
   end else
@@ -3114,14 +3137,14 @@ function TForm1.GetBestMass(const RelCarbs, RelProts, CurMass: real): real;
 {======================================================================================================================}
 { подбор массы в приёме пищи }
 var
-  Rec: TCustomRecord;
+  Selected: TVersioned;
   Kf: TKoof;
   RelBS: real;
 begin
-  Rec := SelectedRecord();
-  if (Rec is TMealRecord) then
+  Selected := SelectedRecord();
+  if (Selected <> nil) and (Selected.Data is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(Rec).TimeInMinutes);
+    Kf := GetKoof(TMealRecord(Selected.Data).TimeInMinutes);
     RelBS := (RelCarbs * Kf.k + RelProts * Kf.p) / 100;
     if (RelBS > 0) then
       Result := (CurrentDB + RelBS * CurMass) / RelBS
@@ -3186,20 +3209,19 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TForm1.DiaryViewFoodShow(Sender: TObject; Index, Line: Integer;
-  var Text: String);
+procedure TForm1.DiaryViewFoodShow(Sender: TObject; Index, Line: Integer; var Text: String);
 {======================================================================================================================}
 var
+  Meal: TMealRecord;
+  Food: TFoodMassed;
   R: TKoof;
 begin
-  R := GetKoof(DiaryView.CurrentPage[Index].TimeInMinutes);
+  Meal := TMealRecord(DiaryView.CurrentPage[Index].Data);
+  Food := Meal.Food[Line];
+  R := GetKoof(Meal.TimeInMinutes);
 
   if (R.q > 0) then
-    Text := ' [+'+
-      RealToStr(
-        TMealRecord(DiaryView.CurrentPage[Index]).Food[Line].Carbs * R.k +
-        TMealRecord(DiaryView.CurrentPage[Index]).Food[Line].Prots * R.p)
-      +']'
+    Text := ' [+' + RealToStr(Food.Carbs * R.k + Food.Prots * R.p) + ']'
   else
     //Text := ' [?]';
     Text := '';
@@ -3418,6 +3440,8 @@ end;
 {======================================================================================================================}
 procedure TForm1.MyIdle(Sender: TObject; var Done: Boolean);
 {======================================================================================================================}
+var
+  Selected: TVersioned;
 begin
   Done := True;
 
@@ -3434,7 +3458,8 @@ begin
   case PageControl1.ActivePageIndex of
     0: { дневник }
     begin
-      ProcessMealSelected(SelectedRecord() is TMealRecord);
+      Selected := SelectedRecord();
+      ProcessMealSelected((Selected <> nil) and (Selected.Data is TMealRecord));
       if WebClient.Online then
         Form1.StatusBar.Panels[2].Text := STATUS_RESULT_STATE_ONLINE
       else
@@ -3847,27 +3872,32 @@ end;
 procedure TForm1.ActionRemovePanelExecute(Sender: TObject);
 {======================================================================================================================}
 var
-  Rec: TCustomRecord;
+  Rec: TVersioned;
   MsgType: TMsgDlgType;
   Msg: string;
 begin
   Rec := SelectedRecord();
-  if (Rec is TBloodRecord) then
+  if (Rec = nil) then
+  begin
+    Exit;
+  end;
+
+  if (Rec.Data is TBloodRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_BLOOD;
   end else
-  if (Rec is TInsRecord) then
+  if (Rec.Data is TInsRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_INS;
   end else
-  if (Rec is TMealRecord) then
+  if (Rec.Data is TMealRecord) then
   begin
     MsgType := mtWarning;
     Msg := MESSAGE_CONF_REMOVE_DIARY_MEAL;
   end else
-  if (Rec is TNoteRecord) then
+  if (Rec.Data is TNoteRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_NOTE;
@@ -3939,6 +3969,7 @@ procedure TForm1.ActionCalcMassExecute(Sender: TObject);
 var
   NewMass: real;
   Cant: boolean;
+  Rec: TVersioned;
   meal: TMealRecord;
   Line: integer;
 begin
@@ -3959,18 +3990,20 @@ begin
 
   if NewMass <> DiaryView.SelectedFood.Mass then
   begin
-    if Cant then InfoMessage(MESSAGE_INFO_CANT_BALANCE);
+    if Cant then
+      InfoMessage(MESSAGE_INFO_CANT_BALANCE);
 
-    Meal := TMealRecord(SelectedRecord());
+    Rec := SelectedRecord();
+    Meal := TMealRecord(Rec.Data);
     Meal[DiaryView.SelectedLine].Mass := Round(NewMass);
-    Meal.Modified();
-    LocalSource.Save(Meal);
+    Rec.Modified();
+    LocalSource.Save(Rec);
     UpdateMealStatistics();
     UpdateMealDose();
 
     Line := DiaryView.SelectedLine;
     DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
-    DiaryView.SelectedRecordID := Meal.ID;
+    DiaryView.SelectedRecordID := Rec.ID;
     DiaryView.SelectedLine := Line;
     EventDiaryChanged();
   end;
@@ -3990,21 +4023,23 @@ end;
 procedure TForm1.ActionRemoveFoodExecute(Sender: TObject);
 {======================================================================================================================}
 var
+  Rec: TVersioned;
   Meal: TMealRecord;
   Food: TFoodMassed;
 begin
   if (DiaryView.IsFoodSelected) then
   begin
-    Meal := TMealRecord(SelectedRecord());
+    Rec := SelectedRecord();
+    Meal := TMealRecord(Rec.Data);
     Food := Meal[DiaryView.SelectedLine];
 
     if MessageDlg(Format(MESSAGE_CONF_REMOVE_DIARY_FOOD, [Food.Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
       Meal.Remove(DiaryView.SelectedLine);
-      Meal.Modified();
-      LocalSource.Save(Meal);
+      Rec.Modified();
+      LocalSource.Save(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      DiaryView.SelectedRecordID := Meal.ID;
+      DiaryView.SelectedRecordID := Rec.ID;
       EventDiaryChanged();
     end;
   end;
@@ -4233,20 +4268,14 @@ end;
 procedure TForm1.ActionShortMealExecute(Sender: TObject);
 {======================================================================================================================}
 var
-  Rec: TCustomRecord;
-  Meal: TMealRecord;
+  Rec: TVersioned;
 begin
-  //{ все проверки - внутри }
-  //DiaryView.SetShortMeal(ActionShortMeal.Checked);
-
   Rec := SelectedRecord();
-
-  if (Rec is TMealRecord) then
+  if (Rec <> nil) and (Rec.Data is TMealRecord) then
   begin
-    Meal := TMealRecord(Rec);
-    Meal.ShortMeal := ActionShortMeal.Checked;
-    Meal.Modified();
-    LocalSource.Save(Meal);
+    TMealRecord(Rec.Data).ShortMeal := ActionShortMeal.Checked;
+    Rec.Modified();
+    LocalSource.Save(Rec);
 
     UpdateTimeLeft();
     EventDiaryChanged();
@@ -4376,7 +4405,7 @@ begin
 end;
 
 procedure TForm1.DiaryViewChange(Sender: TObject; EventType: TPageEventType;
-  Page: TRecordList; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+  Page: TVersionedList; RecClass: TClassCustomRecord; RecInstance: TVersioned);
 begin
   { TODO: Проблема: по идее, лучше наблюдать за изменением дневника непосредственно -
   то есть за событием от типа TDiary. Но тогда получается, что при изменении
@@ -4471,7 +4500,8 @@ var
   Meal: TMealRecord;
   TempTime: integer;
 
-  Recs: TRecordList;
+  Recs: TVersionedList;
+  Rec: TCustomRecord;
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
                               
@@ -4487,12 +4517,14 @@ begin
   Found := False;
   for i := High(Recs) downto 0 do
   begin
-    if (Recs[i].RecType = TMealRecord) then
+    Rec := TCustomRecord(Recs[i].Data);
+
+    if (Rec.RecType = TMealRecord) then
     begin
-      Meal := TMealRecord(Recs[i]);
+      Meal := TMealRecord(Rec);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
       begin
-        TempTime := Round((GetTimeUTC() - Recs[i].Time) * SecPerDay);
+        TempTime := Round((GetTimeUTC() - Rec.Time) * SecPerDay);
 
         if (TempTime >= 0) then
         begin
@@ -4504,6 +4536,7 @@ begin
     end;
     if Found then break;
   end;
+
   Form1.LabelDiaryTimeLeftMealVal.Font.Color := COLOR_HASDATA[Found];
   if not Found then
     Form1.LabelDiaryTimeLeftMealVal.Caption := '?';
@@ -4512,9 +4545,11 @@ begin
   Found := false;
   for i := High(Recs) downto 0 do
   begin
-    if (Recs[i].RecType = TInsRecord) then
+    Rec := TCustomRecord(Recs[i].Data);
+
+    if (Rec.RecType = TInsRecord) then
     begin
-      TempTime := Round((GetTimeUTC() - Recs[i].Time) * SecPerDay);
+      TempTime := Round((GetTimeUTC() - Rec.Time) * SecPerDay);
       if (TempTime > 0) then
       begin
         Found := True;
@@ -4524,6 +4559,7 @@ begin
     end;
     if Found then Break;
   end;
+
   Form1.LabelDiaryTimeLeftInsVal.Font.Color := COLOR_HASDATA[Found];
   if not Found then
     Form1.LabelDiaryTimeLeftInsVal.Caption := '?';
@@ -4867,7 +4903,8 @@ const
 var
   Summ: real;
   i, Count: integer;
-  Recs: TRecordList;
+  Recs: TVersionedList;
+  Rec: TCustomRecord;
 begin
   Summ := 0;
   Count := 0;
@@ -4876,10 +4913,11 @@ begin
 
   for i := 0 to High(Recs) do
   begin
-    if (Recs[i].RecType = TInsRecord) then
+    Rec := TCustomRecord(Recs[i].Data);
+    if (Rec.RecType = TInsRecord) then
     begin
       inc(Count);
-      Summ := Summ + TInsRecord(Recs[i]).Value;
+      Summ := Summ + TInsRecord(Rec).Value;
     end;
   end;
 
@@ -5053,14 +5091,15 @@ begin
 end;
 
 {======================================================================================================================}
-function TForm1.SelectedRecord(): TCustomRecord;
+function TForm1.SelectedRecord(): TVersioned;
 {======================================================================================================================}
 var
   ID: TCompactGUID;
 begin
   ID := DiaryView.SelectedRecordID;
+
   if (ID <> '') then
-    Result := LocalSource.FindById(ID) as TCustomRecord
+    Result := LocalSource.FindById(ID)
   else
     Result := nil;
 end;

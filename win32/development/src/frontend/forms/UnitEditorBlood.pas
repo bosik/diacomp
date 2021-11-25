@@ -50,7 +50,7 @@ class function TFormEditorBlood.Clone(X: TVersioned): TVersioned;
 var
   S: string;
 begin
-  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  S := JsonWrite(SerializeVersionedDiaryRecord(X));
   Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
 end;
 
@@ -134,7 +134,7 @@ end;
 function TFormEditorBlood.Entity: TBloodRecord;
 {======================================================================================================================}
 begin
-  Result := TBloodRecord(inherited Entity);
+  Result := TBloodRecord(inherited Entity.Data);
 end;
 
 {======================================================================================================================}

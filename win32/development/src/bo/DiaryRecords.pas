@@ -17,7 +17,7 @@ type
   TEventRecordChanged = procedure(Sender: TCustomRecord) of object;
 
   // #entity
-  TCustomRecord = class (TVersioned)
+  TCustomRecord = class
   private
     FTime: TDateTime;               // UTC
   public
@@ -26,8 +26,6 @@ type
 
     property Time: TDateTime read FTime write FTime;
   end;
-
-  TRecordList = array of TCustomRecord;
 
   TPageEventType = (etAdd, etModify, etRemove);
 
@@ -99,44 +97,19 @@ type
     property Text: string read FText write SetText;
   end;
 
-  procedure Statistics(const R: TRecordList; out TotalProts, TotalFats, TotalCarbs,
-    TotalValue, TotalMass, TotalIns: Real);
-  function RecordToVersioned(const List: TRecordList): TVersionedList;
-  function VersionedToRecord(const Item: TVersioned): TCustomRecord; overload;
-  function VersionedToRecord(const List: TVersionedList): TRecordList; overload;
+  procedure Statistics(const R: TVersionedList; out TotalProts, TotalFats, TotalCarbs, TotalValue, TotalMass, TotalIns: Real);
+  function VersionedToRecord(const Item: TVersioned): TCustomRecord;
 
-  procedure UpdatePostprand(const Recs: TRecordList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
-  procedure FreeRecords(var Recs: TRecordList);
+  procedure UpdatePostprand(const Recs: TVersionedList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
+  procedure FreeRecords(var Recs: TVersionedList);
 
 implementation
-
-{======================================================================================================================}
-function RecordToVersioned(const List: TRecordList): TVersionedList;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  SetLength(Result, Length(List));
-  for i := 0 to High(Result) do
-    Result[i] := List[i];
-end;
 
 {======================================================================================================================}
 function VersionedToRecord(const Item: TVersioned): TCustomRecord;
 {======================================================================================================================}
 begin
-  Result := Item as TCustomRecord;
-end;
-
-{======================================================================================================================}
-function VersionedToRecord(const List: TVersionedList): TRecordList;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  SetLength(Result, Length(List));
-  for i := 0 to High(Result) do
-    Result[i] := List[i] as TCustomRecord;
+  Result := Item.Data as TCustomRecord;
 end;
 
 { TCustomRecord }
@@ -389,11 +362,12 @@ begin
 end;
 
 {======================================================================================================================}
-procedure Statistics(const R: TRecordList; out TotalProts, TotalFats, TotalCarbs,
-  TotalValue, TotalMass, TotalIns: Real);
+procedure Statistics(const R: TVersionedList; out TotalProts, TotalFats, TotalCarbs, TotalValue, TotalMass, TotalIns: Real);
 {======================================================================================================================}
 var
   i: integer;
+  Rec: TCustomRecord;
+  Meal: TMealRecord;
 begin
   TotalProts := 0.0;
   TotalFats := 0.0;
@@ -401,27 +375,35 @@ begin
   TotalValue := 0.0;
   TotalMass := 0.0;
   TotalIns := 0.0;
+
   for i := Low(R) to High(R) do
-  if (R[i].RecType = TMealRecord) then
   begin
-    TotalProts := TotalProts + TMealRecord(R[i]).Prots;
-    TotalFats := TotalFats + TMealRecord(R[i]).Fats;
-    TotalCarbs := TotalCarbs + TMealRecord(R[i]).Carbs;
-    TotalValue := TotalValue + TMealRecord(R[i]).Value;
-    TotalMass := TotalMass + TMealRecord(R[i]).Mass;
-  end else
-  if (R[i].RecType = TInsRecord) then
-  begin
-    TotalIns := TotalIns + TInsRecord(R[i]).Value;
+    Rec := TCustomRecord(R[i].Data);
+
+    if (Rec.RecType = TMealRecord) then
+    begin
+      Meal := TMealRecord(Rec);
+
+      TotalProts := TotalProts + Meal.Prots;
+      TotalFats := TotalFats + Meal.Fats;
+      TotalCarbs := TotalCarbs + Meal.Carbs;
+      TotalValue := TotalValue + Meal.Value;
+      TotalMass := TotalMass + Meal.Mass;
+    end else
+    if (Rec.RecType = TInsRecord) then
+    begin
+      TotalIns := TotalIns + TInsRecord(Rec).Value;
+    end;
   end;
 end;
 
 {======================================================================================================================}
-procedure UpdatePostprand(const Recs: TRecordList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
+procedure UpdatePostprand(const Recs: TVersionedList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
 {======================================================================================================================}
 var
   i: integer;
   CurFreeTime: TDateTime;
+  Rec: TCustomRecord;
 begin
   //Log('TDiaryPage.UpdatePostPrand()');
   // TODO: дублирующийся код (GetNextDayFreeTime)
@@ -430,29 +412,31 @@ begin
 
   for i := Low(Recs) to High(Recs) do
   begin
-    if (Recs[i].RecType = TInsRecord) then
+    Rec := Recs[i].Data as TCustomRecord;
+
+    if (Rec.RecType = TInsRecord) then
     begin
-      CurFreeTime := Max(CurFreeTime, Recs[i].Time + InsPeriod);
+      CurFreeTime := Max(CurFreeTime, Rec.Time + InsPeriod);
     end else
 
-    if (Recs[i].RecType = TMealRecord) then
+    if (Rec.RecType = TMealRecord) then
     begin
-      if TMealRecord(Recs[i]).Carbs > 0 then
-         if TMealRecord(Recs[i]).ShortMeal then
-           CurFreeTime := Max(CurFreeTime, Recs[i].Time + ShortMealPeriod)
+      if TMealRecord(Rec).Carbs > 0 then
+         if TMealRecord(Rec).ShortMeal then
+           CurFreeTime := Max(CurFreeTime, Rec.Time + ShortMealPeriod)
          else
-           CurFreeTime := Max(CurFreeTime, Recs[i].Time + StdMealPeriod);
+           CurFreeTime := Max(CurFreeTime, Rec.Time + StdMealPeriod);
     end else
 
-    if (Recs[i].RecType = TBloodRecord) then
+    if (Rec.RecType = TBloodRecord) then
     begin
-      TBloodRecord(Recs[i]).PostPrand := (Recs[i].Time < CurFreeTime);
+      TBloodRecord(Rec).PostPrand := (Rec.Time < CurFreeTime);
     end;
   end;
 end;
 
 {======================================================================================================================}
-procedure FreeRecords(var Recs: TRecordList);
+procedure FreeRecords(var Recs: TVersionedList);
 {======================================================================================================================}
 var
   i: integer;

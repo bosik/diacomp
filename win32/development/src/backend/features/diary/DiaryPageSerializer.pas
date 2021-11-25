@@ -16,16 +16,16 @@ type
 
   function ParseDiaryRecord(json: TlkJSONobject): TCustomRecord;
   
-  function ParseVersionedDiaryRecord(json: TlkJSONbase): TCustomRecord;
-  function ParseVersionedDiaryRecords(json: TlkJSONlist): TRecordList;
+  function ParseVersionedDiaryRecord(json: TlkJSONbase): TVersioned;
+  function ParseVersionedDiaryRecords(json: TlkJSONlist): TVersionedList;
   function ParseVersionedFoodItem(json: TlkJSONbase): TFoodItem;
   function ParseVersionedFoodItems(json: TlkJSONlist): TFoodItemList;
   function ParseVersionedDishItem(json: TlkJSONbase): TDishItem;
   function ParseVersionedDishItems(json: TlkJSONlist): TDishItemList;
 
   function SerializeDiaryRecord(R: TCustomRecord): TlkJSONobject;
-  function SerializeVersionedDiaryRecord(R: TCustomRecord): TlkJSONobject;
-  function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
+  function SerializeVersionedDiaryRecord(R: TVersioned): TlkJSONobject;
+  function SerializeVersionedDiaryRecords(List: TVersionedList): TlkJSONlist;
 
   function SerializeVersionedFoodItem(Item: TFoodItem): TlkJSONobject;
   function SerializeVersionedFoodItems(Items: TFoodItemList): TlkJSONlist;
@@ -34,7 +34,7 @@ type
 
   // ============================================================================================
 
-  function ReadVersionedDiaryRecords(const S: string): TRecordList;
+  function ReadVersionedDiaryRecords(const S: string): TVersionedList;
 
 const
   REC_TYPE            = 'type';
@@ -144,23 +144,24 @@ begin
 end;
 
 {======================================================================================================================}
-function ParseVersionedDiaryRecord(json: TlkJSONbase): TCustomRecord;
+function ParseVersionedDiaryRecord(json: TlkJSONbase): TVersioned;
 {======================================================================================================================}
 var
   JsonObj: TlkJSONobject;
 begin
   JsonObj := json as TlkJSONobject;
 
-  Result := ParseDiaryRecord(JsonObj[REC_DATA] as TlkJSONobject);
+  Result := TVersioned.Create();
   Result.ID := (JsonObj[REC_ID] as TlkJSONstring).Value;
   Result.TimeStamp := ParseDateTime((JsonObj[REC_TIMESTAMP] as TlkJSONstring).Value);
   Result.Hash := (JsonObj[REC_HASH] as TlkJSONstring).Value;
   Result.Version := (JsonObj[REC_VERSION] as TlkJSONnumber).Value;
   Result.Deleted := (JsonObj[REC_DELETED] as TlkJSONboolean).Value;
+  Result.Data := ParseDiaryRecord(JsonObj[REC_DATA] as TlkJSONobject);
 end;
 
 {======================================================================================================================}
-function ParseVersionedDiaryRecords(json: TlkJSONlist): TRecordList;
+function ParseVersionedDiaryRecords(json: TlkJSONlist): TVersionedList;
 {======================================================================================================================}
 var
   i: integer;
@@ -331,7 +332,7 @@ begin
 end;
 
 {======================================================================================================================}
-function SerializeVersionedDiaryRecord(R: TCustomRecord): TlkJSONobject;
+function SerializeVersionedDiaryRecord(R: TVersioned): TlkJSONobject;
 {======================================================================================================================}
 begin
   Result := TlkJSONobject.Create();
@@ -340,12 +341,12 @@ begin
   Result.Add(REC_HASH, R.Hash);
   Result.Add(REC_VERSION, R.Version);
   Result.Add(REC_DELETED, R.Deleted);
-  Result.Add(REC_DATA, SerializeDiaryRecord(R));
+  Result.Add(REC_DATA, SerializeDiaryRecord(R.Data as TCustomRecord));
 end;
 
 
 {======================================================================================================================}
-function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
+function SerializeVersionedDiaryRecords(List: TVersionedList): TlkJSONlist;
 {======================================================================================================================}
 var
   i: integer;
@@ -431,7 +432,7 @@ begin
 end;
 
 {======================================================================================================================}
-function ReadVersionedDiaryRecords(const S: string): TRecordList;
+function ReadVersionedDiaryRecords(const S: string): TVersionedList;
 {======================================================================================================================}
 var
   Json: TlkJSONlist;

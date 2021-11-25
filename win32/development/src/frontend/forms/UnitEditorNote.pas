@@ -45,7 +45,7 @@ class function TFormEditorNote.Clone(X: TVersioned): TVersioned;
 var
   S: string;
 begin
-  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  S := JsonWrite(SerializeVersionedDiaryRecord(X));
   Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
 end;
 
@@ -106,7 +106,7 @@ end;
 function TFormEditorNote.Entity: TNoteRecord;
 {======================================================================================================================}
 begin
-  Result := TNoteRecord(inherited Entity);
+  Result := TNoteRecord(inherited Entity.Data);
 end;
 
 {======================================================================================================================}

@@ -6,21 +6,22 @@ uses
   SysUtils, // Exception
   Math, // Max
   DiaryRoutines, // TDate
-  DiaryRecords;
+  DiaryRecords,
+  BusinessObjects;
 
 type
   { 2. ДНЕВНИК }
 
   TDiaryPage = class;
 
-  TEventPageChanged = procedure(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
+  TEventPageChanged = procedure(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TVersioned) of object;
 
   TDiaryPage = class
   private
     FDate: TDate;
     FTimeStamp: TDateTime;
     FVersion: integer;
-    {+}FRecs: TRecordList;
+    {+}FRecs: TVersionedList;
     {+}FSilentChange: boolean;
 
     FFreeTime: integer;
@@ -33,14 +34,14 @@ type
     FOnChange: array of TEventPageChanged;
 
     {+}procedure CheckIndex(Index: integer);
-    {+}function GetRecord(Index: integer): TCustomRecord;
+    {+}function GetRecord(Index: integer): TVersioned;
     {+}function GetStat(Index: integer): real;
-    {#}procedure ProcessRecordChanged(RecInstance: TCustomRecord); overload;
-    {#}procedure ProcessRecordChanged(EventType: TPageEventType; RecType: TClassCustomRecord; RecInstance: TCustomRecord = nil); overload;
+    {#}procedure ProcessRecordChanged(RecInstance: TVersioned); overload;
+    {#}procedure ProcessRecordChanged(EventType: TPageEventType; RecType: TClassCustomRecord; RecInstance: TVersioned = nil); overload;
     {+}function Trace(Index: integer): integer;
     {+}function TraceLast: integer;
   public
-    {+}function Add(Rec: TCustomRecord): integer;
+    {+}function Add(Rec: TVersioned): integer;
     {+}procedure Clear;
     {+}function Count: integer;
     constructor Create; overload;
@@ -49,9 +50,9 @@ type
     {+}procedure Remove(Index: integer; AutoFree: boolean = True);
 
     // сахар
-    {+}function FindRecordFirst(RecType: TClassCustomRecord): TCustomRecord;
-    {+}function FindRecordLast(RecType: TClassCustomRecord): TCustomRecord;
-    {+}function FindRecord(Rec: TCustomRecord): integer; overload;
+    {+}function FindRecordFirst(RecType: TClassCustomRecord): TVersioned;
+    {+}function FindRecordLast(RecType: TClassCustomRecord): TVersioned;
+    {+}function FindRecord(Rec: TVersioned): integer; overload; // TODO: does direct comparison, check if it's intended
     
     // Listeners
     procedure AddChangeListener(Listener: TEventPageChanged);
@@ -60,7 +61,7 @@ type
     property Date: TDate read FDate write FDate;
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
     property Version: integer read FVersion write FVersion;
-    property Recs[Index: integer]: TCustomRecord read GetRecord; default;
+    property Recs[Index: integer]: TVersioned read GetRecord; default;
     property DayProts: real index 1 read GetStat;
     property DayFats:  real index 2 read GetStat;
     property DayCarbs: real index 3 read GetStat;
@@ -83,11 +84,15 @@ const
   INITIAL_PAGE_VERSION = 0;
 
 {======================================================================================================================}
-function TDiaryPage.Add(Rec: TCustomRecord): integer;
+function TDiaryPage.Add(Rec: TVersioned): integer;
 {======================================================================================================================}
+var
+  R: TCustomRecord;
 begin
   if (Rec = nil) then
     raise Exception.Create('Record can''t be nil');
+
+  R := Rec.Data as TCustomRecord;
 
   Result := Length(FRecs);
   SetLength(FRecs, Result + 1);
@@ -95,7 +100,7 @@ begin
   Result := TraceLast;
 
   //{#}Changed({FRecs[Result]}Rec);
-  ProcessRecordChanged(etAdd, Rec.RecType, Rec);
+  ProcessRecordChanged(etAdd, R.RecType, Rec);
 end;
 
 {======================================================================================================================}
@@ -202,7 +207,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiaryPage.FindRecord(Rec: TCustomRecord): integer;
+function TDiaryPage.FindRecord(Rec: TVersioned): integer;
 {======================================================================================================================}
 var
   i: integer;
@@ -217,14 +222,14 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiaryPage.FindRecordFirst(RecType: TClassCustomRecord): TCustomRecord;
+function TDiaryPage.FindRecordFirst(RecType: TClassCustomRecord): TVersioned;
 {======================================================================================================================}
 var
   i: integer;
 begin
   Result := nil;
   for i := 0 to High(FRecs) do
-  if (FRecs[i].RecType = RecType) then
+  if (TCustomRecord(FRecs[i].Data).RecType = RecType) then
   begin
     Result := FRecs[i];
     Exit;
@@ -232,7 +237,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiaryPage.GetRecord(Index: integer): TCustomRecord;
+function TDiaryPage.GetRecord(Index: integer): TVersioned;
 {======================================================================================================================}
 begin
   // TODO: just debug
@@ -246,6 +251,7 @@ end;
 function TDiaryPage.GetStat(Index: integer): real;
 {======================================================================================================================}
 var
+  Item: TCustomRecord;
   i: integer;
 begin
   {
@@ -257,25 +263,31 @@ begin
     6 FDayIns: real;
   }
   Result := 0;
-  case Index of
-    1: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Prots;
-    2: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Fats;
-    3: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Carbs;
-    4: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Value;
-    5: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Mass;
-    6: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TInsRecord)  then Result := Result + TInsRecord(FRecs[i]).Value;
+
+  for i := 0 to High(FRecs) do
+  begin
+    Item := TCustomRecord(FRecs[i].Data);
+
+    case Index of
+      1: if (Item.RecType = TMealRecord) then Result := Result + TMealRecord(Item).Prots;
+      2: if (Item.RecType = TMealRecord) then Result := Result + TMealRecord(Item).Fats;
+      3: if (Item.RecType = TMealRecord) then Result := Result + TMealRecord(Item).Carbs;
+      4: if (Item.RecType = TMealRecord) then Result := Result + TMealRecord(Item).Value;
+      5: if (Item.RecType = TMealRecord) then Result := Result + TMealRecord(Item).Mass;
+      6: if (Item.RecType = TInsRecord)  then Result := Result + TInsRecord(Item).Value;
+    end;
   end;
 end;
 
 {======================================================================================================================}
-function TDiaryPage.FindRecordLast(RecType: TClassCustomRecord): TCustomRecord;
+function TDiaryPage.FindRecordLast(RecType: TClassCustomRecord): TVersioned;
 {======================================================================================================================}
 var
   i: integer;
 begin
   Result := nil;
   for i := High(FRecs) downto 0 do
-  if (FRecs[i].RecType = RecType) then
+  if (TCustomRecord(FRecs[i].Data).RecType = RecType) then
   begin
     Result := FRecs[i];
     Exit;
@@ -286,7 +298,7 @@ end;
 // избегать вызова её при загрузке данных
 {======================================================================================================================}
 procedure TDiaryPage.ProcessRecordChanged(EventType: TPageEventType; RecType: TClassCustomRecord;
-  RecInstance: TCustomRecord = nil);
+  RecInstance: TVersioned = nil);
 {======================================================================================================================}
 var
   Index: integer;
@@ -312,16 +324,15 @@ begin
   UpdatePostprand(FRecs, FInsPeriod, FStdMealPeriod, FShortMealPeriod);
 
   // информируем слушателей (ПОСЛЕ коррекций)
-
   for i := 0 to High(FOnChange) do
-   FOnChange[i](EventType, Self, RecType, RecInstance);
+    FOnChange[i](EventType, Self, RecType, RecInstance);
 end;
 
 {======================================================================================================================}
-procedure TDiaryPage.ProcessRecordChanged(RecInstance: TCustomRecord);
+procedure TDiaryPage.ProcessRecordChanged(RecInstance: TVersioned);
 {======================================================================================================================}
 begin
-  ProcessRecordChanged(etModify, RecInstance.RecType, RecInstance);
+  ProcessRecordChanged(etModify, TCustomRecord(RecInstance.Data).RecType, RecInstance);
 end;
 
 {======================================================================================================================}
@@ -347,65 +358,43 @@ end;
 {======================================================================================================================}
 function TDiaryPage.Trace(Index: integer): integer;
 {======================================================================================================================}
-var
-  Temp: TCustomRecord;
-  Changed: boolean;
+
+  procedure Swap(var A, B: TVersioned);
+  var
+    C: TVersioned;
+  begin
+    C := A;
+    A := B;
+    B := C;
+  end;
+
+  function GetData(i: integer): TCustomRecord;
+  begin
+    Result := TCustomRecord(FRecs[i].Data);
+  end;
+
 begin
   Result := Index;
-  if (Index >= 0)and(Index <= High(FRecs)) then
+
+  { прогон вверх }
+  while (Result > 0) and (GetData(Result - 1).Time > GetData(Result).Time) do
   begin
-    Temp := Recs[Result];
-    Changed := False;
+    Swap(FRecs[Result], FRecs[Result - 1]);
+    dec(Result);
+  end;
 
-    { прогон вверх }
-    while (Result > 0)and(FRecs[Result - 1].Time > Temp.Time) do
-    begin
-      FRecs[Result] := FRecs[Result - 1];
-      dec(Result);
-      Changed := True;
-    end;
-
-    { прогон вниз }
-    while (Result < High(FRecs))and(FRecs[Result + 1].Time < Temp.Time) do
-    begin
-      FRecs[Result] := FRecs[Result + 1];
-      inc(Result);
-      Changed := True;
-    end;
-
-    { запись }
-    if Changed then
-      FRecs[Result] := Temp;
+  { прогон вниз }
+  while (Result < High(FRecs)) and (GetData(Result + 1).Time < GetData(Result).Time) do
+  begin
+    Swap(FRecs[Result], FRecs[Result + 1]);
+    inc(Result);
   end;
 end;
 
 {======================================================================================================================}
 function TDiaryPage.TraceLast: integer;
 {======================================================================================================================}
-{var
-  temp: TCustomRecord;
-  Changed: boolean; }
 begin
-  (*
-  Result := High(FRecs);
-  if (Index >= 0)and(Index <= High(FRecs)) then
-  begin
-    Temp := Recs[Result];
-    Changed := False;
-
-    { прогон вверх }
-    while (Result > 0)and(FRecs[Result-1].Time > Temp.Time) do
-    begin
-      FRecs[Result] := FRecs[Result-1];
-      dec(Result);
-      Changed := True;
-    end;
-
-    { запись }
-    if Changed then
-      FRecs[Result] := Temp;
-  end;   *)
-
   Result := Trace(High(FRecs));
 end;
 

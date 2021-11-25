@@ -30,19 +30,19 @@ type
     FPostPrandStd: integer;
     FPostPrandShort: integer;
 
-    function GetPage(Date: TDate): TRecordList;
+    function GetPage(Date: TDate): TVersionedList;
     procedure SetPostPrand(Index, Value: integer);
   public
     constructor Create(Source: TDiaryDAO);
     function FindRecord(RecType: TClassCustomRecord; TimeUTC: TDateTime;
-      DeltaTime: integer; Direction: TSearchDirection): TCustomRecord;
+      DeltaTime: integer; Direction: TSearchDirection): TVersioned;
     function GetLastBloodRecord: TBloodRecord;
     function GetNextFinger: integer;
     procedure SaveToXML(const FileName: string);
     procedure SaveToJSON(const FileName: string);
 
     // свойства
-    property Pages[Index: TDate]: TRecordList read GetPage; default;
+    property Pages[Index: TDate]: TVersionedList read GetPage; default;
     property PostPrandStd: integer    index 1 read FPostPrandStd   write SetPostPrand default 210;
     property PostPrandShort: integer  index 2 read FPostPrandShort write SetPostPrand default 30;
     property PostPrandIns: integer    index 3 read FPostPrandStd   write SetPostPrand default 210;
@@ -96,7 +96,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiary.GetPage(Date: TDate): TRecordList;
+function TDiary.GetPage(Date: TDate): TVersionedList;
 {======================================================================================================================}
 var
   //PrevPage: TDiaryPage;
@@ -121,7 +121,7 @@ end;
 {======================================================================================================================}
 function TDiary.FindRecord(RecType: TClassCustomRecord;
   TimeUTC: TDateTime; DeltaTime: integer;
-  Direction: TSearchDirection): TCustomRecord;
+  Direction: TSearchDirection): TVersioned;
 {======================================================================================================================}
 
   {
@@ -145,7 +145,7 @@ var
 
   TimeFrom, TimeTo: TDateTime;
 
-  Recs: TRecordList;
+  Recs: TVersionedList;
   CurDist, MinDist: real;
   i: integer;
 begin
@@ -153,14 +153,13 @@ begin
   if (DeltaTime <= 0) then
     raise Exception.Create('FindRecord: некорректное значение DeltaTime (' + IntToStr(DeltaTime) + ')');
 
-
   if (Direction = sdForward) then
   begin
     TimeFrom := TimeUTC;
     TimeTo := TimeUTC + DeltaTime / MinPerDay;
     Recs := FSource.FindPeriod(TimeFrom, TimeTo);
     for i := 0 to High(Recs) do
-    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    if (RecType = nil) or (RecType = (Recs[i].Data as TCustomRecord).RecType) then
     begin
       Result := Recs[i];
       Exit;
@@ -175,7 +174,7 @@ begin
     TimeTo := TimeUTC;
     Recs := FSource.FindPeriod(TimeFrom, TimeTo);
     for i := High(Recs) downto 0 do
-    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    if (RecType = nil) or (RecType = (Recs[i].Data as TCustomRecord).RecType) then
     begin
       Result := Recs[i];
       Exit;
@@ -192,9 +191,9 @@ begin
     Result := nil;
 
     for i := 0 to High(Recs) do
-    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    if (RecType = nil) or (RecType = (Recs[i].Data as TCustomRecord).RecType) then
     begin
-      CurDist := abs(Recs[i].Time - TimeUTC);
+      CurDist := abs((Recs[i].Data as TCustomRecord).Time - TimeUTC);
       if (CurDist < MinDist) then
       begin
         MinDist := CurDist;
@@ -285,7 +284,8 @@ const
   INTERVAL = 7; // days
 var
   TimeFrom, TimeTo: TDateTime;
-  Recs: TRecordList;
+  Recs: TVersionedList;
+  Rec: TCustomRecord;
   i: integer;      
 begin
   TimeTo := GetTimeUTC;
@@ -295,12 +295,13 @@ begin
   try
     for i := High(Recs) downto 0 do
     begin
-      if (Recs[i].RecType = TBloodRecord) then
+      Rec := TCustomRecord(Recs[i].Data);
+      if (Rec.RecType = TBloodRecord) then
       begin
         Result := TBloodRecord.Create(
-          Recs[i].Time,
-          TBloodRecord(Recs[i]).Value,
-          TBloodRecord(Recs[i]).Finger);
+          Rec.Time,
+          TBloodRecord(Rec).Value,
+          TBloodRecord(Rec).Finger);
         Exit;
       end;
     end;

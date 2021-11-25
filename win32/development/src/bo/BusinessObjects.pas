@@ -18,36 +18,33 @@ type
   TVersioned = class
   private
     FID: TCompactGUID;
-
-    // TODO: DEPRECTED
     FTimeStamp: TDateTime;
-
     FHash: TCompactGUID;
-
     FVersion: integer;
     FDeleted: boolean;
+    FData: TObject;
   protected
     procedure SetHash(const Value: TCompactGUID);
     procedure SetID(const Value: TCompactGUID);
   public
     constructor Create();
     procedure CopyFrom(Source: TVersioned); virtual;
+    destructor Destroy; override;
     procedure Modified();
 
     property ID: TCompactGUID read FID write SetID;
-
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
-
     property Hash: TCompactGUID read FHash write SetHash;
     property Version: integer read FVersion write FVersion;
     property Deleted: boolean read FDeleted write FDeleted;
+    property Data: TObject read FData write FData;
   end;
 
   TVersionedList = array of TVersioned;
 
   // хранит: название, БЖУ
   // #entity
-  TFoodRelative = class (TVersioned)
+  TFoodRelative = class (TVersioned) // FIXME: don't inherit TVersioned
   private
     FName: string;
     FRelProts: real;
@@ -111,7 +108,7 @@ type
   TFoodItemList = array of TFoodItem;
 
   // #entity
-  TDishItem = class (TVersioned)
+  TDishItem = class (TVersioned) // FIXME: don't inherit TVersioned
   private
     FContent: array of TFoodMassed;
     FFixedMass: boolean;
@@ -281,6 +278,14 @@ begin
   Hash := CreateCompactGUID();
   Version := 0;
   Deleted := False;
+end;
+
+{======================================================================================================================}
+destructor TVersioned.Destroy;
+{======================================================================================================================}
+begin
+  FreeAndNil(FData);
+  inherited;
 end;
 
 {======================================================================================================================}

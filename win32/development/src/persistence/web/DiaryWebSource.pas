@@ -27,7 +27,7 @@ type
     constructor Create(Client: TDiacompClient);   
     procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
-    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
+    function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
     function GetHashTree(): THashTree; override;
@@ -89,7 +89,7 @@ function TDiaryWebSource.FindById(ID: TCompactGUID): TVersioned;
 {======================================================================================================================}
 var
   Response: TStdResponse;
-  List: TRecordList;
+  List: TVersionedList;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
   List := nil; // for compiler
@@ -116,44 +116,53 @@ end;
 function TDiaryWebSource.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
 {======================================================================================================================}
 var
-  StdResp: TStdResponse;
   Query: string;
+  StdResp: TStdResponse;
 begin
   Query := FClient.GetApiURL() + 'diary/guid/' + Prefix;
-  StdResp := FClient.DoGetSmart(query) ;
-  Result := RecordToVersioned(ReadVersionedDiaryRecords(StdResp.Response));
-  StdResp.Free;
+  StdResp := FClient.DoGetSmart(query);
+  try
+    Result := ReadVersionedDiaryRecords(StdResp.Response);
+  finally
+    StdResp.Free;
+  end;
 end;
 
 {======================================================================================================================}
 function TDiaryWebSource.FindChanged(Since: TDateTime): TVersionedList;
 {======================================================================================================================}
 var
-  Query, Resp: string;
+  Query: string;
+  StdResp: TStdResponse;
 begin
   Query := FClient.GetApiURL() + 'diary/changes/?since=' + FormatDateTime(Since);
-  Resp := FClient.DoGetSmart(query).Response;
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
-
-  Result := RecordToVersioned(ReadVersionedDiaryRecords(Resp));
+  StdResp := FClient.DoGetSmart(query);
+  try
+    Result := ReadVersionedDiaryRecords(StdResp.Response);
+  finally
+    StdResp.Free;
+  end;
 end;
 
 {======================================================================================================================}
-function TDiaryWebSource.FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList;
+function TDiaryWebSource.FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList;
 {======================================================================================================================}
 var
   Query: string;
-  Resp: string;
+  StdResp: TStdResponse;
 begin
   Query :=
     FClient.GetApiURL() + 'diary/period/?show_rem=0' +
     '&start_time=' + FormatDateTime(TimeFrom) +
     '&end_time=' + FormatDateTime(TimeTo);
 
-  Resp := FClient.DoGetSmart(query).Response;
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
-
-  Result := ReadVersionedDiaryRecords(Resp);
+  StdResp := FClient.DoGetSmart(query);
+  try
+    {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + StdResp.Response + '"');
+    Result := ReadVersionedDiaryRecords(StdResp.Response);
+  finally
+    StdResp.Free;
+  end;
 end;
 
 {======================================================================================================================}
@@ -178,7 +187,7 @@ begin
   end;
 
   SetLength(Par, 1);
-  json := SerializeVersionedDiaryRecords(VersionedToRecord(Recs));
+  json := SerializeVersionedDiaryRecords(Recs);
   par[0] := 'items=' + JsonWrite(json);
   json.Free;
 

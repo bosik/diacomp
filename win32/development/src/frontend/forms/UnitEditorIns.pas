@@ -45,7 +45,7 @@ class function TFormEditorIns.Clone(X: TVersioned): TVersioned;
 var
   S: string;
 begin
-  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  S := JsonWrite(SerializeVersionedDiaryRecord(X));
   Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
 end;
 
@@ -117,7 +117,7 @@ end;
 function TFormEditorIns.Entity: TInsRecord;
 {======================================================================================================================}
 begin
-  Result := TInsRecord(inherited Entity);
+  Result := TInsRecord(inherited Entity.Data);
 end;
 
 {======================================================================================================================}

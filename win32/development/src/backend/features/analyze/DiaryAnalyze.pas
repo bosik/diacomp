@@ -12,6 +12,7 @@ uses
   DiaryRecords,
   DiaryDatabase,
   DiaryDAO,
+  BusinessObjects,
 
   // <DEBUG ONLY>
   JsonSerializer,
@@ -41,9 +42,9 @@ type
   function AddAnalyzers(const Source: TAnalyzers; var Target: TAnalyzers): boolean;
 
   { Analyzing }
-  function Analyze(const Analyzer: TAnalyzer; const Items: TRecordList; const Par: TRealArray;
+  function Analyze(const Analyzer: TAnalyzer; const Items: TVersionedList; const Par: TRealArray;
     CallBack: TCallbackProgressProc): TAnalyzeResult; overload;
-  function Analyze(const Analyzers: TAnalyzers; const Items: TRecordList; const Par: TRealArray;
+  function Analyze(const Analyzers: TAnalyzers; const Items: TVersionedList; const Par: TRealArray;
     CallBack: TCallbackProgressProc): TAnalyzeResults; overload;
   function BuildAvgAnalyzer(const AnalyzeResults: TAnalyzeResults): TAnalyzeResult;
 
@@ -113,7 +114,7 @@ end;
 { ПОДГОТОВКА МАТЕРИАЛА }
 
 {======================================================================================================================}
-function ExtractPrimeRecords(Items: TRecordList): TPrimeRecList;
+function ExtractPrimeRecords(Items: TVersionedList): TPrimeRecList;
 {======================================================================================================================}
 const
   MAX_BLOCK_TIME = 12 / 24; // 12 hours
@@ -127,6 +128,7 @@ var
   Ins, CurIns, MaxIns: real;
   TimeF, TimeI: TDateTime;
   TimeShift: integer;
+  Rec: TCustomRecord;
 
   // Debug: string;
 
@@ -167,17 +169,19 @@ begin
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
   for i := Low(Items) to High(Items) do
   begin
+    Rec := Items[i].Data as TCustomRecord;
+
     // **** INSULIN RECORD ****
-    if (Items[i].RecType = TInsRecord) then
+    if (Rec.RecType = TInsRecord) then
     begin
       // {*}Debug := Debug + Items[i].ID + #9'ins'#9;
 
-      CurIns := TInsRecord(Items[i]).Value;
+      CurIns := TInsRecord(Rec).Value;
       Ins := Ins + CurIns;
       if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
-        TimeI := Items[i].Time;
+        TimeI := Rec.Time;
         // {*}Debug := Debug + 'max updated'#13;
       end else
       begin
@@ -186,18 +190,18 @@ begin
     end else
 
     // **** MEAL RECORD ****
-    if (Items[i].RecType = TMealRecord) then
+    if (Rec.RecType = TMealRecord) then
     begin
       // {*}Debug := Debug + Items[i].ID + #9'meal'#9;
 
-      Prots := Prots + TMealRecord(Items[i]).Prots;
-      Fats := Fats + TMealRecord(Items[i]).Fats;
-      CurCarbs := TMealRecord(Items[i]).Carbs;
+      Prots := Prots + TMealRecord(Rec).Prots;
+      Fats := Fats + TMealRecord(Rec).Fats;
+      CurCarbs := TMealRecord(Rec).Carbs;
       Carbs := Carbs + CurCarbs;
       if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
-        TimeF := Items[i].Time;
+        TimeF := Rec.Time;
         // {*}Debug := Debug + 'max updated'#13;
       end else
       begin
@@ -206,15 +210,15 @@ begin
     end else
 
     // **** BLOOD RECORD ****
-    if (Items[i].RecType = TBloodRecord) then
+    if (Rec.RecType = TBloodRecord) then
     begin
       // {*}Debug := Debug + Items[i].ID + #9'blood'#9;
-      if (not TBloodRecord(Items[i]).PostPrand) then
+      if (not TBloodRecord(Rec).PostPrand) then
       begin
         if (PrevBloodValue > 0) and
            ((Carbs > 0) or (Prots > 0)) and
            (Ins > 0) and
-           (Items[i].Time - PrevBloodTime < MAX_BLOCK_TIME) then
+           (Rec.Time - PrevBloodTime < MAX_BLOCK_TIME) then
         begin
           { Add item }
           j := Length(Result);
@@ -227,8 +231,8 @@ begin
           Result[j].Prots := Prots;
           Result[j].Fats := Fats;
           Result[j].Carbs := Carbs;
-          Result[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
-          Result[j].BloodOutValue := TBloodRecord(Items[i]).Value;
+          Result[j].BloodOutTime := GetAbsLocalMinutes(Rec.Time);
+          Result[j].BloodOutValue := TBloodRecord(Rec).Value;
           Result[j].Date := UTCToLocal(TimeF);
           // {*}Debug := Debug + 'OK - new item added'#9 +
           //   Format('%.1f'#9'%.1f'#9'%.1f'#9'%.1f'#13, [Result[j].BloodInValue, Result[j].InsValue, Result[j].Carbs,
@@ -239,8 +243,8 @@ begin
         end;
 
         { Reset }
-        PrevBloodTime := Items[i].Time;
-        PrevBloodValue := TBloodRecord(Items[i]).Value;
+        PrevBloodTime := Rec.Time;
+        PrevBloodValue := TBloodRecord(Rec).Value;
         InitCounters();
       end else
       begin
@@ -360,7 +364,7 @@ end;
 
 // TODO: incapsulate as method "TAnalyzer.Analyze(Items, Par, CallBack)"
 {======================================================================================================================}
-function Analyze(const Analyzer: TAnalyzer; const Items: TRecordList; const Par: TRealArray;
+function Analyze(const Analyzer: TAnalyzer; const Items: TVersionedList; const Par: TRealArray;
   CallBack: TCallbackProgressProc): TAnalyzeResult;
 {======================================================================================================================}
 var
@@ -377,7 +381,7 @@ begin
 end;
 
 {======================================================================================================================}
-function Analyze(const Analyzers: TAnalyzers; const Items: TRecordList; const Par: TRealArray;
+function Analyze(const Analyzers: TAnalyzers; const Items: TVersionedList; const Par: TRealArray;
   CallBack: TCallbackProgressProc): TAnalyzeResults;
 {======================================================================================================================}
 var
@@ -510,7 +514,8 @@ procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdD
 var
   i: integer;
   List: array of double;
-  Items: TRecordList;
+  Items: TVersionedList;
+  Item: TCustomRecord;
 begin
   Targeted := 0;
   Less := 0;
@@ -519,20 +524,24 @@ begin
   Items := Base.FindPeriod(TimeFrom, TimeTo);
 
   for i := Low(Items) to High(Items) do
-  if (Items[i].RecType = TBloodRecord) and
-     (not TBloodRecord(Items[i]).PostPrand) then
   begin
-    SetLength(List, Length(List) + 1);
-    List[High(List)] := TBloodRecord(Items[i]).Value;
+    Item := Items[i].Data as TCustomRecord;
 
-    // TODO: брать данные из настроек и передавать как параметры
-    // TODO: учитывать постпрандиальные замеры - для них тоже есть ТЦП
-    if (List[High(List)] < 3.8) then
-      Less := Less + 1 else
-    if (List[High(List)] <= 6.2) then
-      Targeted := Targeted + 1
-    else
-      More := More + 1;
+    if (Item.RecType = TBloodRecord) and
+       (not TBloodRecord(Item).PostPrand) then
+    begin
+      SetLength(List, Length(List) + 1);
+      List[High(List)] := TBloodRecord(Item).Value;
+
+      // TODO: брать данные из настроек и передавать как параметры
+      // TODO: учитывать постпрандиальные замеры - для них тоже есть ТЦП
+      if (List[High(List)] < 3.8) then
+        Less := Less + 1 else
+      if (List[High(List)] <= 6.2) then
+        Targeted := Targeted + 1
+      else
+        More := More + 1;
+    end;
   end;
 
   Math.MeanAndStdDev(List, Mean, StdDev);
