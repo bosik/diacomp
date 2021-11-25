@@ -39,27 +39,34 @@ type
 
   EKeyNotFoundException = class (Exception);
 
-  TStringMap = class
+  TKeyValues = class
   protected
     FData: array of TStringPair;
     FCount: integer;
     function GetItem(Index: integer): TStringPair;
-    function GetValue(Key: string): string; virtual;
-    function IndexOf(const Key: string): integer;
   public
-    procedure Add(const Key, Value: string; Overwrite: boolean = False);
-    procedure AddAll(Map: TStringMap; Overwrite: boolean = False);
-    procedure Clear;
+    procedure Add(const Key, Value: string); virtual;
+    procedure Clear();
     constructor Create;
-    function Contains(Key: string): boolean;
-    destructor Destroy; override;
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
-    function Values(): TStringArray; virtual;
 
     property Count: integer read FCount;
-    property Items[Key: string]: string read GetValue; default;
     property Item[Index: integer]: TStringPair read GetItem;
+  end;
+
+  TStringMap = class (TKeyValues)
+  protected
+    function GetValue(Key: string): string; virtual; // TODO: introduce GetOrDefault() instead
+    function IndexOf(const Key: string): integer;
+  public
+    procedure Add(const Key, Value: string); override;
+    procedure AddAll(Map: TStringMap);
+    // constructor Create; // TODO: check if not required indeed
+    function Contains(Key: string): boolean;
+    function Values(): TStringArray; virtual;
+
+    property Items[Key: string]: string read GetValue; default;
   end;
 
   TDate = type integer; // yao ming ;D
@@ -262,47 +269,107 @@ begin
   Result.Value := Value;
 end;
 
-{ TStringMap }
+{ TKeyValues }
 
 {======================================================================================================================}
-procedure TStringMap.Add(const Key, Value: string; Overwrite: boolean);
+procedure TKeyValues.Add(const Key, Value: string);
 {======================================================================================================================}
 var
   k: integer;
 begin
-  if (Overwrite) then
-  begin
-    k := IndexOf(Key);
-    if (k > -1) then
-    begin
-      FData[k].Value := Value;
-      Exit;
-    end;
-  end;
-
   if (FCount = Length(FData)) then
   begin
     SetLength(FData, Length(FData) * 2 + 1);
   end;
+
   FData[FCount] := StringPair(Key, Value);
   inc(FCount);
 end;
 
 {======================================================================================================================}
-procedure TStringMap.AddAll(Map: TStringMap; Overwrite: boolean);
+procedure TKeyValues.Clear;
+{======================================================================================================================}
+begin
+  SetLength(FData, 16);
+  FCount := 0;
+end;
+
+{======================================================================================================================}
+constructor TKeyValues.Create();
+{======================================================================================================================}
+begin
+  Clear();
+end;
+
+{======================================================================================================================}
+function TKeyValues.GetItem(Index: integer): TStringPair;
+{======================================================================================================================}
+begin
+  Result := FData[Index];
+end;
+
+{======================================================================================================================}
+procedure TKeyValues.LoadFromFile(const FileName: string);
+{======================================================================================================================}
+var
+  i: integer;
+  Key, Value: string;
+begin
+  Clear();
+
+  with TStringList.Create do
+  begin
+    LoadFromFile(FileName);
+    for i := 0 to Count - 1 do
+    begin
+      Key := TrimRight(TextBefore(Strings[i], '='));
+      Value := TrimLeft(TextAfter(Strings[i], '='));
+      Self.Add(Key, Value);
+    end;
+    Free();
+  end;
+end;
+
+{======================================================================================================================}
+procedure TKeyValues.SaveToFile(const FileName: string);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  with TStringList.Create do
+  begin
+    for i := 0 to FCount - 1 do
+    begin
+      Add(FData[i].Key + '=' + FData[i].Value);
+    end;
+    SaveToFile(FileName);
+    Free();
+  end;
+end;
+
+{ TStringMap }
+
+{======================================================================================================================}
+procedure TStringMap.Add(const Key, Value: string);
+{======================================================================================================================}
+var
+  k: integer;
+begin
+  k := IndexOf(Key);
+  if (k > -1) then
+    FData[k].Value := Value
+  else
+    inherited Add(Key, Value);
+end;
+
+{======================================================================================================================}
+procedure TStringMap.AddAll(Map: TStringMap);
 {======================================================================================================================}
 var
   i: integer;
 begin
   for i := 0 to Map.Count - 1 do
-    Add(Map.Item[i].Key, Map.Item[i].Value, Overwrite);
-end;
-
-{======================================================================================================================}
-procedure TStringMap.Clear;
-{======================================================================================================================}
-begin
-  FCount := 0;
+    Add(Map.FData[i].Key, Map.FData[i].Value);
 end;
 
 {======================================================================================================================}
@@ -310,29 +377,6 @@ function TStringMap.Contains(Key: string): boolean;
 {======================================================================================================================}
 begin
   Result := IndexOf(Key) > -1;
-end;
-
-{======================================================================================================================}
-constructor TStringMap.Create;
-{======================================================================================================================}
-begin
-  FCount := 0;
-  SetLength(FData, 16);
-end;
-
-{======================================================================================================================}
-destructor TStringMap.Destroy;
-{======================================================================================================================}
-begin
-  Clear;
-  inherited;
-end;
-
-{======================================================================================================================}
-function TStringMap.GetItem(Index: integer): TStringPair;
-{======================================================================================================================}
-begin
-  Result := FData[Index];
 end;
 
 {======================================================================================================================}
@@ -366,44 +410,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TStringMap.LoadFromFile(const FileName: string);
-{======================================================================================================================}
-var
-  i: integer;
-  Key, Value: string;
-begin
-  with TStringList.Create do
-  begin
-    LoadFromFile(FileName);
-    SetLength(FData, Count);
-    FCount := Count;
-    for i := 0 to Count - 1 do
-    begin
-      Key := TrimRight(TextBefore(Strings[i], '='));
-      Value := TrimLeft(TextAfter(Strings[i], '='));
-      FData[i] := StringPair(Key, Value);
-    end;
-    Free;
-  end;
-end;
-
-{======================================================================================================================}
-procedure TStringMap.SaveToFile(const FileName: string);
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  with TStringList.Create do
-  begin
-    for i := 0 to FCount - 1 do
-      Add(FData[i].Key + '=' + FData[i].Value);
-    SaveToFile(FileName);
-    Free;
-  end;
-end;
-
-{======================================================================================================================}
-function TStringMap.Values: TStringArray;
+function TStringMap.Values(): TStringArray;
 {======================================================================================================================}
 var
   i: integer;
@@ -430,7 +437,7 @@ begin
       Item := json.Child[i] as TlkJSONobject;
       Key := Item.getString('key');
       Value := Item.GetString('value');
-      Result.Add(Key, Value, True);
+      Result.Add(Key, Value);
     end;
   finally
     Json.Free;

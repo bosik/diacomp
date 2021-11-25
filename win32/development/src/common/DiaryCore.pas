@@ -55,7 +55,7 @@ var
   Diary: TDiary;
 
   WebClient: TDiacompClient;
-  Expander: TStringMap;
+  Expander: TKeyValues;
 
   FoodBaseLocal: TFoodBaseDAO;
   FoodBaseWeb: TFoodBaseDAO;
@@ -134,7 +134,7 @@ begin
   DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName);
   DishBaseWeb := TDishbaseWebDAO.Create(WebClient);
 
-  Expander := TStringMap.Create;
+  Expander := TKeyValues.Create();
 end;
 
 {======================================================================================================================}

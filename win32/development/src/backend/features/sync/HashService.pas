@@ -113,7 +113,6 @@ end;
 
 { THashService }
 
-
 {======================================================================================================================}
 function THashService.GetValue(Key: string): string;
 {======================================================================================================================}
@@ -139,7 +138,7 @@ begin
   for i := 0 to MAX_PREFIX_SIZE do
   begin
     Key := Copy(Prefix, 1, i);
-    Add(Key, Sum(GetValue(Key), Diff), True);
+    Add(Key, Sum(GetValue(Key), Diff));
   end;
 end;
 

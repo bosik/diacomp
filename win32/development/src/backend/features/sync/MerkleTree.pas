@@ -161,7 +161,7 @@ begin
     FChildren[Index].PutLong(Copy(Key, 2, Length(Key) - 1), Value, PrefixSize - 1);
   end else
   begin
-    FData.Add(Key, Value, True);
+    FData.Add(Key, Value);
   end;
 end;
 
