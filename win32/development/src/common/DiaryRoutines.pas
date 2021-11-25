@@ -62,9 +62,8 @@ type
   public
     procedure Add(const Key, Value: string); override;
     procedure AddAll(Map: TStringMap);
-    // constructor Create; // TODO: check if not required indeed
     function Contains(Key: string): boolean;
-    function Values(): TStringArray; virtual;
+    function Values(): TStringArray;
 
     property Items[Key: string]: string read GetValue; default;
   end;
@@ -274,8 +273,6 @@ end;
 {======================================================================================================================}
 procedure TKeyValues.Add(const Key, Value: string);
 {======================================================================================================================}
-var
-  k: integer;
 begin
   if (FCount = Length(FData)) then
   begin
