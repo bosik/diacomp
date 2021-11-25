@@ -32,7 +32,6 @@ type
   public
     function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(const BaseFileName: string);
-    procedure Delete(ID: TCompactGUID); override;
     destructor Destroy; override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
@@ -97,22 +96,6 @@ begin
   Timer.Interval := 1000;
   Timer.OnTimer := OnTimer;
   Timer.Enabled := True;
-end;
-
-{======================================================================================================================}
-procedure TDishbaseLocalDAO.Delete(ID: TCompactGUID);
-{======================================================================================================================}
-var
-  Index: integer;
-begin
-  Index := GetIndex(ID);
-  if (Index > -1) then
-  begin
-    FBase[Index].Deleted := True;
-    FBase[Index].Modified();
-    Modified();
-  end else
-    raise EItemNotFoundException.Create(ID);
 end;
 
 {======================================================================================================================}

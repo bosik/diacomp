@@ -1390,7 +1390,9 @@ begin
   if //((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
      ((DishNumber = -1) and (AskConfirm(Item))) then
   begin
-    FoodBaseLocal.Delete(Item.ID);
+    Item.Deleted := True;
+    Item.Modified();
+    FoodBaseLocal.Save(Item);
     UpdateFoodTable();
     {*}UpdateCombos;
   end;
@@ -1433,7 +1435,9 @@ begin
   if //((DishNumber > -1)and(AskWarning(DishList[Index], DishBase[DishNumber])))or
      ((DishNumber = -1)and(AskConfirm(Item))) then
   begin
-    DishBaseLocal.Delete(Item.ID);
+    Item.Deleted := True;
+    Item.Modified();
+    DishBaseLocal.Save(Item);
     UpdateDishTable();
     {*}UpdateCombos;
   end;
@@ -3913,7 +3917,9 @@ begin
 
   if (MessageDlg(Msg, MsgType, [mbYes, mbNo], 0) = mrYes) then
   begin
-    LocalSource.Delete(DiaryView.SelectedRecordID);
+    Rec.Deleted := True;
+    Rec.Modified();
+    LocalSource.Save(Rec);
     DiaryView.SelectedRecordID := '';
     DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
 

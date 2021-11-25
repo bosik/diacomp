@@ -21,7 +21,6 @@ type
   public
     function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(Client: TDiacompClient);
-    procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDishItem; override;
@@ -83,20 +82,6 @@ begin
     raise Exception.Create('Client can''t be nil');
     
   FClient := Client;
-end;
-
-{======================================================================================================================}
-procedure TDishbaseWebDAO.Delete(ID: TCompactGUID);
-{======================================================================================================================}
-var
-  Item: TVersioned;
-begin
-  Item := FindById(ID);
-  if (Item <> nil) then
-  begin
-    Item.Deleted := True;
-    Save(Item);
-  end;
 end;
 
 {======================================================================================================================}

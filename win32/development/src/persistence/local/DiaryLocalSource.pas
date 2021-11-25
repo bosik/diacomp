@@ -49,7 +49,6 @@ type
     function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(const BaseFileName: string);
     destructor Destroy; override;
-    procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
@@ -500,30 +499,6 @@ begin
     FormatDateTime(TimeFrom),
     FormatDateTime(TimeTo),
     Length(Result)]));
-end;
-
-{======================================================================================================================}
-procedure TDiaryLocalSource.Delete(ID: TCompactGUID);
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FRecords) do
-  if (FRecords[i].ID = ID) then
-  begin
-    FRecords[i].Deleted := True;
-
-    //FRecords[i].Modified();
-    // TODO: check if this must be here
-    FRecords[i].Version := FRecords[i].Version + 1;
-    FRecords[i].TimeStamp := GetTimeUTC();
-    FRecords[i].Hash := CreateCompactGUID();
-
-    SaveToFile(FBaseFileName);
-
-    {* tree outdated *}
-    Exit;
-  end;
 end;
 
 {======================================================================================================================}

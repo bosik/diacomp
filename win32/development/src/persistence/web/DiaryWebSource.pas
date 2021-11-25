@@ -24,8 +24,7 @@ type
     FClient: TDiacompClient;
   public
     function Count(Prefix: TCompactGUID): integer; override;
-    constructor Create(Client: TDiacompClient);   
-    procedure Delete(ID: TCompactGUID); override;
+    constructor Create(Client: TDiacompClient);
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
@@ -68,20 +67,6 @@ begin
     raise Exception.Create('Client can''t be nil');
 
   FClient := Client;
-end;
-
-{======================================================================================================================}
-procedure TDiaryWebSource.Delete(ID: TCompactGUID);
-{======================================================================================================================}
-var
-  Item: TVersioned;
-begin
-  Item := FindById(ID);
-  if (Item <> nil) then
-  begin
-    Item.Deleted := True;
-    Save(Item);
-  end;
 end;
 
 {======================================================================================================================}
