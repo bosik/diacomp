@@ -535,47 +535,51 @@ end;
 // и заполнить FDropDown.Items любыми требуемыми значени€ми.
 // ¬ параметре AText передаетс€ введенный в поле редактировани€ комбобокса текст.
 procedure TACComboBox.PrepareACStrings({const }AText: String);
-var
-  FirstList: TStrings;
-  SecondList: TStrings;
-  Buffer: TStrings;
 
-  procedure Search(q: String);
+  function Search(q: String): TStrings;
   var
+    FirstList: TStrings;
+    SecondList: TStrings;
     i: integer;
   begin
-    for i := 0 to FACItems.Count - 1 do
-    begin
-      if CheckStringWord(q, FACItems[i]) then
-        FirstList.AddObject(FACItems[i], TObject(i)) else
-      if CheckStringSubString(q, FACItems[i]) then
-        SecondList.AddObject(FACItems[i], TObject(i));
+    FirstList := TStringList.Create();
+    SecondList := TStringList.Create();
+    try
+      for i := 0 to FACItems.Count - 1 do
+      begin
+        if CheckStringWord(q, FACItems[i]) then
+          FirstList.AddObject(FACItems[i], TObject(i)) else
+        if CheckStringSubString(q, FACItems[i]) then
+          SecondList.AddObject(FACItems[i], TObject(i));
+      end;
+
+      Result := TStringList.Create();
+      Result.AddStrings(FirstList);
+      Result.AddStrings(SecondList);
+    finally
+      FirstList.Free;
+      SecondList.Free;
     end;
   end;
 
+var
+  Buffer: TStrings;
 begin
   AText := Trim(AText);
 
-  FirstList := TStringList.Create;
-  SecondList := TStringList.Create;
-  Buffer := TStringList.Create;
   try
-    // fill
-    Search(AText);
+    Buffer := Search(AText);
 
-    if (FirstList.Count = 0) and (SecondList.Count = 0) then
+    if (Buffer.Count = 0) then
     begin
-      Search(SwitchLanguage(AText));
+      Buffer.Free();
+      Buffer := Search(SwitchLanguage(AText));
     end;
 
     // copy items
-    Buffer.AddStrings(FirstList);
-    Buffer.AddStrings(SecondList);
     FDropDown.Items.Assign(Buffer);
   finally
-    FirstList.Free;
-    SecondList.Free;
-    Buffer.Free;
+    Buffer.Free();
   end;
 end;
 
