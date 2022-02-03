@@ -151,6 +151,17 @@ procedure Register;
 
 implementation
 
+const
+  RUSSIAN = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
+             'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т',
+             'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь',
+             'Э', 'Ю', 'Я',
+             'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и',
+             'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т',
+             'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь',
+             'э', 'ю', 'я'];
+  GOOD = RUSSIAN + ['a'..'z', 'A'..'Z', '0'..'9'];
+
 {$R *.dcr}
 
 procedure Register;
@@ -257,16 +268,6 @@ begin
 end;
 
 function CheckStringWord({const} EditText, S: String): boolean;
-const
-  RUSSIAN = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
-             'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т',
-             'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь',
-             'Э', 'Ю', 'Я',
-             'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и',
-             'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т',
-             'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь',
-             'э', 'ю', 'я'];
-  GOOD = RUSSIAN + ['a'..'z', 'A'..'Z', '0'..'9'];
 var
   i, j: integer;
   Ignore: boolean;
@@ -536,50 +537,79 @@ end;
 // В параметре AText передается введенный в поле редактирования комбобокса текст.
 procedure TACComboBox.PrepareACStrings({const }AText: String);
 
-  function Search(q: String): TStrings;
+  function MatchesTerms(Query, S: String): boolean;
   var
-    FirstList: TStrings;
-    SecondList: TStrings;
+    i: integer;
+    Start: integer;
+  begin
+    Start := 0;
+    Query := AnsiUpperCase(Query);
+    S := AnsiUpperCase(S);
+
+    for i := 1 to Length(Query) do
+    begin
+      if (Query[i] in GOOD) then
+      begin
+        if (Start = 0) then
+        begin
+          Start := i;
+        end;
+      end else
+      begin
+        if (Start <> 0) then
+        begin
+          if (pos(Copy(Query, Start, i - Start), S) = 0) then
+          begin
+            Result := False;
+            Exit;
+          end;
+
+          Start := 0;
+        end;
+      end;
+    end;
+
+    if (Start <> 0) then
+    begin
+      i := Length(Query) + 1;
+      if (pos(Copy(Query, Start, i - Start), S) = 0) then
+      begin
+        Result := False;
+        Exit;
+      end;
+    end;
+
+    Result := True;
+  end;
+
+  function Search(Query: String): TStrings;
+  var
     i: integer;
   begin
-    FirstList := TStringList.Create();
-    SecondList := TStringList.Create();
-    try
-      for i := 0 to FACItems.Count - 1 do
-      begin
-        if CheckStringWord(q, FACItems[i]) then
-          FirstList.AddObject(FACItems[i], TObject(i)) else
-        if CheckStringSubString(q, FACItems[i]) then
-          SecondList.AddObject(FACItems[i], TObject(i));
-      end;
-
-      Result := TStringList.Create();
-      Result.AddStrings(FirstList);
-      Result.AddStrings(SecondList);
-    finally
-      FirstList.Free;
-      SecondList.Free;
+    Result := TStringList.Create();
+    for i := 0 to FACItems.Count - 1 do
+    begin
+      if (MatchesTerms(Query, FACItems[i])) then
+        Result.AddObject(FACItems[i], TObject(i));
     end;
   end;
 
 var
-  Buffer: TStrings;
+  FoundItems: TStrings;
 begin
   AText := Trim(AText);
 
+  FoundItems := Search(AText);
   try
-    Buffer := Search(AText);
-
-    if (Buffer.Count = 0) then
+    if (FoundItems.Count = 0) then
     begin
-      Buffer.Free();
-      Buffer := Search(SwitchLanguage(AText));
+      FoundItems.Free();
+      FoundItems := Search(SwitchLanguage(AText));
     end;
 
-    // copy items
-    FDropDown.Items.Assign(Buffer);
+    FDropDown.Items.Assign(FoundItems);
   finally
-    Buffer.Free();
+    FoundItems.Free();
   end;
 end;
 
