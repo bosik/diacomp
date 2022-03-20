@@ -144,6 +144,7 @@ type
   function UppercaseFirst(const S: string): string;
   function Split(const S: string; Delimiter: char): TStringArray;
   function SwitchLanguage(s: String): String;
+  function EscapeHtml(const S: String): String;
 
   { быстрая сортировка }
   procedure QuickSort(Left, Right: integer; Swap: TSwapClassProcedure; More: TMoreClassFunction); overload;
@@ -1086,6 +1087,15 @@ begin
         Result := Result + S[i];
     end;
   end;
+end;
+
+{======================================================================================================================}
+function EscapeHtml(const S: String): String;
+{======================================================================================================================}
+begin
+  Result := S;
+  Result := ReplaceAll(Result, '%', '%25');
+  Result := ReplaceAll(Result, '&', '%26');
 end;
 
 {======================================================================================================================}

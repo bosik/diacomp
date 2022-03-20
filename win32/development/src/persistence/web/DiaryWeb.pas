@@ -319,7 +319,7 @@ begin
   Data := TStringList.Create;
   try
     for i := Low(Par) to High(Par) do
-      Data.Add(ReplaceAll(Par[i], '%', '%25'));
+      Data.Add(EscapeHtml(Par[i]));
 
     try
       S := FHTTP.Post(URL, Data);
@@ -357,7 +357,7 @@ begin
   // формируем тело запроса
   Data := TStringList.Create;
   for i := Low(Par) to High(Par) do
-    Data.Add(ReplaceAll(Par[i], '%', '%25'));
+    Data.Add(EscapeHtml(Par[i]));
 
   Stream := TStringStream.Create(Trim(Data.Text));
   try
