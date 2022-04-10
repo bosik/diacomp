@@ -50,7 +50,7 @@ begin
   else
     Result := 'diacomp.log';
 
-  Result := LogPath + '/' + Result;
+  Result := IncludeTrailingBackslash(LogPath) + Result;
 end;
 
 {======================================================================================================================}
@@ -126,7 +126,10 @@ begin
   FileName := GetLogFileName(0);
 
   AssignFile(F, FileName);
-  Append(F);
+  if (FileExists(FileName)) then
+    Append(F)
+  else
+    Rewrite(F);
   Writeln(F, Line);
   CloseFile(F);
 
