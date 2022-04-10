@@ -81,10 +81,40 @@ begin
   Result := LevelToIndex(Level) <= LevelToIndex(LogLevel);
 end;
 
+function GetLogFileName(Index: integer): String;
+begin
+  if (Index > 0) then
+    Result := Format('diacomp.%d.log', [Index])
+  else
+    Result := 'diacomp.log';
+end;
+
 {======================================================================================================================}
 procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
 {======================================================================================================================}
 {$IFDEF LOGGING}
+
+  procedure RotateLogs();
+  var
+    i, MaxIndex: integer;
+  begin
+    // find oldest file index
+    MaxIndex := -1;
+    while (FileExists(GetLogFileName(MaxIndex + 1))) do
+    begin
+      inc(MaxIndex);
+    end;
+
+    // do rename
+    for i := MaxIndex downto 0 do
+    begin
+      RenameFile(
+        GetLogFileName(i),
+        GetLogFileName(i + 1)
+      );
+    end;
+  end;
+
 var
   Date: string;
 {$ENDIF}
@@ -100,8 +130,16 @@ begin
 
     LogFile.Add(Date + #9 + TYPES[MsgType] + #9 + Msg);
 
-    if (Save or (MsgType = ERROR)) then
+    //if (Save or (MsgType = ERROR)) then
+    LogFile.SaveToFile(FileName);
+
+    // TODO: optimize performance?
+    if (Length(LogFile.Text) >= 10 * 1024 * 1024) then
+    begin
+      RotateLogs();
+      LogFile.Clear();
       LogFile.SaveToFile(FileName);
+    end;
   end;
 
   {$ENDIF}
@@ -164,10 +202,12 @@ begin
   if not DirectoryExists(Path) then
     CreateDirectory(PChar(Path), nil);
 
-  DateTimeToString(FileName, 'yyyy-mm-dd_hh-mm-ss', GetTimeUTC());
-  FileName := Path + '\' + FileName + '.txt';
+  FileName := Path + '\' + GetLogFileName(0);
 
   LogFile := TStringList.Create();
+
+  if (FileExists(FileName)) then
+    LogFile.LoadFromFile(FileName);
 
   {$ENDIF}
 end;
