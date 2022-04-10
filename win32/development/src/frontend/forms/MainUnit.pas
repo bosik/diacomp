@@ -3180,8 +3180,7 @@ begin
   {*}ShowProcess('Освобождение ресурсов');
   FullFree;
 
-  FinishProc;
-  SaveLog;
+  FinishProc();
 end;
 
 {======================================================================================================================}
@@ -3198,8 +3197,6 @@ begin
         // StatusBar.Panels[3].Text := 'Загрузка на сервер...';
         TaskSaveAndSync(nil);
       //ThreadExec.Execute(TaskSaveAndSync, tpIdle, 80000, TASK_SAVE_N_SYNC);
-
-      SaveLog;
     finally
       TimerAutosave.Enabled := True;
     end;

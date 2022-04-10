@@ -10,14 +10,12 @@ uses
 type
   TLogType = (ERROR, WARNING, INFO, DEBUG, VERBOUS);
 
-  procedure StartLogger(const Path: string);
-  procedure StopLogger;
+  procedure InitLogger(const Path: string);
 
   procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
-  procedure SaveLog;
 
   procedure StartProc(const Name: string);
-  procedure FinishProc;
+  procedure FinishProc();
   function GetCurrentLog(): TStrings;
 
   function LevelToIndex(Level: TLogType): integer;
@@ -38,15 +36,30 @@ type
   end;
 
 var
-  LogFile: TStrings = nil;
+  LogPath: String;
+
   Stack: array of TStackNode;
   StackSize: integer = 0;
-  FileName: string;
 
-  function GetCurrentLog(): TStrings;
-  begin
-    Result := LogFile;
-  end;
+{======================================================================================================================}
+function GetLogFileName(Index: integer = 0): String;
+{======================================================================================================================}
+begin
+  if (Index > 0) then
+    Result := Format('diacomp.%d.log', [Index])
+  else
+    Result := 'diacomp.log';
+
+  Result := LogPath + '/' + Result;
+end;
+
+{======================================================================================================================}
+function GetCurrentLog(): TStrings;
+{======================================================================================================================}
+begin
+  Result := TStringList.Create();
+  Result.LoadFromFile(GetLogFileName(0));
+end;
 
 {======================================================================================================================}
 function LevelToIndex(Level: TLogType): integer;
@@ -81,18 +94,9 @@ begin
   Result := LevelToIndex(Level) <= LevelToIndex(LogLevel);
 end;
 
-function GetLogFileName(Index: integer): String;
-begin
-  if (Index > 0) then
-    Result := Format('diacomp.%d.log', [Index])
-  else
-    Result := 'diacomp.log';
-end;
-
 {======================================================================================================================}
-procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
+procedure LogLine(Line: String);
 {======================================================================================================================}
-{$IFDEF LOGGING}
 
   procedure RotateLogs();
   var
@@ -116,36 +120,50 @@ procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
   end;
 
 var
+  F: TextFile;
+  FileName: String;
+begin
+  FileName := GetLogFileName(0);
+
+  AssignFile(F, FileName);
+  Append(F);
+  Writeln(F, Line);
+  CloseFile(F);
+
+  if (FileSize(FileName) >= 10 * 1024 * 1024) then
+  begin
+    RotateLogs();
+
+    AssignFile(F, FileName);
+    Rewrite(F);
+    CloseFile(F);
+  end;
+end;
+
+{======================================================================================================================}
+procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
+{======================================================================================================================}
+{$IFDEF LOGGING}
+var
   Date: string;
 {$ENDIF}
 begin
   {$IFDEF LOGGING}
-
-  if (LogFile = nil) then
+  if (LogPath = '') then
     raise Exception.CreateFmt('Failed to print "%s": logger not initialized', [Msg]);
 
   if (CheckLevel(MsgType)) then
   begin
     DateTimeToString(Date, 'yyyy-MM-dd hh:mm:ss.zzz', GetTimeUTC());
-
-    LogFile.Add(Date + #9 + TYPES[MsgType] + #9 + Msg);
-
-    //if (Save or (MsgType = ERROR)) then
-    LogFile.SaveToFile(FileName);
-
-    // TODO: optimize performance?
-    if (Length(LogFile.Text) >= 10 * 1024 * 1024) then
-    begin
-      RotateLogs();
-      LogFile.Clear();
-      LogFile.SaveToFile(FileName);
-    end;
+    LogLine(Date + #9 + TYPES[MsgType] + #9 + Msg);
   end;
 
   {$ENDIF}
 end;
 
+{======================================================================================================================}
 function Tabs(Count: integer): string;
+{======================================================================================================================}
 var
   i: integer;
 begin
@@ -185,37 +203,15 @@ begin
 end;
 
 {======================================================================================================================}
-procedure SaveLog();
+procedure InitLogger(const Path: string);
 {======================================================================================================================}
 begin
   {$IFDEF LOGGING}
-  LogFile.SaveToFile(FileName);
+  LogPath := Path;
+
+  if not DirectoryExists(LogPath) then
+    CreateDirectory(PChar(LogPath), nil);
   {$ENDIF}
-end;
-
-{======================================================================================================================}
-procedure StartLogger(const Path: string);
-{======================================================================================================================}
-begin
-  {$IFDEF LOGGING}
-
-  if not DirectoryExists(Path) then
-    CreateDirectory(PChar(Path), nil);
-
-  FileName := Path + '\' + GetLogFileName(0);
-
-  LogFile := TStringList.Create();
-
-  if (FileExists(FileName)) then
-    LogFile.LoadFromFile(FileName);
-
-  {$ENDIF}
-end;
-
-{======================================================================================================================}
-procedure StopLogger();
-{======================================================================================================================}
-begin
 end;
 
 end.

@@ -125,7 +125,7 @@ begin
     Exit;
 
   CheckFolders(); // before check file!
-  AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
+  AutoLog.InitLogger(WORK_FOLDER + FOLDER_LOGS);
 
   {#}Log(INFO, 'Application started');
   {#}Log(INFO, Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
@@ -181,5 +181,4 @@ begin
   Application.Run();
 
   DiaryCore.Finalize();
-  AutoLog.StopLogger();
 end.
