@@ -28,6 +28,9 @@ var
   
 implementation
 
+const
+  TYPES: array[TLogType] of string = ('ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOUS');
+
 type
   TStackNode = record
     Time: Cardinal;
@@ -74,20 +77,16 @@ end;
 {======================================================================================================================}
 function CheckLevel(Level: TLogType): boolean;
 {======================================================================================================================}
-const
-  WEIGHT: array[0..4] of integer = (5, 4, 3, 2, 1);
 begin
-  Result := (WEIGHT[LevelToIndex(Level)] >= WEIGHT[LevelToIndex(LogLevel)]);
+  Result := LevelToIndex(Level) <= LevelToIndex(LogLevel);
 end;
 
 {======================================================================================================================}
 procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
 {======================================================================================================================}
 {$IFDEF LOGGING}
-const
-  TYPES: array[TLogType] of string = ('ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOUS');
 var
-  Temp: string;
+  Date: string;
 {$ENDIF}
 begin
   {$IFDEF LOGGING}
@@ -97,10 +96,9 @@ begin
 
   if (CheckLevel(MsgType)) then
   begin
-    DateTimeToString(Temp, 'yyyy-MM-dd hh:mm:ss.zzz', GetTimeUTC());
-    Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
+    DateTimeToString(Date, 'yyyy-MM-dd hh:mm:ss.zzz', GetTimeUTC());
 
-    LogFile.Add(Temp);
+    LogFile.Add(Date + #9 + TYPES[MsgType] + #9 + Msg);
 
     if (Save or (MsgType = ERROR)) then
       LogFile.SaveToFile(FileName);
@@ -136,7 +134,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure FinishProc;
+procedure FinishProc();
 {======================================================================================================================}
 begin
   {$IFDEF LOGGING}
@@ -149,7 +147,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure SaveLog;
+procedure SaveLog();
 {======================================================================================================================}
 begin
   {$IFDEF LOGGING}
@@ -169,21 +167,15 @@ begin
   DateTimeToString(FileName, 'yyyy-mm-dd_hh-mm-ss', GetTimeUTC());
   FileName := Path + '\' + FileName + '.txt';
 
-  LogFile := TStringList.Create;
+  LogFile := TStringList.Create();
 
   {$ENDIF}
 end;
 
 {======================================================================================================================}
-procedure StopLogger;
+procedure StopLogger();
 {======================================================================================================================}
 begin
-  {$IFDEF LOGGING}
-  // FreeAndNil(LogFile);
-  {$ENDIF}
 end;
 
-initialization
-finalization
-  StopLogger;
 end.
