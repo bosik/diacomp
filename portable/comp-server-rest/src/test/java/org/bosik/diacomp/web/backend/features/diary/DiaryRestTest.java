@@ -278,7 +278,7 @@ public class DiaryRestTest extends IntegrationTest
 		final String to = "2020-04-02 21:00:00";
 
 		final List<Versioned<DiaryRecord>> expected = DiaryLocalService.convert(
-				diaryEntityRepository.findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(
+				diaryEntityRepository.findForPeriod(
 						userId,
 						Utils.parseDateUTC(from),
 						Utils.parseDateUTC(to)));

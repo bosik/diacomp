@@ -17,7 +17,9 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +40,9 @@ public interface DiaryEntityRepository extends CrudRepository<DiaryEntity, Strin
 
 	List<DiaryEntity> findByUserIdAndTimeStampIsGreaterThanEqual(int userId, Date time);
 
-	List<DiaryEntity> findByUserIdAndTimeCacheBetweenOrderByTimeCache(int userId, Date from, Date to);
+	@Query(value = "SELECT e FROM DiaryEntity e WHERE e.userId = :userId AND e.timeCache >= :from AND e.timeCache < :to ORDER BY e.timeCache")
+	List<DiaryEntity> findForPeriodIncludingRemoved(@Param("userId") int userId, @Param("from") Date from, @Param("to") Date to);
 
-	List<DiaryEntity> findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(int userId, Date from, Date to);
+	@Query(value = "SELECT e FROM DiaryEntity e WHERE e.userId = :userId AND e.timeCache >= :from AND e.timeCache < :to AND e.deleted = 0 ORDER BY e.timeCache")
+	List<DiaryEntity> findForPeriod(@Param("userId") int userId, @Param("from") Date from, @Param("to") Date to);
 }

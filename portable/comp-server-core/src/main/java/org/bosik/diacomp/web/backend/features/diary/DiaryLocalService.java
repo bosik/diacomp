@@ -166,11 +166,11 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 	{
 		if (includeRemoved)
 		{
-			return convert(repository.findByUserIdAndTimeCacheBetweenOrderByTimeCache(userId, startTime, endTime));
+			return convert(repository.findForPeriodIncludingRemoved(userId, startTime, endTime));
 		}
 		else
 		{
-			return convert(repository.findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(userId, startTime, endTime));
+			return convert(repository.findForPeriod(userId, startTime, endTime));
 		}
 	}
 
