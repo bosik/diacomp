@@ -256,7 +256,7 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 		s.append("VERSION=6\n");
 
 		// TODO: check performance
-		repository.findByUserId(userId).forEach(entity ->
+		repository.findByUserIdOrderByTimeCache(userId).forEach(entity ->
 		{
 			s.append(Utils.formatTimeUTC(entity.getTimeCache())).append('\t');
 			s.append(entity.getId()).append('\t');

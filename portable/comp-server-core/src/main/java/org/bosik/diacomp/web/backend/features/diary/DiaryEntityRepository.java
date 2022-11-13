@@ -30,6 +30,8 @@ public interface DiaryEntityRepository extends CrudRepository<DiaryEntity, Strin
 
 	List<DiaryEntity> findByUserId(int userId);
 
+	List<DiaryEntity> findByUserIdOrderByTimeCache(int userId);
+
 	List<DiaryEntity> findByUserIdAndDeletedIsFalse(int userId);
 
 	DiaryEntity findByUserIdAndId(int userId, String id);

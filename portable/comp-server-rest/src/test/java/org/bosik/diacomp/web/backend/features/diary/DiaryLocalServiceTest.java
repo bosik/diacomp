@@ -72,7 +72,7 @@ public class DiaryLocalServiceTest
 			setTimeCache(Utils.parseTimeUTC(VALUE_TIME_CACHE));
 		}};
 
-		when(repository.findByUserId(eq(USER_ID))).thenReturn(Collections.singletonList(entity));
+		when(repository.findByUserIdOrderByTimeCache(eq(USER_ID))).thenReturn(Collections.singletonList(entity));
 
 		final String EXPECTED =
 				"VERSION=6\n" + VALUE_TIME_CACHE + '\t' + VALUE_ID + '\t' + VALUE_TIMESTAMP + '\t' + VALUE_HASH + '\t' + String
