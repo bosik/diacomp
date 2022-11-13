@@ -1,0 +1,28 @@
+.carbs-table {
+    display: table;
+    width: 100%;
+}
+
+.carbs-table-header {
+    display: table-row;
+    font-weight: bold;
+}
+
+.carbs-table-row {
+    display: table-row;
+}
+
+.carbs-table-row:hover{
+    background: #e9e7f3;
+}
+
+.cars-table-row-selected{
+    background: #e9e7e3;
+}
+
+.carbs-table-cell {
+    display: table-cell;
+    text-align: right;
+    border-bottom: 1px solid #f0f0f0;
+    padding-right: 5px;
+}

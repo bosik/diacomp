@@ -1,0 +1,50 @@
+.diary-record-meal {
+    background: #ffffdd;
+}
+
+.diary-record-meal-selected {
+    background: #ffff99;
+}
+
+.food-list {
+    display: table;
+    width: 100%;
+}
+
+.food-item {
+    display: table-row;
+    padding-right: 15px;
+    width: 85%;
+}
+
+.food-item:hover {
+    background: #ffffbb;
+}
+
+.food-item-name {
+    display: table-cell;
+    padding-right: 15px;
+    width: 80%;
+}
+
+.food-item-mass {
+    display: table-cell;
+    padding-right: 15px;
+    width: 20%;
+    max-width: 80px;
+
+}
+
+.transparent {
+    background: transparent;
+    border: transparent;
+}
+
+.input-name {
+    width: 100%;
+}
+
+.input-mass {
+    width: 100%;
+    max-width: 80px;
+}

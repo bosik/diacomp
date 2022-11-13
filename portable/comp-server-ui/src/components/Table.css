@@ -1,0 +1,35 @@
+.table {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-header {
+    background-color: #eee;
+    padding-right: 20px;
+}
+
+.table-cell {
+    display: table-cell;
+    border-bottom: 1px solid #ccc;
+}
+
+.table-row {
+    display: table-row;
+}
+
+.table-row-selected {
+    background-color: #0a246a;
+    color: #ffffff;
+}
+
+.table-content {
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    height: 100%;
+}
+
+.table-info {
+    padding: 10px;
+    color: #aaa;
+}

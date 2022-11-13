@@ -1,0 +1,10 @@
+.panel {
+    margin: 0 auto;
+    max-width: 260px;
+}
+
+.big-input {
+    display: block;
+    width: 250px;
+    height: 2em;
+}

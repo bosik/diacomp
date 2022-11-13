@@ -1,0 +1,21 @@
+.info-lines {
+    display: table;
+    width: 100%;
+}
+
+.info-line {
+    display: table-row;
+}
+
+.info-line-key {
+    display: table-cell;
+}
+
+.info-line-value {
+    display: table-cell;
+    text-align: right;
+}
+
+.info-line-value-bold {
+    font-weight: bold;
+}

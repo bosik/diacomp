@@ -1,0 +1,16 @@
+.info-section {
+    margin: 10px 10px 20px 10px;
+    border: 1px solid #d5dfe5;
+    padding: 15px 10px 10px 10px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.info-section-title {
+    position: absolute;
+    top: -10px;
+    background: #fff;
+    color: #888;
+    width: fit-content;
+    padding: 0 5px 0 5px;
+}

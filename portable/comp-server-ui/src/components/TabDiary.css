@@ -1,0 +1,72 @@
+div#panel-left {
+    float: left;
+    top: 50px;
+    bottom: 10px;
+    position: fixed;
+    background: #fff;
+    width: 250px;
+}
+
+div#panel-right {
+    float: right;
+    top: 50px;
+    bottom: 10px;
+    position: fixed;
+    background: #fff;
+    width: 280px;
+    right: 10px;
+}
+
+div#panel-center {
+    left: 260px;
+    right: 290px;
+    bottom: 110px;
+    overflow-y: scroll;
+    position: fixed;
+    top: 50px;
+    padding-bottom: 20px;
+}
+
+.diary {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+div#diary-add {
+    position: fixed;
+    bottom: 10px;
+    background: #d4d0c8;
+    right: 290px;
+    left: 260px;
+    height: 100px;
+}
+
+.button-add {
+    background-color: #f0f0f0;
+    width: 80px;
+    display: inline-block;
+    height: 80px;
+    margin-left: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+    border-radius: 5px;
+}
+
+/* Calendar */
+
+.react-calendar {
+    background: white !important;
+    border: 1px solid #d5dfe5 !important;
+    margin: 10px 10px 20px 10px !important;
+    width: unset !important;
+}
+
+.react-calendar__tile--now {
+    border: 1px solid #88f !important;
+    background: unset !important;
+}
+
+.react-calendar__tile--now:enabled:hover, .react-calendar__tile--now:enabled:focus {
+    background: #eef !important;
+}

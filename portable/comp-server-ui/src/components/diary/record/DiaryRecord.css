@@ -1,0 +1,29 @@
+.diary-record {
+    display: flex;
+    margin: 10px 10px -11px 10px;
+    border: 1px solid #999;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.record-time {
+    font-weight: bold;
+    margin-left: 5px;
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+.record-value {
+    flex-grow: 1;
+}
+
+.button-remove {
+    padding-right: 10px;
+    padding-left: 10px;
+    text-decoration: none;
+    color: #0001;
+}
+
+.button-remove:hover {
+    color: #a00;
+}

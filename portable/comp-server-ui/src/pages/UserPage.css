@@ -1,0 +1,32 @@
+.button-logout {
+    float: right;
+    margin-right: 20px;
+    position: relative;
+    width: 60px;
+}
+
+/* Tabs */
+
+.react-tabs__tab {
+    display: inline-block;
+    padding: 10px;
+    cursor: pointer;
+    border-right: 1px solid #808080;
+    border-left: 1px solid #fff;
+    background: #d4d0c8;
+    border-radius: 5px 5px 0 0;
+    margin-right: 1px;
+}
+
+.react-tabs__tab--selected {
+    background: #e9e7e3 !important;
+}
+
+.tabs-content {
+    top: 50px;
+    overflow-y: scroll;
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+}
