@@ -190,10 +190,10 @@ public class ActivityMain extends FragmentActivity
 		Account account = AccountUtils.getAccount(this);
 		if (account != null)
 		{
-			long SYNC_INTERVAL = 120; // sec
+			final long syncInterval = getResources().getInteger(R.integer.sync_interval_sec);
 			ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
 			ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
-			ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+			ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, syncInterval);
 		}
 	}
 
