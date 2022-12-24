@@ -14,11 +14,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.accounts.Account;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,7 +32,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -168,6 +173,8 @@ public class ActivityMain extends FragmentActivity
 		ViewPager mViewPager = findViewById(R.id.pager);
 		mViewPager.setAdapter(adapter);
 
+		enableAutosync();
+
 		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 
 		boolean firstStart = preferences.getBooleanValue(PreferenceID.ANDROID_FIRST_START);
@@ -175,6 +182,18 @@ public class ActivityMain extends FragmentActivity
 		{
 			startActivity(new Intent(this, ActivityWelcome.class));
 			finish();
+		}
+	}
+
+	private void enableAutosync()
+	{
+		Account account = AccountUtils.getAccount(this);
+		if (account != null)
+		{
+			long SYNC_INTERVAL = 120; // sec
+			ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
+			ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
+			ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
 		}
 	}
 

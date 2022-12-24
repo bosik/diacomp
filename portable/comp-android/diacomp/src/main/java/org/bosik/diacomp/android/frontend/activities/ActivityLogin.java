@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -25,7 +25,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -41,9 +40,8 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.AccountUtils;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -450,8 +448,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 							UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_fail));
 						}
 
-						enableAutosync();
-
 						// TODO: don't do this if activity is started from main activity
 						Intent intentR = new Intent(ActivityLogin.this, ActivityMain.class);
 						intentR.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -464,16 +460,4 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			}
 		}
 	};
-
-	private void enableAutosync()
-	{
-		Account account = AccountUtils.getAccount(this);
-		if (account != null)
-		{
-			long SYNC_INTERVAL = 120; // sec
-			ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
-			ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
-			ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
-		}
-	}
 }
