@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
@@ -24,16 +24,17 @@ import android.os.IBinder;
 
 public class SyncService extends Service
 {
-	private static final Object	sSyncAdapterLock	= new Object();
-	private static SyncAdapter	sSyncAdapter		= null;
+	private static       SyncAdapter sSyncAdapter     = null;
 
 	@Override
 	public void onCreate()
 	{
-		synchronized (sSyncAdapterLock)
+		synchronized (SyncService.class)
 		{
 			if (sSyncAdapter == null)
+			{
 				sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+			}
 		}
 	}
 
