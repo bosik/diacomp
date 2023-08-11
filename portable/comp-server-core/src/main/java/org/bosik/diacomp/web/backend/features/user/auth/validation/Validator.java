@@ -26,10 +26,10 @@ import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.Us
 
 public class Validator
 {
-	public static final int USERNAME_MIN_SIZE = 8;
-	public static final int USERNAME_MAX_SIZE = 50;
-	public static final int PASSWORD_MIN_SIZE = 6;
-	public static final int PASSWORD_MAX_SIZE = 64;
+	private static final int USERNAME_MIN_SIZE = 8;
+	private static final int USERNAME_MAX_SIZE = 50;
+	private static final int PASSWORD_MIN_SIZE = 6;
+	private static final int PASSWORD_MAX_SIZE = 64;
 
 	public static void validateUserName(String userName)
 	{
