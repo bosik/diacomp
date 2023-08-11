@@ -17,7 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
-import org.bosik.diacomp.core.services.exceptions.AuthException;
+import org.springframework.security.core.AuthenticationException;
 
 public interface AuthService
 {
@@ -43,11 +43,10 @@ public interface AuthService
 	 * 
 	 * @param userName
 	 * @param password
-	 * @return ID of user if validation done OK
-	 * @throws AuthException
-	 *             If validation failed
+	 * @return ID of user if authentication passed OK
+	 * @throws AuthenticationException If authentication failed
 	 */
-	int login(String userName, String password) throws AuthException;
+	int login(String userName, String password) throws AuthenticationException;
 
 	/**
 	 * Converts user ID to user name
@@ -60,4 +59,10 @@ public interface AuthService
 	String buildRestoreKey(String userName);
 
 	void changePassword(String restoreKey, String newPassword);
+
+	void scheduleForDeletion(int userId);
+
+	void unscheduleForDeletion(int userId);
+
+	void cleanupDeletedUsers();
 }

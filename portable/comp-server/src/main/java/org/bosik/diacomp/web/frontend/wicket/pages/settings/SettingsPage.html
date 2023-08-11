@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <wicket:head>
+        <style>
+            .strong {
+                font-weight: bold;
+            }
+        </style>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h3>
+        <wicket:message key="header.common"/>
+    </h3>
+    <table class="mb-3">
+        <tr>
+            <td>
+                <wicket:message key="label.userEmail"/>
+            </td>
+            <td><span wicket:id="userEmail" class="strong ml-3"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <wicket:message key="label.userDateSignUp"/>
+            </td>
+            <td><span wicket:id="userDateSignUp" class="strong ml-3"></span></td>
+        </tr>
+    </table>
+
+    <h3 class="mt-3">
+        <wicket:message key="header.accountDeletion"/>
+    </h3>
+
+    <div wicket:id="panelAccountNotDeleted">
+        <div>
+            <wicket:message key="text.account.notDeleted"/>
+        </div>
+        <a wicket:id="linkRequestAccountDeletion" class="mt-2 btn btn-negative">
+            <wicket:message key="button.deleteAccount"/>
+        </a>
+    </div>
+
+    <div wicket:id="panelAccountDeleted">
+        <div>
+            <wicket:message key="text.account.deleted"/>
+            <span wicket:id="userDateDeleted" class="strong"></span></div>
+        <a wicket:id="linkCancelAccountDeletion" class="mt-2 btn">
+            <wicket:message key="button.restoreAccount"/>
+        </a>
+    </div>
+
+</wicket:extend>
+</body>
+</html>

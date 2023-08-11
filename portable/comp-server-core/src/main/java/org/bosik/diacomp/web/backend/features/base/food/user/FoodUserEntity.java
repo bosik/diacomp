@@ -19,7 +19,9 @@ package org.bosik.diacomp.web.backend.features.base.food.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bosik.diacomp.web.backend.features.base.food.combo.FoodEntity;
 
 import javax.persistence.Column;
@@ -30,6 +32,8 @@ import java.util.Date;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "food_user")
@@ -70,129 +74,9 @@ public class FoodUserEntity implements FoodEntity
 	@Column(name = "version")
 	private int version;
 
-	public FoodUserEntityPK getKey()
-	{
-		return key;
-	}
-
-	public void setKey(FoodUserEntityPK key)
-	{
-		this.key = key;
-	}
-
 	@Override
 	public String getId()
 	{
 		return key.getId();
-	}
-
-	@Override
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	@Override
-	public double getProts()
-	{
-		return prots;
-	}
-
-	public void setProts(double prots)
-	{
-		this.prots = prots;
-	}
-
-	@Override
-	public double getFats()
-	{
-		return fats;
-	}
-
-	public void setFats(double fats)
-	{
-		this.fats = fats;
-	}
-
-	@Override
-	public double getCarbs()
-	{
-		return carbs;
-	}
-
-	public void setCarbs(double carbs)
-	{
-		this.carbs = carbs;
-	}
-
-	@Override
-	public double getValue()
-	{
-		return value;
-	}
-
-	public void setValue(double value)
-	{
-		this.value = value;
-	}
-
-	@Override
-	public boolean isFromTable()
-	{
-		return fromTable;
-	}
-
-	public void setFromTable(boolean fromTable)
-	{
-		this.fromTable = fromTable;
-	}
-
-	@Override
-	public boolean isDeleted()
-	{
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted)
-	{
-		this.deleted = deleted;
-	}
-
-	@Override
-	public Date getLastModified()
-	{
-		return lastModified;
-	}
-
-	public void setLastModified(Date lastModified)
-	{
-		this.lastModified = lastModified;
-	}
-
-	@Override
-	public String getHash()
-	{
-		return hash;
-	}
-
-	public void setHash(String hash)
-	{
-		this.hash = hash;
-	}
-
-	@Override
-	public int getVersion()
-	{
-		return version;
-	}
-
-	public void setVersion(int version)
-	{
-		this.version = version;
 	}
 }

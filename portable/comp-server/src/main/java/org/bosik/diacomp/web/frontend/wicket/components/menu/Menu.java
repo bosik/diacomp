@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.settings.SettingsPage;
 
 public class Menu extends GenericPanel<MenuContent>
 {
@@ -72,6 +73,6 @@ public class Menu extends GenericPanel<MenuContent>
 		MarkupContainer loginInfo = new WebMarkupContainer("infoLogin");
 		add(loginInfo.setVisible(!"".equals(userName))); // TODO
 		loginInfo.add(new ExternalLink("linkLogout", "/logout"));
-		loginInfo.add(new Label("infoLoginUserName", userName));
+		loginInfo.add(new BookmarkablePageLink("linkSettings", SettingsPage.class).add(new Label("userName", userName)));
 	}
 }

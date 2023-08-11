@@ -20,16 +20,18 @@ package org.bosik.diacomp.web.backend.features.user.auth.validation;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordIsEmptyException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooShortException;
+import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameInvalidException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameIsEmptyException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooShortException;
 
 public class Validator
 {
-	public static final int USERNAME_MIN_SIZE = 8;
-	public static final int USERNAME_MAX_SIZE = 50;
-	public static final int PASSWORD_MIN_SIZE = 6;
-	public static final int PASSWORD_MAX_SIZE = 64;
+	private static final int    USERNAME_MIN_SIZE = 8;
+	private static final int    USERNAME_MAX_SIZE = 50;
+	private static final int    PASSWORD_MIN_SIZE = 6;
+	private static final int    PASSWORD_MAX_SIZE = 64;
+	private static final String PASSWORD_PATTERN  = "^[\\w-.]+@[\\w-.]+\\.[\\w]{2,4}$";
 
 	public static void validateUserName(String userName)
 	{
@@ -48,6 +50,11 @@ public class Validator
 		{
 			throw new UserNameTooLongException("User name too long, must be at most " + USERNAME_MAX_SIZE + " chars long",
 					USERNAME_MAX_SIZE);
+		}
+
+		if (!userName.matches(PASSWORD_PATTERN))
+		{
+			throw new UserNameInvalidException("User name is not valid");
 		}
 	}
 

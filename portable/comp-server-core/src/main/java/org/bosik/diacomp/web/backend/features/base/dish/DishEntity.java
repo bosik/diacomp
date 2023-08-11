@@ -19,7 +19,9 @@ package org.bosik.diacomp.web.backend.features.base.dish;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +31,8 @@ import java.util.Date;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dish")
@@ -60,84 +64,4 @@ public class DishEntity
 
 	@Column(name = "name_cache", length = MAX_SIZE_NAME)
 	private String nameCache;
-
-	public String getId()
-	{
-		return id;
-	}
-
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-
-	public int getUserId()
-	{
-		return userId;
-	}
-
-	public void setUserId(int userId)
-	{
-		this.userId = userId;
-	}
-
-	public Date getTimeStamp()
-	{
-		return timeStamp;
-	}
-
-	public void setTimeStamp(Date timeStamp)
-	{
-		this.timeStamp = timeStamp;
-	}
-
-	public String getHash()
-	{
-		return hash;
-	}
-
-	public void setHash(String hash)
-	{
-		this.hash = hash;
-	}
-
-	public int getVersion()
-	{
-		return version;
-	}
-
-	public void setVersion(int version)
-	{
-		this.version = version;
-	}
-
-	public boolean isDeleted()
-	{
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted)
-	{
-		this.deleted = deleted;
-	}
-
-	public String getContent()
-	{
-		return content;
-	}
-
-	public void setContent(String content)
-	{
-		this.content = content;
-	}
-
-	public String getNameCache()
-	{
-		return nameCache;
-	}
-
-	public void setNameCache(String nameCache)
-	{
-		this.nameCache = nameCache;
-	}
 }

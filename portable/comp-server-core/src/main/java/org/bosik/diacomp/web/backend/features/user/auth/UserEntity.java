@@ -19,7 +19,9 @@ package org.bosik.diacomp.web.backend.features.user.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +33,8 @@ import java.util.Date;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
@@ -59,73 +63,14 @@ public class UserEntity
 	@Column(name = "date_sign_in")
 	private Date loginDate;
 
-	public int getId()
-	{
-		return id;
-	}
+	@Column(name = "date_deleted")
+	private Date deletionDate;
 
-	public void setId(int id)
-	{
-		this.id = id;
-	}
+	@Column(name = "login_deleted")
+	private String loginDeleted;
 
-	public String getName()
+	public boolean isDeleted()
 	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public String getHashPass()
-	{
-		return hashPass;
-	}
-
-	public void setHashPass(String hashPass)
-	{
-		this.hashPass = hashPass;
-	}
-
-	public String getActivationKey()
-	{
-		return activationKey;
-	}
-
-	public void setActivationKey(String activationKey)
-	{
-		this.activationKey = activationKey;
-	}
-
-	public String getRestoreKey()
-	{
-		return restoreKey;
-	}
-
-	public void setRestoreKey(String restoreKey)
-	{
-		this.restoreKey = restoreKey;
-	}
-
-	public Date getRegistrationDate()
-	{
-		return registrationDate;
-	}
-
-	public void setRegistrationDate(Date registrationDate)
-	{
-		this.registrationDate = registrationDate;
-	}
-
-	public Date getLoginDate()
-	{
-		return loginDate;
-	}
-
-	public void setLoginDate(Date loginDate)
-	{
-		this.loginDate = loginDate;
+		return deletionDate != null && deletionDate.before(new Date());
 	}
 }

@@ -24,9 +24,10 @@
 		</div>
 		<div wicket:id="infoLogin" class="login">
 			<div style="margin-top: 5px;">
-				<i class="glyphicon glyphicon-user"></i> <span
-					wicket:id="infoLoginUserName"
-					style="margin-top: 4px; margin-right: 10px;"></span>
+				<i class="glyphicon glyphicon-user"></i>
+				<a wicket:id="linkSettings">
+					<span wicket:id="userName" style="margin-top: 4px; margin-right: 10px;"></span>
+				</a>
 			</div>
 			<div style="margin-right: 10px;">
 				<a wicket:id="linkLogout" href="j_spring_security_logout"><wicket:message

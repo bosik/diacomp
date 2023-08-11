@@ -15,21 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.user.auth;
+package org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-import java.util.List;
-
-public interface UserEntityRepository extends CrudRepository<UserEntity, Integer>
+public class UserNameInvalidException extends ValidationException
 {
-	UserEntity findByName(String name);
+	public UserNameInvalidException()
+	{
+	}
 
-	UserEntity findByActivationKey(String activationKey);
-
-	UserEntity findByRestoreKey(String restoreKey);
-
-	@Query("SELECT u FROM UserEntity u WHERE u.deletionDate IS NOT NULL AND u.deletionDate < NOW() AND u.loginDeleted IS NULL")
-	List<UserEntity> findUsersToCleanup();
+	public UserNameInvalidException(String message)
+	{
+		super(message);
+	}
 }

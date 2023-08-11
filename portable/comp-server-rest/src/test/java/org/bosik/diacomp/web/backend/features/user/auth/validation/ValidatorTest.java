@@ -22,6 +22,7 @@ import junitparams.Parameters;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordIsEmptyException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooShortException;
+import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameInvalidException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameIsEmptyException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooShortException;
@@ -39,22 +40,31 @@ public class ValidatorTest
 	}
 
 	@Test(expected = PasswordTooShortException.class)
-	@Parameters(value = { "123", "12345" })
+	@Parameters(value = {
+			"123",
+			"12345"
+	})
 	public void validatePassword_tooShort(String password)
 	{
 		Validator.validatePassword(password);
 	}
 
 	@Test
-	@Parameters({ "123456", "password", "5bd3db21f2df44a8a25d242ff69aeed4",
-			"1234567890123456789012345678901234567890123456789012345678901234" })
+	@Parameters({
+			"123456",
+			"password",
+			"5bd3db21f2df44a8a25d242ff69aeed4",
+			"1234567890123456789012345678901234567890123456789012345678901234"
+	})
 	public void validatePassword_ok(String password)
 	{
 		Validator.validatePassword(password);
 	}
 
 	@Test(expected = PasswordTooLongException.class)
-	@Parameters({ "12345678901234567890123456789012345678901234567890123456789012345" })
+	@Parameters({
+			"12345678901234567890123456789012345678901234567890123456789012345"
+	})
 	public void validatePassword_tooLong(String password)
 	{
 		Validator.validatePassword(password);
@@ -68,22 +78,46 @@ public class ValidatorTest
 	}
 
 	@Test(expected = UserNameTooShortException.class)
-	@Parameters(value = { "1234", "1234567" })
+	@Parameters(value = {
+			"1234",
+			"1234567"
+	})
 	public void validateUserName_tooShort(String UserName)
 	{
 		Validator.validateUserName(UserName);
 	}
 
 	@Test
-	@Parameters({ "12345678", "UserName", "5bd3db21f2df44a8a25d242ff69aeed4", "12345678901234567890123456789012345678901234567890" })
+	@Parameters({
+			"abc.def.123_4@gmail.com",
+			"abc@domain.sub.com",
+			"abc@yandex.ru"
+	})
 	public void validateUserName_ok(String UserName)
 	{
 		Validator.validateUserName(UserName);
 	}
 
 	@Test(expected = UserNameTooLongException.class)
-	@Parameters({ "123456789012345678901234567890123456789012345678901" })
+	@Parameters({
+			"123456789012345678901234567890123456789012345678901"
+	})
 	public void validateUserName_tooLong(String UserName)
+	{
+		Validator.validateUserName(UserName);
+	}
+
+	@Test(expected = UserNameInvalidException.class)
+	@Parameters({
+			"12345678",
+			"UserName",
+			"aaa@bbbb",
+			"aaa@.com",
+			"a#c@def.com",
+			"5bd3db21f2df44a8a25d242ff69aeed4",
+			"12345678901234567890123456789012345678901234567890"
+	})
+	public void validateUserName_invalid(String UserName)
 	{
 		Validator.validateUserName(UserName);
 	}

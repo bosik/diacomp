@@ -17,20 +17,30 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static org.bosik.merklesync.HashUtils.generateGuid;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService
 {
+	private static final int USER_DELETION_TIMEOUT_DAYS = 14;
+
 	@Autowired
 	private UserEntityRepository userEntityRepository;
 
@@ -67,7 +77,7 @@ public class AuthServiceImpl implements AuthService
 		}
 
 		final UserEntity user = userEntityRepository.findByActivationKey(activationKey);
-		if (user == null)
+		if (user == null || user.isDeleted())
 		{
 			throw new NotAuthorizedException();
 		}
@@ -78,25 +88,25 @@ public class AuthServiceImpl implements AuthService
 	}
 
 	@Override
-	public int login(String userName, final String password)
+	public int login(String userName, final String password) throws AuthenticationException
 	{
 		//		Validator.validateUserName(userName);
 		//		Validator.validatePassword(password);
 
 		UserEntity user = userEntityRepository.findByName(userName);
-		if (user == null)
+		if (user == null || user.isDeleted())
 		{
-			throw new NotAuthorizedException();
+			throw new UsernameNotFoundException("User not found");
 		}
 
 		if (user.getActivationKey() != null)
 		{
-			throw new NotActivatedException("Not activated");
+			throw new DisabledException("User not activated");
 		}
 
 		if (!HashUtils.validatePassword(password, user.getHashPass()))
 		{
-			throw new NotAuthorizedException();
+			throw new BadCredentialsException("Invalid password");
 		}
 
 		user.setLoginDate(new Date());
@@ -116,7 +126,7 @@ public class AuthServiceImpl implements AuthService
 		Validator.validateUserName(userName);
 
 		final UserEntity user = userEntityRepository.findByName(userName);
-		if (user != null)
+		if (user != null && !user.isDeleted())
 		{
 			user.setRestoreKey(generateGuid() + generateGuid());
 			userEntityRepository.save(user);
@@ -148,5 +158,43 @@ public class AuthServiceImpl implements AuthService
 		user.setRestoreKey(null);
 		user.setActivationKey(null);
 		userEntityRepository.save(user);
+	}
+
+	@Override
+	public void scheduleForDeletion(int userId)
+	{
+		log.info("Scheduling deletion of user " + userId);
+		final Calendar c = Calendar.getInstance();
+		c.add(Calendar.DAY_OF_YEAR, USER_DELETION_TIMEOUT_DAYS);
+
+		final UserEntity user = userEntityRepository.findById(userId).get();
+		user.setDeletionDate(c.getTime());
+		userEntityRepository.save(user);
+	}
+
+	@Override
+	public void unscheduleForDeletion(int userId)
+	{
+		log.info("Unscheduling deletion of user " + userId);
+		final UserEntity user = userEntityRepository.findById(userId).get();
+		user.setDeletionDate(null);
+		userEntityRepository.save(user);
+	}
+
+	@Override
+	@Scheduled(fixedDelay = 1000L * 60 * 60 * 24) // once a day
+	public void cleanupDeletedUsers()
+	{
+		log.debug("Searching for deleted users....");
+		final List<UserEntity> users = userEntityRepository.findUsersToCleanup();
+
+		for (UserEntity user : users)
+		{
+			log.warn("Deleting user '" + user.getName() + "'");
+
+			user.setLoginDeleted(user.getName());
+			user.setName(generateGuid());
+			userEntityRepository.save(user);
+		}
 	}
 }
