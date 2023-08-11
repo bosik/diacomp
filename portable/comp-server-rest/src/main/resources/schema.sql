@@ -10,6 +10,8 @@ CREATE TABLE `user` (
   `restore_key` char(64) DEFAULT NULL,
   `date_sign_up` datetime DEFAULT NULL,
   `date_sign_in` datetime DEFAULT NULL,
+  `date_deleted` datetime DEFAULT NULL,
+  `login_deleted` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Login_UNIQUE` (`login`),
   UNIQUE KEY `ActivationKey_UNIQUE` (`activation_key`),

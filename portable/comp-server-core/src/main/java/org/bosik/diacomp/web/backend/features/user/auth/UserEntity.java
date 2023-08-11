@@ -62,4 +62,15 @@ public class UserEntity
 
 	@Column(name = "date_sign_in")
 	private Date loginDate;
+
+	@Column(name = "date_deleted")
+	private Date deletionDate;
+
+	@Column(name = "login_deleted")
+	private String loginDeleted;
+
+	public boolean isDeleted()
+	{
+		return deletionDate != null && deletionDate.before(new Date());
+	}
 }
