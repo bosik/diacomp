@@ -17,7 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
-import org.bosik.diacomp.core.services.exceptions.AuthException;
+import org.springframework.security.core.AuthenticationException;
 
 public interface AuthService
 {
@@ -32,7 +32,7 @@ public interface AuthService
 
 	/**
 	 * Activates user's account
-	 * 
+	 *
 	 * @param activationKey
 	 * @return userId
 	 */
@@ -40,14 +40,13 @@ public interface AuthService
 
 	/**
 	 * Validates the supplied userName:password pair
-	 * 
+	 *
 	 * @param userName
 	 * @param password
-	 * @return ID of user if validation done OK
-	 * @throws AuthException
-	 *             If validation failed
+	 * @return ID of user if authentication passed OK
+	 * @throws AuthenticationException If authentication failed
 	 */
-	int login(String userName, String password) throws AuthException;
+	int login(String userName, String password) throws AuthenticationException;
 
 	/**
 	 * Converts user ID to user name

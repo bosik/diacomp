@@ -36,10 +36,12 @@ import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.restore.RestorePage;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
 @NoArgsConstructor
@@ -98,22 +100,17 @@ public class LoginPage extends MasterPage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-				final String MSG_ERROR_USERNAME_IS_EMPTY = getString("error.userName.empty");
-				final String MSG_ERROR_PASSWORD_IS_EMPTY = getString("error.password.empty");
-				final String MSG_ERROR_COMMON = getString("error.common");
-				final String MSG_ERROR_CREDENTIALS = getString("error.badCredentials");
-
 				try
 				{
 					if (StringUtils.isEmpty(userName))
 					{
-						showError(target, MSG_ERROR_USERNAME_IS_EMPTY);
+						showError(target, getString("error.userName.empty"));
 						return;
 					}
 
 					if (StringUtils.isEmpty(password))
 					{
-						showError(target, MSG_ERROR_PASSWORD_IS_EMPTY);
+						showError(target, getString("error.password.empty"));
 						return;
 					}
 
@@ -124,14 +121,22 @@ public class LoginPage extends MasterPage
 					context.setAuthentication(auth);
 					LoginPage.this.setResponsePage(DiaryPage.class);
 				}
+				catch (UsernameNotFoundException e)
+				{
+					showError(target, getString("error.userNotFound"));
+				}
+				catch (DisabledException e)
+				{
+					showError(target, getString("error.userNotActivated"));
+				}
 				catch (BadCredentialsException e)
 				{
-					showError(target, MSG_ERROR_CREDENTIALS);
+					showError(target, getString("error.badCredentials"));
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
-					showError(target, MSG_ERROR_COMMON);
+					showError(target, getString("error.common"));
 				}
 			}
 

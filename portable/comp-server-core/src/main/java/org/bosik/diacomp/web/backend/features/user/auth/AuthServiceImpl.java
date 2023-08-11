@@ -18,10 +18,13 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -78,7 +81,7 @@ public class AuthServiceImpl implements AuthService
 	}
 
 	@Override
-	public int login(String userName, final String password)
+	public int login(String userName, final String password) throws AuthenticationException
 	{
 		//		Validator.validateUserName(userName);
 		//		Validator.validatePassword(password);
@@ -86,17 +89,17 @@ public class AuthServiceImpl implements AuthService
 		UserEntity user = userEntityRepository.findByName(userName);
 		if (user == null)
 		{
-			throw new NotAuthorizedException();
+			throw new UsernameNotFoundException("User not found");
 		}
 
 		if (user.getActivationKey() != null)
 		{
-			throw new NotActivatedException("Not activated");
+			throw new DisabledException("User not activated");
 		}
 
 		if (!HashUtils.validatePassword(password, user.getHashPass()))
 		{
-			throw new NotAuthorizedException();
+			throw new BadCredentialsException("Invalid password");
 		}
 
 		user.setLoginDate(new Date());

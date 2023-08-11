@@ -18,11 +18,8 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
 import lombok.NoArgsConstructor;
-import org.bosik.diacomp.core.services.exceptions.AuthException;
-import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -48,26 +45,14 @@ public class AuthProvider implements AuthenticationProvider
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
 	{
-		try
-		{
-			String email = authentication.getName();
-			String password = authentication.getCredentials().toString();
-			int userId = authService.login(email, password);
-			String userInfo = String.format("%d:%s", userId, email);
+		String email = authentication.getName();
+		String password = authentication.getCredentials().toString();
+		int userId = authService.login(email, password);
+		String userInfo = String.format("%d:%s", userId, email);
 
-			List<GrantedAuthority> authorities = new ArrayList<>();
-			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
-		}
-		catch (NotActivatedException e)
-		{
-			// TODO: do something specific
-			throw new BadCredentialsException("Not activated", e);
-		}
-		catch (AuthException e)
-		{
-			throw new BadCredentialsException("Unauthorized", e);
-		}
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
 	}
 
 	@Override
