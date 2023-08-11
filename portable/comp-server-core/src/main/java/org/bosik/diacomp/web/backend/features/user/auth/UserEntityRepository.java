@@ -17,7 +17,10 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
 
 public interface UserEntityRepository extends CrudRepository<UserEntity, Integer>
 {
@@ -26,4 +29,7 @@ public interface UserEntityRepository extends CrudRepository<UserEntity, Integer
 	UserEntity findByActivationKey(String activationKey);
 
 	UserEntity findByRestoreKey(String restoreKey);
+
+	@Query("SELECT u FROM UserEntity u WHERE u.deletionDate IS NOT NULL AND u.deletionDate < NOW() AND u.loginDeleted IS NULL")
+	List<UserEntity> findUsersToCleanup();
 }

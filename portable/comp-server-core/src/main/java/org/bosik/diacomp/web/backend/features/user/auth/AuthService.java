@@ -32,7 +32,7 @@ public interface AuthService
 
 	/**
 	 * Activates user's account
-	 *
+	 * 
 	 * @param activationKey
 	 * @return userId
 	 */
@@ -40,7 +40,7 @@ public interface AuthService
 
 	/**
 	 * Validates the supplied userName:password pair
-	 *
+	 * 
 	 * @param userName
 	 * @param password
 	 * @return ID of user if authentication passed OK
@@ -59,4 +59,10 @@ public interface AuthService
 	String buildRestoreKey(String userName);
 
 	void changePassword(String restoreKey, String newPassword);
+
+	void scheduleForDeletion(int userId);
+
+	void unscheduleForDeletion(int userId);
+
+	void cleanupDeletedUsers();
 }

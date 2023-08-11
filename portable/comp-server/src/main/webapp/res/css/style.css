@@ -112,6 +112,7 @@ th {
     min-width: 110px;
     font-size: 100%;
     background-repeat: no-repeat;
+    border: 1px solid #ccc !important;
 }
 
 .btn:hover {
@@ -122,8 +123,14 @@ th {
     color: #000080;
 }
 
+.btn-negative {
+    background-color: #f6f8fa;
+    color: #cf222e;
+}
+
 .btn-negative:hover {
-    color: #800000;
+    background-color: #a40e26;
+    color: #fff !important;
 }
 
 .input-light {

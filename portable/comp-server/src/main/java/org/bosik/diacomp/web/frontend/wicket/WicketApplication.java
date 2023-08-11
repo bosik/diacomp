@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.settings.SettingsPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.activate.ActivationPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
@@ -73,6 +74,7 @@ public class WicketApplication extends WebApplication
 		mountPage("/diary", DiaryPage.class);
 		mountPage("/diary/printable", DiaryPreviewPage.class);
 		mountPage("/base", FoodBasePage.class);
+		mountPage("/settings", SettingsPage.class);
 		mountPage("/stats", StatsPage.class);
 
 		Bootstrap.install(this);
