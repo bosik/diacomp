@@ -17,10 +17,11 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food;
 
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.core.entities.business.FoodMassed;
 
 public class FoodList implements Serializable
 {

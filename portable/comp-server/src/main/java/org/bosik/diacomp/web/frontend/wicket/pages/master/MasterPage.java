@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -41,6 +38,10 @@ import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class MasterPage extends WebPage
 {

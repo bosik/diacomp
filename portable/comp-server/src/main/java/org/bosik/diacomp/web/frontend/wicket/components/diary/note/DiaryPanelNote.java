@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.note;
 
-import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -26,6 +25,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
+
+import java.util.TimeZone;
 
 public class DiaryPanelNote extends Panel
 {

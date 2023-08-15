@@ -17,10 +17,11 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
+import org.apache.wicket.markup.html.WebPage;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.markup.html.WebPage;
 
 public class MenuContent implements Serializable
 {

@@ -35,7 +35,6 @@ import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.Pa
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooShortException;
 import org.bosik.diacomp.web.frontend.wicket.ProgressBundle;
-import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 

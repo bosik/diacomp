@@ -17,11 +17,12 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.day;
 
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.merklesync.Versioned;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelDayModelObject implements Serializable
 {

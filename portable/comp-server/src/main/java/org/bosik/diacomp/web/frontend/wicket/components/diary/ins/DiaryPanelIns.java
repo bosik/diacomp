@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.ins;
 
-import java.util.TimeZone;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -28,6 +27,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
+
+import java.util.TimeZone;
 
 public class DiaryPanelIns extends Panel
 {

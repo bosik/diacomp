@@ -17,11 +17,12 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.register.sent;
 
-import javax.servlet.http.HttpServletResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+
+import javax.servlet.http.HttpServletResponse;
 
 public class RegistrationSentPage extends MasterPage
 {

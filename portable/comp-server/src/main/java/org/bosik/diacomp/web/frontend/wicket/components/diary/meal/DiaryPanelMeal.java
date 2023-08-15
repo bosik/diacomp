@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.meal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -31,6 +28,10 @@ import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.editor.MealEd
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodList;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 public class DiaryPanelMeal extends Panel
 {

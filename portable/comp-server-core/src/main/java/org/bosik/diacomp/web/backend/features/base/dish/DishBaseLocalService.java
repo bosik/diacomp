@@ -29,7 +29,6 @@ import org.bosik.diacomp.web.backend.common.UserDataService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

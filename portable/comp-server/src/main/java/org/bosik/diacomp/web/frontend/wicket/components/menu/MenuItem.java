@@ -17,8 +17,9 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
-import java.io.Serializable;
 import org.apache.wicket.markup.html.WebPage;
+
+import java.io.Serializable;
 
 public class MenuItem implements Serializable
 {

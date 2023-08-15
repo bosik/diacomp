@@ -17,8 +17,9 @@
  */
 package org.bosik.diacomp.web.backend.common;
 
-import javax.servlet.http.HttpServletRequest;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class UserSessionUtils
 {

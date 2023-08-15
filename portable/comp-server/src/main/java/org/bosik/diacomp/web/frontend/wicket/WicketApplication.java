@@ -24,8 +24,6 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.settings.SettingsPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.register.activate.ActivationPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.preview.DiaryPreviewPage;
@@ -33,10 +31,12 @@ import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.privacy.PrivacyPolicyPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.register.activate.ActivationPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.sent.RegistrationSentPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.restore.RestorePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.restore.change.ChangePasswordPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.restore.sent.RestoreSentPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.settings.SettingsPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
 
 public class WicketApplication extends WebApplication

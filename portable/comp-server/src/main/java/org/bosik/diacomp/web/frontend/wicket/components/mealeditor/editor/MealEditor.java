@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.editor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -31,6 +28,10 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodList;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.inserter.FoodMassedInserter;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.updater.FoodMassedUpdater;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MealEditor extends GenericPanel<FoodList>
 {

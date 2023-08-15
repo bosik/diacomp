@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.dialogs.diary.blood;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -31,6 +28,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.common.CommonEditorContentPanel;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public abstract class DiaryEditorBloodContentPanel extends CommonEditorContentPanel<BloodRecord>
 {
