@@ -18,6 +18,7 @@
 package org.bosik.diacomp.android.backend.common.db.tables;
 
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 public class TablePreferences extends Table
 {
+	public static final String TABLE_NAME     = "preferences";
 	public static final String COLUMN_KEY     = "Key";
 	public static final String COLUMN_VALUE   = "Value";
 	public static final String COLUMN_VERSION = "Version";
@@ -35,7 +37,7 @@ public class TablePreferences extends Table
 	@Override
 	public String getName()
 	{
-		return "preferences";
+		return TABLE_NAME;
 	}
 
 	@Override

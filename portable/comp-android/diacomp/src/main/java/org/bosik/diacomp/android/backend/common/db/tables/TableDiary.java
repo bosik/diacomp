@@ -18,6 +18,7 @@
 package org.bosik.diacomp.android.backend.common.db.tables;
 
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 public class TableDiary extends Table
 {
+	public static final String TABLE_NAME       = "diary";
 	public static final String COLUMN_ID        = "_GUID";
 	public static final String COLUMN_TIMESTAMP = "_TimeStamp";
 	public static final String COLUMN_HASH      = "_Hash";
@@ -39,7 +41,7 @@ public class TableDiary extends Table
 	@Override
 	public String getName()
 	{
-		return "diary";
+		return TABLE_NAME;
 	}
 
 	@Override

@@ -18,6 +18,7 @@
 package org.bosik.diacomp.android.backend.common.db.tables;
 
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 public class TableFoodbase extends Table
 {
+	public static final String TABLE_NAME       = "foodbase";
 	public static final String COLUMN_ID        = "GUID";
 	public static final String COLUMN_TIMESTAMP = "TimeStamp";
 	public static final String COLUMN_HASH      = "Hash";
@@ -39,7 +41,7 @@ public class TableFoodbase extends Table
 	@Override
 	public String getName()
 	{
-		return "foodbase";
+		return TABLE_NAME;
 	}
 
 	@Override
