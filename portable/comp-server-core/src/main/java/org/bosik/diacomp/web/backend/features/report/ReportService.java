@@ -24,6 +24,7 @@ import com.itextpdf.layout.Document;
 import lombok.Value;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.report.data.BsUnit;
 import org.bosik.diacomp.web.backend.features.report.data.Statistics;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 @Service
@@ -45,15 +47,16 @@ public class ReportService
 	@Autowired
 	private DiaryLocalService diaryService;
 
-	private Statistics getStatistics(int userId, Date fromDate, Date toDate, TimeZone timeZone)
+	private Statistics getStatistics(int userId, Date fromDate, Date toDate, BsUnit bsUnit, TimeZone timeZone, Locale locale)
 	{
 		final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(userId, fromDate, toDate, false);
-		return new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
+		return new Statistics(records, fromDate, toDate, minBs, maxBs, bsUnit, timeZone, locale);
 	}
 
-	public Report exportReportJson(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	public Report exportReportJson(int userId, Date fromDate, Date toDate, BsUnit bsUnit, TimeZone timeZone, Locale locale)
+			throws IOException
 	{
-		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, bsUnit, timeZone, locale);
 
 		return new Report(
 				getFileName(statistics) + ".json",
@@ -61,9 +64,10 @@ public class ReportService
 		);
 	}
 
-	public Report exportReportPdf(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	public Report exportReportPdf(int userId, Date fromDate, Date toDate, BsUnit bsUnit, TimeZone timeZone, Locale locale)
+			throws IOException
 	{
-		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, bsUnit, timeZone, locale);
 
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (final Document doc = new Document(new PdfDocument(new PdfWriter(outputStream))))

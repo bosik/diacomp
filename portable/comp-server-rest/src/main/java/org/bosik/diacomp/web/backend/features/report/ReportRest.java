@@ -19,6 +19,7 @@ package org.bosik.diacomp.web.backend.features.report;
 
 import lombok.RequiredArgsConstructor;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.report.data.BsUnit;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 @RestController
@@ -38,6 +40,7 @@ public class ReportRest extends UserRest
 {
 	private static final int MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
 	private static final int MAX_TIMEZONE_SIZE = "GMT+00:00".length();
+	private static final int MAX_LOCALE_SIZE   = "en".length();
 
 	private final ReportService reportService;
 
@@ -45,15 +48,19 @@ public class ReportRest extends UserRest
 	public ResponseEntity<byte[]> exportPdfReport(
 			@RequestParam("from") String parFromDate,
 			@RequestParam("to") String parToDate,
-			@RequestParam("timeZone") String parTimeZone
+			@RequestParam(name = "timeZone", defaultValue = "UTC") String parTimeZone,
+			@RequestParam(name = "locale", defaultValue = "en") String parLocale,
+			@RequestParam(name = "bsUnit", defaultValue = "mmoll") String parBsUnit
 	) throws IOException
 	{
 		final int userId = getUserId();
 		final Date fromDate = safeParseTimeUTC(parFromDate);
 		final Date toDate = safeParseTimeUTC(parToDate);
 		final TimeZone timeZone = safeParseTimeZone(parTimeZone);
+		final Locale locale = safeParseLocale(parLocale);
+		final BsUnit bsUnit = safeParseBsUnit(parBsUnit);
 
-		final ReportService.Report report = reportService.exportReportPdf(userId, fromDate, toDate, timeZone);
+		final ReportService.Report report = reportService.exportReportPdf(userId, fromDate, toDate, bsUnit, timeZone, locale);
 
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + report.getFileName() + "\"")
@@ -70,5 +77,40 @@ public class ReportRest extends UserRest
 	{
 		Utils.checkSize(s, MAX_TIMEZONE_SIZE);
 		return TimeZone.getTimeZone(s);
+	}
+
+	private static Locale safeParseLocale(String s)
+	{
+		Utils.checkSize(s, MAX_LOCALE_SIZE);
+		try
+		{
+			return new Locale(s);
+		}
+		catch (Exception e)
+		{
+			return Locale.ENGLISH;
+		}
+	}
+
+	private static BsUnit safeParseBsUnit(String s)
+	{
+		Utils.checkSize(s, 5);
+
+		try
+		{
+			switch (s.toLowerCase())
+			{
+				case "mmoll":
+					return BsUnit.MMOL_L;
+				case "mgdl":
+					return BsUnit.MG_DL;
+			}
+		}
+		catch (Exception e)
+		{
+			// ignore
+		}
+
+		return BsUnit.MMOL_L;
 	}
 }

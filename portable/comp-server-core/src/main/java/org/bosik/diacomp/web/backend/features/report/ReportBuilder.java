@@ -43,7 +43,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.report.data.AverageBS;
+import org.bosik.diacomp.web.backend.common.UTF8Control;
+import org.bosik.diacomp.web.backend.features.report.data.BsUnit;
 import org.bosik.diacomp.web.backend.features.report.data.Metrics;
 import org.bosik.diacomp.web.backend.features.report.data.Statistics;
 import org.bosik.merklesync.Versioned;
@@ -68,6 +69,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -94,54 +96,99 @@ public class ReportBuilder
 		final byte[] bytes = IOUtils.toByteArray(is);
 		final PdfFont font = PdfFontFactory.createFont(bytes, PdfEncodings.IDENTITY_H);
 
+		// Java 8 uses ISO 8859-1 by default; remove after migration to Java 9+
+		// final ResourceBundle res = ResourceBundle.getBundle("report", statistics.getLocale());
+		final ResourceBundle res = ResourceBundle.getBundle("report", statistics.getLocale(), new UTF8Control());
+
 		doc.setFont(font);
 		doc.setFontSize(FONT_SIZE_DEFAULT);
 
-		exportGeneralInfo(doc, statistics);
+		exportGeneralInfo(doc, res, statistics);
 
 		if (!statistics.getRecords().isEmpty())
 		{
-			exportBloodSugar(doc, statistics);
-			exportDailyStat(doc, statistics);
-			exportDiary(doc, statistics);
+			exportBloodSugar(doc, res, statistics);
+			exportDailyStat(doc, res, statistics);
+			exportDiary(doc, res, statistics);
 		}
 		else
 		{
-			doc.add(new Paragraph("Данные отсутствуют")
+			doc.add(new Paragraph(res.getString("report.empty"))
 					.setPaddingTop(PADDING_MEDIUM)
 					.setFontColor(COLOR_HEADER)
 			);
 		}
 	}
 
-	private static void exportGeneralInfo(Document doc, Statistics statistics)
+	private static String getBsUnitName(ResourceBundle res, BsUnit bsUnit)
 	{
-		doc.add(buildChapter("Общая информация"));
+		switch (bsUnit)
+		{
+			case MMOL_L:
+				return res.getString("report.units.mmoll");
+			case MG_DL:
+				return res.getString("report.units.mgdl");
+			default:
+				throw new IllegalArgumentException("Unsupported unit: " + bsUnit);
+		}
+	}
+
+	private static double getBsValue(double valueMmolL, BsUnit bsUnit)
+	{
+		switch (bsUnit)
+		{
+			case MMOL_L:
+				return valueMmolL;
+			case MG_DL:
+				return valueMmolL * 18;
+			default:
+				throw new IllegalArgumentException("Unsupported unit: " + bsUnit);
+		}
+	}
+
+	private static String getBsUnitFormat(BsUnit bsUnit)
+	{
+		switch (bsUnit)
+		{
+			case MMOL_L:
+				return "%.1f";
+			case MG_DL:
+				return "%.0f";
+			default:
+				throw new IllegalArgumentException("Unsupported unit: " + bsUnit);
+		}
+	}
+
+	private static void exportGeneralInfo(Document doc, ResourceBundle res, Statistics statistics)
+	{
+		doc.add(buildChapter(res.getString("report.basic.header")));
 
 		final Table table = new Table(UnitValue.createPercentArray(2));
+		final String bsUnitName = getBsUnitName(res, statistics.getBsUnit());
+		final String bsUnitFormat = getBsUnitFormat(statistics.getBsUnit());
 
-		table.addCell(buildCellBorderless("Начало периода:"));
+		table.addCell(buildCellBorderless(res.getString("report.basic.periodStart")));
 		table.addCell(buildCellBorderless(statistics.getDateStart()));
 
-		table.addCell(buildCellBorderless("Конец периода:"));
+		table.addCell(buildCellBorderless(res.getString("report.basic.periodEnd")));
 		table.addCell(buildCellBorderless(statistics.getDateEnd()));
 
-		table.addCell(buildCellBorderless("Средний сахар крови:"));
+		table.addCell(buildCellBorderless(res.getString("report.basic.averageBS")));
 		table.addCell(buildCellBorderless(
 				statistics.getTotalMetrics().getAverageBs() != null
-						? String.format(Locale.US, "%.1f ± %.1f ммоль/л",
-						statistics.getTotalMetrics().getAverageBs(),
-						statistics.getTotalMetrics().getDeviationBs()
+						? String.format(Locale.US, bsUnitFormat + " ± " + bsUnitFormat + " " + bsUnitName,
+						getBsValue(statistics.getTotalMetrics().getAverageBs(), statistics.getBsUnit()),
+						getBsValue(statistics.getTotalMetrics().getDeviationBs(), statistics.getBsUnit())
 				)
 						: "–"
 		));
 
-		table.addCell(buildCellBorderless("Целевой интервал:"));
-		table.addCell(buildCellBorderless(String.format(Locale.US, "%.1f – %.1f ммоль/л",
-				statistics.getTargetMinBS(),
-				statistics.getTargetMaxBS())));
+		table.addCell(buildCellBorderless(res.getString("report.basic.targetBS")));
+		table.addCell(buildCellBorderless(String.format(Locale.US, bsUnitFormat + " – " + bsUnitFormat + " " + bsUnitName,
+				getBsValue(statistics.getTargetMinBS(), statistics.getBsUnit()),
+				getBsValue(statistics.getTargetMaxBS(), statistics.getBsUnit()))));
 
-		table.addCell(buildCellBorderless("Нахождение в целевом интервале:"));
+		table.addCell(buildCellBorderless(res.getString("report.basic.targetBSPercentage")));
 		table.addCell(buildCellBorderless(
 				statistics.getTargetAchievement() != null
 						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement() * 100)
@@ -150,20 +197,20 @@ public class ReportBuilder
 		doc.add(table);
 	}
 
-	private static void exportBloodSugar(Document doc, Statistics statistics) throws IOException
+	private static void exportBloodSugar(Document doc, ResourceBundle res, Statistics statistics) throws IOException
 	{
-		doc.add(buildChapter("Сахар крови"));
+		doc.add(buildChapter(res.getString("report.chartsOverview.header")));
 
-		doc.add(new Paragraph("Динамика за период"));
-		doc.add(buildImageHistoryBs(statistics));
+		doc.add(new Paragraph(res.getString("report.chartsOverview.totalChart.title")));
+		doc.add(buildImageHistoryBs(statistics, res));
 
-		doc.add(new Paragraph("Среднесуточный профиль"));
-		doc.add(buildImageAverageBs(statistics.getAverageBS()));
+		doc.add(new Paragraph(res.getString("report.chartsOverview.averageDailyChart.title")));
+		doc.add(buildImageAverageBs(statistics, res));
 
 		doc.add(new AreaBreak());
 	}
 
-	private static Image buildImageHistoryBs(Statistics statistics) throws IOException
+	private static Image buildImageHistoryBs(Statistics statistics, ResourceBundle res) throws IOException
 	{
 		final int CHART_WIDTH = 800;
 		final int CHART_HEIGHT = 320;
@@ -174,7 +221,7 @@ public class ReportBuilder
 		{
 			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
 			{
-				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				writeNoDataImage(res, CHART_WIDTH, CHART_HEIGHT, stream);
 				return new Image(ImageDataFactory.create(stream.toByteArray()));
 			}
 		}
@@ -182,8 +229,8 @@ public class ReportBuilder
 		final XYChart chart = new XYChartBuilder()
 				.width(CHART_WIDTH)
 				.height(CHART_HEIGHT)
-				.xAxisTitle("Дата")
-				.yAxisTitle("СК, ммоль/л")
+				.xAxisTitle(res.getString("report.chartsOverview.totalChart.axisX"))
+				.yAxisTitle(getBsUnitName(res, statistics.getBsUnit()))
 				.build();
 
 		chart.getStyler()
@@ -210,10 +257,10 @@ public class ReportBuilder
 		bloodRecords.forEach(r ->
 		{
 			axisX.add(r.getTime());
-			axisY.add(r.getValue());
+			axisY.add(getBsValue(r.getValue(), statistics.getBsUnit()));
 		});
 
-		final XYSeries series = chart.addSeries("СК", axisX, axisY);
+		final XYSeries series = chart.addSeries("BS", axisX, axisY);
 		series.setMarker(new None());
 		series.setLineColor(java.awt.Color.RED);
 		series.setSmooth(true);
@@ -226,16 +273,16 @@ public class ReportBuilder
 		}
 	}
 
-	private static Image buildImageAverageBs(AverageBS bs) throws IOException
+	private static Image buildImageAverageBs(Statistics statistics, ResourceBundle res) throws IOException
 	{
 		final int CHART_WIDTH = 800;
 		final int CHART_HEIGHT = 320;
 
-		if (bs.isEmpty())
+		if (statistics.getAverageBS().isEmpty())
 		{
 			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
 			{
-				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				writeNoDataImage(res, CHART_WIDTH, CHART_HEIGHT, stream);
 				return new Image(ImageDataFactory.create(stream.toByteArray()));
 			}
 		}
@@ -243,8 +290,8 @@ public class ReportBuilder
 		final XYChart chart = new XYChartBuilder()
 				.width(CHART_WIDTH)
 				.height(CHART_HEIGHT)
-				.xAxisTitle("Время, ч")
-				.yAxisTitle("СК, ммоль/л")
+				.xAxisTitle(res.getString("report.chartsOverview.averageDailyChart.axisX"))
+				.yAxisTitle(getBsUnitName(res, statistics.getBsUnit()))
 				.build();
 
 		chart.getStyler()
@@ -267,8 +314,8 @@ public class ReportBuilder
 			final int time = Utils.MinPerDay * i / POINTS_COUNT;
 			axisX.add((double) time / Utils.MinPerHour);
 
-			final double mean = bs.getMean(time);
-			final double deviation = bs.getDeviation(time);
+			final double mean = getBsValue(statistics.getAverageBS().getMean(time), statistics.getBsUnit());
+			final double deviation = getBsValue(statistics.getAverageBS().getDeviation(time), statistics.getBsUnit());
 
 			axisYMean.add(mean);
 			axisYMin.add(mean - deviation);
@@ -276,15 +323,15 @@ public class ReportBuilder
 		}
 
 		// Series
-		chart.addSeries("Макс", axisX, axisYMax)
+		chart.addSeries("Max", axisX, axisYMax)
 				.setMarker(new None())
 				.setLineColor(java.awt.Color.PINK)
 				.setFillColor(new java.awt.Color(255, 175, 175, 128));
-		chart.addSeries("Среднее", axisX, axisYMean)
+		chart.addSeries("Average", axisX, axisYMean)
 				.setMarker(new None())
 				.setLineColor(java.awt.Color.RED)
 				.setFillColor(new java.awt.Color(0, 0, 0, 0));
-		chart.addSeries("Мин", axisX, axisYMin)
+		chart.addSeries("Min", axisX, axisYMin)
 				.setMarker(new None())
 				.setLineColor(java.awt.Color.PINK)
 				.setFillColor(new java.awt.Color(255, 255, 255, 128));
@@ -297,7 +344,8 @@ public class ReportBuilder
 		}
 	}
 
-	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records,
+	private static Image buildImageDailyBs(Statistics statistics,
+			ResourceBundle res, List<Versioned<DiaryRecord>> records,
 			BloodRecord prevBloodRecord, BloodRecord nextBloodRecord, double maxBs,
 			TimeZone timeZone) throws IOException
 	{
@@ -308,7 +356,7 @@ public class ReportBuilder
 		{
 			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
 			{
-				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				writeNoDataImage(res, CHART_WIDTH, CHART_HEIGHT, stream);
 				return new Image(ImageDataFactory.create(stream.toByteArray()));
 			}
 		}
@@ -341,25 +389,25 @@ public class ReportBuilder
 			{
 				final int time = Utils.getDayMinutes(prevBloodRecord.getTime(), timeZone) - Utils.MinPerDay;
 				axisX.add((double) time / Utils.MinPerHour);
-				axisY.add(prevBloodRecord.getValue());
+				axisY.add(getBsValue(prevBloodRecord.getValue(), statistics.getBsUnit()));
 			}
 
 			for (BloodRecord bloodRecord : bloodRecords)
 			{
 				final int time = Utils.getDayMinutes(bloodRecord.getTime(), timeZone);
 				axisX.add((double) time / Utils.MinPerHour);
-				axisY.add(bloodRecord.getValue());
+				axisY.add(getBsValue(bloodRecord.getValue(), statistics.getBsUnit()));
 			}
 
 			if (nextBloodRecord != null)
 			{
 				final int time = Utils.getDayMinutes(nextBloodRecord.getTime(), timeZone) + Utils.MinPerDay;
 				axisX.add((double) time / Utils.MinPerHour);
-				axisY.add(nextBloodRecord.getValue());
+				axisY.add(getBsValue(nextBloodRecord.getValue(), statistics.getBsUnit()));
 			}
 
 			// Series
-			final XYSeries series = chart.addSeries("СК", toArray(axisX), toArray(axisY));
+			final XYSeries series = chart.addSeries("BS", toArray(axisX), toArray(axisY));
 			series.setMarker(new None());
 			series.setLineColor(java.awt.Color.RED);
 			series.setSmooth(true);
@@ -383,9 +431,9 @@ public class ReportBuilder
 		return array;
 	}
 
-	private static void writeNoDataImage(int width, int height, ByteArrayOutputStream outputStream) throws IOException
+	private static void writeNoDataImage(ResourceBundle res, int width, int height, ByteArrayOutputStream outputStream) throws IOException
 	{
-		final String text = "Нет данных";
+		final String text = res.getString("report.empty");
 		final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		final Graphics graphics = bufferedImage.getGraphics();
 
@@ -404,23 +452,29 @@ public class ReportBuilder
 		ImageIO.write(bufferedImage, "png", outputStream);
 	}
 
-	private static void exportDailyStat(Document doc, Statistics statistics)
+	private static void exportDailyStat(Document doc, ResourceBundle res, Statistics statistics)
 	{
-		doc.add(buildChapter("Статистика"));
+		doc.add(buildChapter(res.getString("report.statSummary.header")));
 
 		final Table table = new Table(UnitValue.createPercentArray(7)).useAllAvailableWidth();
 
 		// header
 
-		table.addHeaderCell(buildCellHeader("Дата"));
-		table.addHeaderCell(buildCellHeader("Средний СК"));
-		table.addHeaderCell(buildCellHeader("Белки"));
-		table.addHeaderCell(buildCellHeader("Жиры"));
-		table.addHeaderCell(buildCellHeader("Углеводы"));
-		table.addHeaderCell(buildCellHeader("Калорийность"));
-		table.addHeaderCell(buildCellHeader("Инсулин"));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.date")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.averageBS")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.prots")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.fats")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.carbs")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.value")));
+		table.addHeaderCell(buildCellHeader(res.getString("report.statSummary.column.insulin")));
 
 		// body
+
+		final String bsFormat = getBsUnitFormat(statistics.getBsUnit());
+		final String unitsBs = getBsUnitName(res, statistics.getBsUnit());
+		final String unitsG = res.getString("report.units.g");
+		final String unitsKcal = res.getString("report.units.kcal");
+		final String unitsIns = res.getString("report.units.insulinUnit");
 
 		for (Map.Entry<String, Metrics> entry : statistics.getMetrics().entrySet())
 		{
@@ -430,14 +484,19 @@ public class ReportBuilder
 			table.addCell(buildCellContent(date));
 			table.addCell(buildCellNumber(
 					metrics.getAverageBs() != null
-							? String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(), metrics.getTotalBsCount())
+							? String.format(Locale.US, bsFormat
+									+ " "
+									+ unitsBs
+									+ " (%d)",
+							getBsValue(metrics.getAverageBs(), statistics.getBsUnit()),
+							metrics.getTotalBsCount())
 							: "–"
 			));
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getTotalProts())));
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getTotalFats())));
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getTotalCarbs())));
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getTotalValue())));
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getTotalIns())));
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getTotalProts())));
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getTotalFats())));
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getTotalCarbs())));
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsKcal, metrics.getTotalValue())));
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsIns, metrics.getTotalIns())));
 		}
 
 		// totals
@@ -446,23 +505,24 @@ public class ReportBuilder
 		{
 			final Metrics metrics = statistics.getTotalMetrics();
 
-			table.addCell(buildCellContent("Среднее").setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(),
+			table.addCell(buildCellContent(res.getString("report.statSummary.average")).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, bsFormat + " " + unitsBs + " (%d)",
+					getBsValue(metrics.getAverageBs(), statistics.getBsUnit()),
 					metrics.getTotalBsCount())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageProts())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageFats())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageCarbs())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getAverageValue())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getAverageIns())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getAverageProts())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getAverageFats())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsG, metrics.getAverageCarbs())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsKcal, metrics.getAverageValue())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f " + unitsIns, metrics.getAverageIns())).setBold());
 		}
 
 		doc.add(table);
 		doc.add(new AreaBreak());
 	}
 
-	private static void exportDiary(Document doc, Statistics statistics) throws IOException
+	private static void exportDiary(Document doc, ResourceBundle res, Statistics statistics) throws IOException
 	{
-		doc.add(buildChapter("Дневник"));
+		doc.add(buildChapter(res.getString("report.diary.header")));
 
 		final Table table = new Table(UnitValue.createPercentArray(new float[] { 0f, 0f, 0f, 0f, 100f, 0f })).useAllAvailableWidth();
 
@@ -475,7 +535,7 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("Время")));
+				.add(new Paragraph(res.getString("report.diary.column.time"))));
 		table.addHeaderCell(new Cell(1, 1)
 				.setPaddingTop(0)
 				.setPaddingBottom(0)
@@ -483,7 +543,7 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("СК")));
+				.add(new Paragraph(res.getString("report.diary.column.bs"))));
 		table.addHeaderCell(new Cell(1, 1)
 				.setPaddingTop(0)
 				.setPaddingBottom(0)
@@ -491,7 +551,7 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("Инсулин")));
+				.add(new Paragraph(res.getString("report.diary.column.insulin"))));
 		table.addHeaderCell(new Cell(1, 1)
 				.setPaddingTop(0)
 				.setPaddingBottom(0)
@@ -499,7 +559,7 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("Еда")));
+				.add(new Paragraph(res.getString("report.diary.column.meal"))));
 		table.addHeaderCell(new Cell(1, 1)
 				.setPaddingTop(0)
 				.setPaddingBottom(0)
@@ -507,7 +567,7 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("Заметки")));
+				.add(new Paragraph(res.getString("report.diary.column.notes"))));
 		table.addHeaderCell(new Cell(1, 1)
 				.setPaddingTop(0)
 				.setPaddingBottom(0)
@@ -515,14 +575,19 @@ public class ReportBuilder
 				.setBold()
 				.setTextAlignment(TextAlignment.CENTER)
 				.setVerticalAlignment(VerticalAlignment.MIDDLE)
-				.add(new Paragraph("Статистика")));
+				.add(new Paragraph(res.getString("report.diary.column.chart"))));
 
 		// body
 
-		final double maxBs = Statistics.filterRecords(statistics.getRecords(), BloodRecord.class).stream()
+		final String bsFormat = getBsUnitFormat(statistics.getBsUnit());
+		final String unitsBs = getBsUnitName(res, statistics.getBsUnit());
+		final String unitsIns = res.getString("report.units.insulinUnit");
+		final String unitsBU = res.getString("report.units.bread");
+
+		final double maxBs = getBsValue(Statistics.filterRecords(statistics.getRecords(), BloodRecord.class).stream()
 				.mapToDouble(BloodRecord::getValue)
 				.max()
-				.orElse(12.0);
+				.orElse(12.0), statistics.getBsUnit());
 
 		final List<Map.Entry<String, List<Versioned<DiaryRecord>>>> list = new ArrayList<>(
 				statistics.getRecordsPerDay().entrySet());
@@ -545,17 +610,18 @@ public class ReportBuilder
 
 				if (record.getData() instanceof BloodRecord)
 				{
-					final String value = String.format(Locale.US, "%.1f ммоль/л", ((BloodRecord) record.getData()).getValue());
+					final String value = String.format(Locale.US, bsFormat + " " + unitsBs,
+							getBsValue(((BloodRecord) record.getData()).getValue(), statistics.getBsUnit()));
 					addRecordBlood(table, time, value);
 				}
 				else if (record.getData() instanceof InsRecord)
 				{
-					final String value = Utils.formatDoubleShort(((InsRecord) record.getData()).getValue()) + " ед";
+					final String value = Utils.formatDoubleShort(((InsRecord) record.getData()).getValue()) + " " + unitsIns;
 					addRecordInsulin(table, time, value);
 				}
 				else if (record.getData() instanceof MealRecord)
 				{
-					final String value = String.format(Locale.US, "%.1f ХЕ",
+					final String value = String.format(Locale.US, "%.1f " + unitsBU,
 							((MealRecord) record.getData()).getCarbs() / Utils.CARB_PER_BU);
 					final String content = getMealDescription((MealRecord) record.getData());
 					addRecordMeal(table, time, value, content);
@@ -575,7 +641,8 @@ public class ReportBuilder
 					final BloodRecord prevBloodRecord = getPrevBloodRecord(list, i);
 					final BloodRecord nextBloodRecord = getNextBloodRecord(list, i);
 
-					final Image chart = buildImageDailyBs(records, prevBloodRecord, nextBloodRecord, maxBs, statistics.getTimeZone());
+					final Image chart = buildImageDailyBs(statistics, res, records, prevBloodRecord, nextBloodRecord, maxBs,
+							statistics.getTimeZone());
 					table.addCell(buildCellStats(records.size(), chart));
 					firstRecord = false;
 				}

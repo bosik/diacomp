@@ -22,6 +22,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -32,6 +34,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.Files;
 import org.apache.wicket.util.time.Duration;
 import org.bosik.diacomp.web.backend.features.report.ReportService;
+import org.bosik.diacomp.web.backend.features.report.data.BsUnit;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.diacomp.web.frontend.wicket.components.UpdateOnBlurBehavior;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
@@ -42,6 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -58,12 +62,16 @@ public class StatsPage extends MasterPage
 
 	private Date   dateFrom;
 	private Date   dateTo;
+	private BsUnit bsUnit;
+	private Locale language;
 	private String reportFileName;
 
 	public StatsPage(PageParameters parameters)
 	{
 		super(parameters);
 		setPeriodMonth();
+		this.bsUnit = BsUnit.MMOL_L;
+		this.language = getLocale();
 	}
 
 	@Override
@@ -100,6 +108,73 @@ public class StatsPage extends MasterPage
 		fieldDateTo.add(new UpdateOnBlurBehavior());
 		fieldDateTo.setOutputMarkupId(true);
 		form.add(fieldDateTo);
+
+		final DropDownChoice<BsUnit> dropdownBsUnit = new DropDownChoice<>("inputBsUnit", new PropertyModel<>(this, "bsUnit"),
+				Arrays.asList(
+						BsUnit.MMOL_L,
+						BsUnit.MG_DL
+				),
+				new ChoiceRenderer<BsUnit>()
+				{
+					@Override
+					public Object getDisplayValue(BsUnit option)
+					{
+						switch (option)
+						{
+							case MMOL_L:
+								return getString("common.bsUnit.mmoll");
+							case MG_DL:
+								return getString("common.bsUnit.mgdl");
+							default:
+								throw new IllegalArgumentException("Unsupported unit: " + option);
+						}
+					}
+
+					@Override
+					public String getIdValue(BsUnit option, int index)
+					{
+						return option.name();
+					}
+				}
+		);
+		dropdownBsUnit.setOutputMarkupId(true);
+		dropdownBsUnit.add(new UpdateOnBlurBehavior());
+		form.add(dropdownBsUnit);
+
+		final DropDownChoice<Locale> dropdownLocale = new DropDownChoice<>("inputLocale", new PropertyModel<>(this, "language"),
+				Arrays.asList(
+						new Locale("en"),
+						new Locale("pl"),
+						new Locale("ru")
+				),
+				new ChoiceRenderer<Locale>()
+				{
+					@Override
+					public Object getDisplayValue(Locale option)
+					{
+						switch (option.getLanguage())
+						{
+							case "en":
+								return "English";
+							case "pl":
+								return "Polski";
+							case "ru":
+								return "Русский";
+							default:
+								throw new IllegalArgumentException("Unsupported language: " + option.getLanguage());
+						}
+					}
+
+					@Override
+					public String getIdValue(Locale option, int index)
+					{
+						return option.getLanguage();
+					}
+				}
+		);
+		dropdownLocale.setOutputMarkupId(true);
+		dropdownLocale.add(new UpdateOnBlurBehavior());
+		form.add(dropdownLocale);
 
 		form.add(new AjaxFallbackLink<Void>("linkWeek")
 		{
@@ -155,7 +230,7 @@ public class StatsPage extends MasterPage
 
 				if (datePeriod(dateFrom, dateTo) > 366)
 				{
-					error("Period must one year most");
+					error("Period must not exceed one year");
 					return null;
 				}
 
@@ -163,7 +238,7 @@ public class StatsPage extends MasterPage
 				{
 					final ReportService.Report report = reportService.exportReportPdf(
 							userInfoService.getCurrentUserId(),
-							dateFrom, dateTo, getTimeZone());
+							dateFrom, dateTo, bsUnit, getTimeZone(), language);
 					reportFileName = report.getFileName();
 					return createTempFile(report.getContent());
 				}
@@ -209,7 +284,7 @@ public class StatsPage extends MasterPage
 				{
 					final ReportService.Report report = reportService.exportReportJson(
 							userInfoService.getCurrentUserId(),
-							dateFrom, dateTo, getTimeZone());
+							dateFrom, dateTo, bsUnit, getTimeZone(), language);
 					reportFileName = report.getFileName();
 					return createTempFile(report.getContent());
 				}

@@ -39,6 +39,8 @@ import org.bosik.diacomp.web.frontend.wicket.pages.restore.sent.RestoreSentPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.settings.SettingsPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
 
+import java.util.Locale;
+
 public class WicketApplication extends WebApplication
 {
 	@Override
@@ -59,6 +61,7 @@ public class WicketApplication extends WebApplication
 		super.init();
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
+		Locale.setDefault(Locale.ENGLISH);
 
 		mountPage("/about", AboutPage.class);
 		mountPage("/login", LoginPage.class);

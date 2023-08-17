@@ -18,7 +18,7 @@
                     <wicket:message key="label.date.from"/>
                 </div>
                 <div class="d-cell pt-2 pr-3">
-                    <input wicket:id="fieldDateFrom" type="text" placeholder="yyyy-MM-dd"/>
+                    <input wicket:id="fieldDateFrom" type="text" class="input-light full_width" placeholder="yyyy-MM-dd"/>
                 </div>
             </div>
             <div class="d-row">
@@ -26,7 +26,25 @@
                     <wicket:message key="label.date.to"/>
                 </div>
                 <div class="d-cell pt-2 pr-3">
-                    <input wicket:id="fieldDateTo" type="text" placeholder="yyyy-MM-dd"/>
+                    <input wicket:id="fieldDateTo" type="text" class="input-light full_width" placeholder="yyyy-MM-dd"/>
+                </div>
+            </div>
+            <div class="d-row">
+                <div class="d-cell pt-2 pr-3">
+                    <wicket:message key="label.bsUnit"/>
+                </div>
+                <div class="d-cell pt-2 pr-3">
+                    <select wicket:id="inputBsUnit" class="input-light full_width">
+                    </select>
+                </div>
+            </div>
+            <div class="d-row">
+                <div class="d-cell pt-2 pr-3">
+                    <wicket:message key="label.locale"/>
+                </div>
+                <div class="d-cell pt-2 pr-3">
+                    <select wicket:id="inputLocale" class="input-light full_width">
+                    </select>
                 </div>
             </div>
         </div>

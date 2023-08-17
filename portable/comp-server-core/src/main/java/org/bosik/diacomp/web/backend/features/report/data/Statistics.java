@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
@@ -50,9 +51,11 @@ public class Statistics
 	private final String                                    dateStart;
 	private final String                                    dateEnd;
 	private final TimeZone                                  timeZone;
+	private final Locale                                    locale;
+	private final BsUnit                                    bsUnit;
 
 	public Statistics(List<Versioned<DiaryRecord>> records, Date fromDate, Date toDate, double targetMinBS,
-			double targetMaxBS, TimeZone timeZone)
+			double targetMaxBS, BsUnit bsUnit, TimeZone timeZone, Locale locale)
 	{
 		this.records = records;
 		this.recordsPerDay = groupByDate(records, timeZone);
@@ -64,7 +67,9 @@ public class Statistics
 		this.targetAchievement = calculateTargetAchievement(records, targetMinBS, targetMaxBS);
 		this.dateStart = formatDate(records.stream().map(e -> e.getData().getTime()).min(Date::compareTo).orElse(fromDate), timeZone);
 		this.dateEnd = formatDate(records.stream().map(e -> e.getData().getTime()).max(Date::compareTo).orElse(toDate), timeZone);
+		this.bsUnit = bsUnit;
 		this.timeZone = timeZone;
+		this.locale = locale;
 	}
 
 	private static Map<String, List<Versioned<DiaryRecord>>> groupByDate(List<Versioned<DiaryRecord>> records, TimeZone timeZone)
