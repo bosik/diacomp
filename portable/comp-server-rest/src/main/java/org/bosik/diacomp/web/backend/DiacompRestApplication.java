@@ -9,12 +9,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import java.util.Locale;
+
 @EnableScheduling
 @SpringBootApplication
 public class DiacompRestApplication extends SpringBootServletInitializer
 {
 	public static void main(String[] args)
 	{
+		Locale.setDefault(Locale.ENGLISH);
 		SpringApplication.run(DiacompRestApplication.class, args);
 	}
 
