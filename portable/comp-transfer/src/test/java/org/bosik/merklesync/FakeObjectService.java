@@ -28,7 +28,7 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeObjectService implements DataSource<String>
 {
-	private final List<Versioned<String>> data = new ArrayList<Versioned<String>>();
+	private final List<Versioned<String>> data = new ArrayList<>();
 
 	@Override
 	public int count(String prefix)
@@ -53,7 +53,7 @@ public class FakeObjectService implements DataSource<String>
 		{
 			if (item.getId().equals(id))
 			{
-				return new Versioned<String>(item);
+				return new Versioned<>(item);
 			}
 		}
 		return null;
@@ -62,13 +62,13 @@ public class FakeObjectService implements DataSource<String>
 	@Override
 	public List<Versioned<String>> findByIdPrefix(String prefix)
 	{
-		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
+		List<Versioned<String>> result = new ArrayList<>();
 
 		for (Versioned<String> item : data)
 		{
 			if (item.getId().startsWith(prefix))
 			{
-				result.add(new Versioned<String>(item));
+				result.add(new Versioned<>(item));
 			}
 		}
 
@@ -78,13 +78,13 @@ public class FakeObjectService implements DataSource<String>
 	@Override
 	public List<Versioned<String>> findChanged(Date since)
 	{
-		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
+		List<Versioned<String>> result = new ArrayList<>();
 
 		for (Versioned<String> item : data)
 		{
 			if (item.getTimeStamp().after(since))
 			{
-				result.add(new Versioned<String>(item));
+				result.add(new Versioned<>(item));
 			}
 		}
 
@@ -100,7 +100,7 @@ public class FakeObjectService implements DataSource<String>
 
 			if (temp == null)
 			{
-				data.add(new Versioned<String>(item));
+				data.add(new Versioned<>(item));
 			}
 			else
 			{
@@ -124,7 +124,7 @@ public class FakeObjectService implements DataSource<String>
 	@Override
 	public MerkleTree getHashTree()
 	{
-		SortedMap<String, String> hashes = new TreeMap<String, String>();
+		SortedMap<String, String> hashes = new TreeMap<>();
 		for (Versioned<String> item : data)
 		{
 			hashes.put(item.getId(), item.getHash());

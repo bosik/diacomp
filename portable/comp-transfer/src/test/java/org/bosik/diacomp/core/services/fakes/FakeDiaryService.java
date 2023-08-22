@@ -38,9 +38,9 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeDiaryService implements DiaryService
 {
-	private final Mock<Versioned<DiaryRecord>>	mock			= new MockVersionedConverter<DiaryRecord>(
+	private final Mock<Versioned<DiaryRecord>>	mock			= new MockVersionedConverter<>(
 			new MockDiaryRecord());
-	private final List<Versioned<DiaryRecord>>	samples			= new ArrayList<Versioned<DiaryRecord>>();
+	private final List<Versioned<DiaryRecord>>	samples			= new ArrayList<>();
 
 	private static final int					MAX_READ_ITEMS	= 500;
 
@@ -132,7 +132,7 @@ public class FakeDiaryService implements DiaryService
 			if (item.getId().equals(id))
 			{
 				// FIXME: unlink data
-				return new Versioned<DiaryRecord>(item);
+				return new Versioned<>(item);
 			}
 		}
 		return null;
@@ -141,14 +141,14 @@ public class FakeDiaryService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
 	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 		for (Versioned<DiaryRecord> rec : samples)
 		{
 			if (rec.getId().startsWith(prefix))
 			{
 				// FIXME: unlink data
-				result.add(new Versioned<DiaryRecord>(rec));
+				result.add(new Versioned<>(rec));
 			}
 
 			if (result.size() > MAX_READ_ITEMS)
@@ -164,13 +164,13 @@ public class FakeDiaryService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 		for (Versioned<DiaryRecord> item : samples)
 		{
 			if (item.getTimeStamp().after(since))
 			{
-				result.add(new Versioned<DiaryRecord>(item));
+				result.add(new Versioned<>(item));
 			}
 		}
 
@@ -182,7 +182,7 @@ public class FakeDiaryService implements DiaryService
 	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 		for (Versioned<DiaryRecord> item : samples)
 		{
@@ -190,7 +190,7 @@ public class FakeDiaryService implements DiaryService
 
 			if ((includeRemoved || !item.isDeleted()) && (time.after(startTime) && time.before(endTime)))
 			{
-				result.add(new Versioned<DiaryRecord>(item));
+				result.add(new Versioned<>(item));
 			}
 		}
 
@@ -221,7 +221,7 @@ public class FakeDiaryService implements DiaryService
 
 			if (!found)
 			{
-				samples.add(new Versioned<DiaryRecord>(item));
+				samples.add(new Versioned<>(item));
 			}
 		}
 	}

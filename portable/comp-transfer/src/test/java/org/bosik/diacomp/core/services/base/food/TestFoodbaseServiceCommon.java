@@ -31,8 +31,8 @@ import org.junit.Test;
 public abstract class TestFoodbaseServiceCommon extends TestCase implements TestFoodbaseService
 {
 	private FoodBaseService						foodBaseService;
-	private static Mock<Versioned<FoodItem>>	mockGenerator	= new MockVersionedConverter<FoodItem>(
-																		new MockFoodItem());
+	private static Mock<Versioned<FoodItem>>	mockGenerator	= new MockVersionedConverter<>(
+			new MockFoodItem());
 
 	protected abstract FoodBaseService getService();
 

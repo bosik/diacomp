@@ -33,7 +33,7 @@ public class MockFood implements Mock<Food>
 	@Override
 	public List<Food> getSamples()
 	{
-		List<Food> samples = new ArrayList<Food>();
+		List<Food> samples = new ArrayList<>();
 
 		samples.add(new Food("[Test] Хлеб \"Бородино\" нарезка (JUnit test)", 5.5, 0.9, 44.1, 206.3));
 		samples.add(new Food("[Test] Абрикос", 0.9, 0.1, 9, 41));

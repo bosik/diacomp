@@ -36,7 +36,7 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeFoodBaseService implements FoodBaseService
 {
-	private final Mock<Versioned<FoodItem>>	mock			= new MockVersionedConverter<FoodItem>(new MockFoodItem());
+	private final Mock<Versioned<FoodItem>>	mock			= new MockVersionedConverter<>(new MockFoodItem());
 	private final List<Versioned<FoodItem>>	samples			= mock.getSamples();
 
 	private static final int				MAX_READ_ITEMS	= 500;
@@ -97,13 +97,13 @@ public class FakeFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
-		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+		List<Versioned<FoodItem>> result = new ArrayList<>();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
 			if (includeRemoved || !rec.isDeleted())
 			{
-				result.add(new Versioned<FoodItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -114,14 +114,14 @@ public class FakeFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+		List<Versioned<FoodItem>> result = new ArrayList<>();
 		filter = filter.toLowerCase();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
 			if (rec.getData().getName().toLowerCase().contains(filter))
 			{
-				result.add(new Versioned<FoodItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -136,7 +136,7 @@ public class FakeFoodBaseService implements FoodBaseService
 		{
 			if (rec.getId().equals(id))
 			{
-				return new Versioned<FoodItem>(rec);
+				return new Versioned<>(rec);
 			}
 		}
 
@@ -146,13 +146,13 @@ public class FakeFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findByIdPrefix(String prefix)
 	{
-		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+		List<Versioned<FoodItem>> result = new ArrayList<>();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
 			if (rec.getId().startsWith(prefix))
 			{
-				result.add(new Versioned<FoodItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 
 			if (result.size() > MAX_READ_ITEMS)
@@ -168,13 +168,13 @@ public class FakeFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findChanged(Date since)
 	{
-		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+		List<Versioned<FoodItem>> result = new ArrayList<>();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
 			if (rec.getTimeStamp().after(since))
 			{
-				result.add(new Versioned<FoodItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -189,7 +189,7 @@ public class FakeFoodBaseService implements FoodBaseService
 		{
 			if (rec.getData().getName().equals(exactName))
 			{
-				return new Versioned<FoodItem>(rec);
+				return new Versioned<>(rec);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class FakeFoodBaseService implements FoodBaseService
 				{
 					if (samples.get(i).equals(item))
 					{
-						samples.set(i, new Versioned<FoodItem>(item));
+						samples.set(i, new Versioned<>(item));
 						found = true;
 						break;
 					}
@@ -216,7 +216,7 @@ public class FakeFoodBaseService implements FoodBaseService
 
 				if (!found)
 				{
-					samples.add(new Versioned<FoodItem>(item));
+					samples.add(new Versioned<>(item));
 				}
 			}
 		}

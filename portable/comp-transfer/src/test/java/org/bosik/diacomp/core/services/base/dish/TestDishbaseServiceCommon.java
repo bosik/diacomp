@@ -31,8 +31,8 @@ import org.junit.Test;
 public abstract class TestDishbaseServiceCommon extends TestCase implements TestDishbaseService
 {
 	private DishBaseService						dishBaseService;
-	private static Mock<Versioned<DishItem>>	mockGenerator	= new MockVersionedConverter<DishItem>(
-																		new MockDishItem());
+	private static Mock<Versioned<DishItem>>	mockGenerator	= new MockVersionedConverter<>(
+			new MockDishItem());
 
 	protected abstract DishBaseService getService();
 

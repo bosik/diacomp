@@ -41,7 +41,7 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 	@Override
 	public List<Versioned<T>> getSamples()
 	{
-		List<Versioned<T>> result = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> result = new ArrayList<>();
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -54,7 +54,7 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 	@Override
 	public Versioned<T> getSample()
 	{
-		Versioned<T> item = new Versioned<T>(generator.getSample());
+		Versioned<T> item = new Versioned<>(generator.getSample());
 		item.setId(HashUtils.generateGuid());
 		// long timeBase = 1261440000000L;
 		// long timeDelta = ((long)r.nextInt(315360000)) * 1000;

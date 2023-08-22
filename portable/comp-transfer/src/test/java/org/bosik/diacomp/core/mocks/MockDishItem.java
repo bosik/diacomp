@@ -32,7 +32,7 @@ public class MockDishItem implements Mock<DishItem>
 	@Override
 	public List<DishItem> getSamples()
 	{
-		List<DishItem> samples = new ArrayList<DishItem>();
+		List<DishItem> samples = new ArrayList<>();
 
 		DishItem dishEmpty = new DishItem();
 		dishEmpty.setName("[Test] Empty dish");

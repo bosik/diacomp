@@ -38,7 +38,7 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 	@Override
 	public List<DiaryRecord> getSamples()
 	{
-		List<DiaryRecord> samples = new ArrayList<DiaryRecord>();
+		List<DiaryRecord> samples = new ArrayList<>();
 
 		samples.add(new BloodRecord(Utils.time(2012, 04, 18, 16, 42, 05), 7.1, 0));
 		samples.add(new BloodRecord(Utils.time(2013, 04, 18, 16, 50, 28), 7.0, 1));

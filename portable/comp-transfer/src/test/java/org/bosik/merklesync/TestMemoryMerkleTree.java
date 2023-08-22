@@ -81,9 +81,9 @@ public class TestMemoryMerkleTree
 	@Test
 	public void test_getHash_empty()
 	{
-		MerkleTree m1 = new MemoryMerkleTree(new HashMap<String, String>());
-		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<String, String>());
-		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<String, String>());
+		MerkleTree m1 = new MemoryMerkleTree(new HashMap<>());
+		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<>());
+		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<>());
 
 		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
 		{
@@ -107,9 +107,9 @@ public class TestMemoryMerkleTree
 	@Test
 	public void test_getHashChildren_empty()
 	{
-		MerkleTree m1 = new MemoryMerkleTree(new HashMap<String, String>());
-		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<String, String>());
-		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<String, String>());
+		MerkleTree m1 = new MemoryMerkleTree(new HashMap<>());
+		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<>());
+		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<>());
 
 		for (String key : SHORT_KEYS)
 		{

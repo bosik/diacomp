@@ -33,7 +33,7 @@ public class MockFoodMassed implements Mock<FoodMassed>
 	@Override
 	public List<FoodMassed> getSamples()
 	{
-		List<FoodMassed> samples = new ArrayList<FoodMassed>();
+		List<FoodMassed> samples = new ArrayList<>();
 
 		for (int i = 0; i < 10; i++)
 		{

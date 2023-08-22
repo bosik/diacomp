@@ -452,9 +452,9 @@ public class TestUtils
 	@Test
 	public void test_intersection()
 	{
-		Assert.assertEquals(set(), Utils.intersection(new HashSet<Integer>(), new HashSet<Integer>()));
-		Assert.assertEquals(set(), Utils.intersection(set(1), new HashSet<Integer>()));
-		Assert.assertEquals(set(), Utils.intersection(new HashSet<Integer>(), set(1)));
+		Assert.assertEquals(set(), Utils.intersection(new HashSet<>(), new HashSet<>()));
+		Assert.assertEquals(set(), Utils.intersection(set(1), new HashSet<>()));
+		Assert.assertEquals(set(), Utils.intersection(new HashSet<>(), set(1)));
 
 		Assert.assertEquals(set(), Utils.intersection(set(1), set(2)));
 		Assert.assertEquals(set(2), Utils.intersection(set(1, 2), set(2, 3)));
@@ -466,9 +466,9 @@ public class TestUtils
 	@Test
 	public void test_difference()
 	{
-		Assert.assertEquals(set(), Utils.difference(new HashSet<Integer>(), new HashSet<Integer>()));
-		Assert.assertEquals(set(1), Utils.difference(set(1), new HashSet<Integer>()));
-		Assert.assertEquals(set(), Utils.difference(new HashSet<Integer>(), set(1)));
+		Assert.assertEquals(set(), Utils.difference(new HashSet<>(), new HashSet<>()));
+		Assert.assertEquals(set(1), Utils.difference(set(1), new HashSet<>()));
+		Assert.assertEquals(set(), Utils.difference(new HashSet<>(), set(1)));
 
 		Assert.assertEquals(set(1), Utils.difference(set(1), set(2)));
 		Assert.assertEquals(set(1), Utils.difference(set(1, 2), set(2, 3)));

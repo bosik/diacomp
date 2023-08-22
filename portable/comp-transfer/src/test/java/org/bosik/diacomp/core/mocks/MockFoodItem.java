@@ -32,7 +32,7 @@ public class MockFoodItem implements Mock<FoodItem>
 	@Override
 	public List<FoodItem> getSamples()
 	{
-		List<FoodItem> samples = new ArrayList<FoodItem>();
+		List<FoodItem> samples = new ArrayList<>();
 
 		for (int i = 0; i < 50; i++)
 		{

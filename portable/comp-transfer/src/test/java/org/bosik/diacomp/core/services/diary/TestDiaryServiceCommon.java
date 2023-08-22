@@ -34,8 +34,8 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 {
 	private DiaryService								diaryService;
 	private static final Mock<DiaryRecord>				mockDiaryRecord	= new MockDiaryRecord();
-	private static final Mock<Versioned<DiaryRecord>>	mockVersioned	= new MockVersionedConverter<DiaryRecord>(
-																				mockDiaryRecord);
+	private static final Mock<Versioned<DiaryRecord>>	mockVersioned	= new MockVersionedConverter<>(
+			mockDiaryRecord);
 
 	private static final long							DELTA			= 60000;
 

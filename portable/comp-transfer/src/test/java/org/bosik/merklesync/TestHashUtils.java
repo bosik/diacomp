@@ -190,7 +190,7 @@ public class TestHashUtils
 	public void test_performance_buildHashTree()
 	{
 		long time = System.currentTimeMillis();
-		SortedMap<String, String> data = new TreeMap<String, String>();
+		SortedMap<String, String> data = new TreeMap<>();
 		for (int i = 0; i < 500000; i++)
 		{
 			String id = HashUtils.generateGuid();

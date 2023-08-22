@@ -36,7 +36,7 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeDishBaseService implements DishBaseService
 {
-	private final Mock<Versioned<DishItem>>	mock			= new MockVersionedConverter<DishItem>(new MockDishItem());
+	private final Mock<Versioned<DishItem>>	mock			= new MockVersionedConverter<>(new MockDishItem());
 	private final List<Versioned<DishItem>>	samples			= mock.getSamples();
 
 	private static final int				MAX_READ_ITEMS	= 500;
@@ -97,13 +97,13 @@ public class FakeDishBaseService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findAll(boolean includeRemoved)
 	{
-		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<>();
 
 		for (Versioned<DishItem> rec : samples)
 		{
 			if (includeRemoved || !rec.isDeleted())
 			{
-				result.add(new Versioned<DishItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -114,14 +114,14 @@ public class FakeDishBaseService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findAny(String filter)
 	{
-		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<>();
 		filter = filter.toLowerCase();
 
 		for (Versioned<DishItem> rec : samples)
 		{
 			if (rec.getData().getName().toLowerCase().contains(filter))
 			{
-				result.add(new Versioned<DishItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -136,7 +136,7 @@ public class FakeDishBaseService implements DishBaseService
 		{
 			if (rec.getId().equals(id))
 			{
-				return new Versioned<DishItem>(rec);
+				return new Versioned<>(rec);
 			}
 		}
 
@@ -146,13 +146,13 @@ public class FakeDishBaseService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findByIdPrefix(String prefix)
 	{
-		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<>();
 
 		for (Versioned<DishItem> rec : samples)
 		{
 			if (rec.getId().startsWith(prefix))
 			{
-				result.add(new Versioned<DishItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 
 			if (result.size() > MAX_READ_ITEMS)
@@ -168,13 +168,13 @@ public class FakeDishBaseService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findChanged(Date since)
 	{
-		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<>();
 
 		for (Versioned<DishItem> rec : samples)
 		{
 			if (rec.getTimeStamp().after(since))
 			{
-				result.add(new Versioned<DishItem>(rec));
+				result.add(new Versioned<>(rec));
 			}
 		}
 
@@ -189,7 +189,7 @@ public class FakeDishBaseService implements DishBaseService
 		{
 			if (rec.getData().getName().equals(exactName))
 			{
-				return new Versioned<DishItem>(rec);
+				return new Versioned<>(rec);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class FakeDishBaseService implements DishBaseService
 				{
 					if (samples.get(i).equals(item))
 					{
-						samples.set(i, new Versioned<DishItem>(item));
+						samples.set(i, new Versioned<>(item));
 						found = true;
 						break;
 					}
@@ -216,7 +216,7 @@ public class FakeDishBaseService implements DishBaseService
 
 				if (!found)
 				{
-					samples.add(new Versioned<DishItem>(item));
+					samples.add(new Versioned<>(item));
 				}
 			}
 		}
