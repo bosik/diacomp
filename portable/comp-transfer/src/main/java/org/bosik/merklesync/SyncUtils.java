@@ -57,10 +57,10 @@ public class SyncUtils
 	 */
 	public static class TimeSynchronizer<T> implements Synchronizer
 	{
-		private DataSource<T> service1;
-		private DataSource<T> service2;
-		private Date          since;
-		private int           maxItemsWrite;
+		private final DataSource<T> service1;
+		private final DataSource<T> service2;
+		private final Date          since;
+		private final int           maxItemsWrite;
 
 		/**
 		 * Constructor
@@ -106,9 +106,9 @@ public class SyncUtils
 	 */
 	public static class SingleSynchronizer<T> implements Synchronizer
 	{
-		private DataSource<T> service1;
-		private DataSource<T> service2;
-		private String        id;
+		private final DataSource<T> service1;
+		private final DataSource<T> service2;
+		private final String        id;
 
 		/**
 		 * Constructor
@@ -178,11 +178,11 @@ public class SyncUtils
 	@Deprecated
 	public static class Synchronizer1<T> implements Synchronizer
 	{
-		private DataSource<T> service1;
-		private DataSource<T> service2;
-		private MerkleTree    tree1;
-		private MerkleTree    tree2;
-		private int           maxItemsWrite;
+		private final DataSource<T> service1;
+		private final DataSource<T> service2;
+		private       MerkleTree    tree1;
+		private       MerkleTree    tree2;
+		private final int           maxItemsWrite;
 
 		/**
 		 * Constructor
@@ -255,15 +255,15 @@ public class SyncUtils
 	 */
 	public static class Synchronizer2<T> implements Synchronizer
 	{
-		private DataSource<T>      service1;
-		private DataSource<T>      service2;
-		private MerkleTree         tree1;
-		private MerkleTree         tree2;
-		private List<Versioned<T>> newer1;
-		private List<Versioned<T>> newer2;
-		private int                maxItemsRead;
-		private int                maxItemsWrite;
-		private ProgressCallback   callback;
+		private final DataSource<T>      service1;
+		private final DataSource<T>      service2;
+		private       MerkleTree         tree1;
+		private       MerkleTree         tree2;
+		private       List<Versioned<T>> newer1;
+		private       List<Versioned<T>> newer2;
+		private final int                maxItemsRead;
+		private final int                maxItemsWrite;
+		private final ProgressCallback   callback;
 
 		/**
 		 * Constructor
