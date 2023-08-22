@@ -1,13 +1,13 @@
 /*
  * MerkleSync - Data synchronization routine based on Merkle hash trees
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package org.bosik.merklesync;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,11 +31,9 @@ public class SyncUtils
 		/**
 		 * Called on progress change. The percentage value may be calculated as
 		 * <code>progress * 100 / max</code>
-		 * 
-		 * @param progress
-		 *            Current progress value
-		 * @param max
-		 *            Out-of value
+		 *
+		 * @param progress Current progress value
+		 * @param max      Out-of value
 		 */
 		void onProgress(int progress, int max);
 	}
@@ -45,7 +42,7 @@ public class SyncUtils
 	{
 		/**
 		 * Perform synchronizing
-		 * 
+		 *
 		 * @return Total number of transferred items
 		 */
 		int synchronize();
@@ -56,27 +53,22 @@ public class SyncUtils
 	/**
 	 * Data synchronizer based on version comparison. The sync scope is limited by the modification time.
 	 *
-	 * @param <T>
-	 *            Type of data source objects
+	 * @param <T> Type of data source objects
 	 */
 	public static class TimeSynchronizer<T> implements Synchronizer
 	{
-		private DataSource<T>	service1;
-		private DataSource<T>	service2;
-		private Date			since;
-		private int				maxItemsWrite;
+		private DataSource<T> service1;
+		private DataSource<T> service2;
+		private Date          since;
+		private int           maxItemsWrite;
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param since
-		 *            Modification time limiter: items modified after this time is taking into account only
-		 * @param maxItemsWrite
-		 *            Max number of items to be saved to service per request
+		 *
+		 * @param service1      First service
+		 * @param service2      Second service
+		 * @param since         Modification time limiter: items modified after this time is taking into account only
+		 * @param maxItemsWrite Max number of items to be saved to service per request
 		 */
 		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since, int maxItemsWrite)
 		{
@@ -88,13 +80,10 @@ public class SyncUtils
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param since
-		 *            Modification time limiter: items modified after this time is taking into account only
+		 *
+		 * @param service1 First service
+		 * @param service2 Second service
+		 * @param since    Modification time limiter: items modified after this time is taking into account only
 		 */
 		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since)
 		{
@@ -112,25 +101,21 @@ public class SyncUtils
 
 	/**
 	 * Single item data synchronizer based on version comparison.
-	 * 
-	 * @param <T>
-	 *            Type of data source objects
+	 *
+	 * @param <T> Type of data source objects
 	 */
 	public static class SingleSynchronizer<T> implements Synchronizer
 	{
-		private DataSource<T>	service1;
-		private DataSource<T>	service2;
-		private String			id;
+		private DataSource<T> service1;
+		private DataSource<T> service2;
+		private String        id;
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param id
-		 *            Object ID to sync
+		 *
+		 * @param service1 First service
+		 * @param service2 Second service
+		 * @param id       Object ID to sync
 		 */
 		public SingleSynchronizer(DataSource<T> service1, DataSource<T> service2, String id)
 		{
@@ -185,31 +170,26 @@ public class SyncUtils
 
 	/**
 	 * General-purpose data source synchronizer based on tree hashes and version comparison.
-	 * 
-	 * @param <T>
-	 *            Type of data source objects
 	 *
+	 * @param <T> Type of data source objects
 	 * @deprecated This implementation checks only one hash per request and doesn't support progress callbacking. Use
-	 *             {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 * {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
 	 */
 	@Deprecated
 	public static class Synchronizer1<T> implements Synchronizer
 	{
-		private DataSource<T>	service1;
-		private DataSource<T>	service2;
-		private MerkleTree		tree1;
-		private MerkleTree		tree2;
-		private int				maxItemsWrite;
+		private DataSource<T> service1;
+		private DataSource<T> service2;
+		private MerkleTree    tree1;
+		private MerkleTree    tree2;
+		private int           maxItemsWrite;
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param maxItemsWrite
-		 *            Max number of items to be saved to service per request
+		 *
+		 * @param service1      First service
+		 * @param service2      Second service
+		 * @param maxItemsWrite Max number of items to be saved to service per request
 		 */
 		public Synchronizer1(DataSource<T> service1, DataSource<T> service2, int maxItemsWrite)
 		{
@@ -220,11 +200,9 @@ public class SyncUtils
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
+		 *
+		 * @param service1 First service
+		 * @param service2 Second service
 		 */
 		public Synchronizer1(DataSource<T> service1, DataSource<T> service2)
 		{
@@ -272,35 +250,29 @@ public class SyncUtils
 
 	/**
 	 * General-purpose data source synchronizer based on tree hashes and version comparison.
-	 * 
-	 * @param <T>
-	 *            Type of data source objects
+	 *
+	 * @param <T> Type of data source objects
 	 */
 	public static class Synchronizer2<T> implements Synchronizer
 	{
-		private DataSource<T>		service1;
-		private DataSource<T>		service2;
-		private MerkleTree			tree1;
-		private MerkleTree			tree2;
-		private List<Versioned<T>>	newer1;
-		private List<Versioned<T>>	newer2;
-		private int					maxItemsRead;
-		private int					maxItemsWrite;
-		private ProgressCallback	callback;
+		private DataSource<T>      service1;
+		private DataSource<T>      service2;
+		private MerkleTree         tree1;
+		private MerkleTree         tree2;
+		private List<Versioned<T>> newer1;
+		private List<Versioned<T>> newer2;
+		private int                maxItemsRead;
+		private int                maxItemsWrite;
+		private ProgressCallback   callback;
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param maxItemsRead
-		 *            Max number of items to be read from service per request
-		 * @param maxItemsWrite
-		 *            Max number of items to be saved to service per request
-		 * @param callback
-		 *            Callback to inform about sync progress (optional, may be <code>null<code>)
+		 *
+		 * @param service1      First service
+		 * @param service2      Second service
+		 * @param maxItemsRead  Max number of items to be read from service per request
+		 * @param maxItemsWrite Max number of items to be saved to service per request
+		 * @param callback      Callback to inform about sync progress (optional, may be <code>null<code>)
 		 */
 		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite,
 				ProgressCallback callback)
@@ -314,15 +286,11 @@ public class SyncUtils
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param maxItemsRead
-		 *            Max number of items to be read from service per request
-		 * @param maxItemsWrite
-		 *            Max number of items to be saved to service per request
+		 *
+		 * @param service1      First service
+		 * @param service2      Second service
+		 * @param maxItemsRead  Max number of items to be read from service per request
+		 * @param maxItemsWrite Max number of items to be saved to service per request
 		 */
 		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite)
 		{
@@ -331,13 +299,10 @@ public class SyncUtils
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
-		 * @param callback
-		 *            Callback to inform about sync progress (optional, may be <code>null<code>)
+		 *
+		 * @param service1 First service
+		 * @param service2 Second service
+		 * @param callback Callback to inform about sync progress (optional, may be <code>null<code>)
 		 */
 		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
 		{
@@ -346,11 +311,9 @@ public class SyncUtils
 
 		/**
 		 * Constructor
-		 * 
-		 * @param service1
-		 *            First service
-		 * @param service2
-		 *            Second service
+		 *
+		 * @param service1 First service
+		 * @param service2 Second service
 		 */
 		public Synchronizer2(DataSource<T> service1, DataSource<T> service2)
 		{
