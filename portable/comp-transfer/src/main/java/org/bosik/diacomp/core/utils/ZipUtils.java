@@ -108,15 +108,12 @@ public final class ZipUtils
 	{
 		List<Entry> result = new ArrayList<>();
 
-		ZipInputStream zipStream = new ZipInputStream(stream);
-
-		try
+		try (ZipInputStream zipStream = new ZipInputStream(stream))
 		{
 			ZipEntry entry = zipStream.getNextEntry();
 			while (entry != null)
 			{
-				ByteArrayOutputStream bufout = new ByteArrayOutputStream();
-				try
+				try (ByteArrayOutputStream bufout = new ByteArrayOutputStream())
 				{
 					byte[] buffer = new byte[16 * 1024];
 					int read;
@@ -130,15 +127,10 @@ public final class ZipUtils
 				finally
 				{
 					zipStream.closeEntry();
-					bufout.close();
 				}
 
 				entry = zipStream.getNextEntry();
 			}
-		}
-		finally
-		{
-			zipStream.close();
 		}
 
 		return result;
