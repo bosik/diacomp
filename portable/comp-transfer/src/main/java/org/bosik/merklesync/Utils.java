@@ -1,13 +1,13 @@
 /*
  * MerkleSync - Data synchronization routine based on Merkle hash trees
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ public class Utils
 {
 	/**
 	 * Null-safe check.
-	 * 
+	 *
 	 * @param a
 	 * @param b
 	 * @return True if both strings are null or equal
@@ -36,14 +36,11 @@ public class Utils
 
 	/**
 	 * Verifies if the object is <code>null</code>
-	 * 
-	 * @param object
-	 *            Object to check
-	 * @param name
-	 *            Object name (to build exception message in case it's null)
+	 *
+	 * @param object Object to check
+	 * @param name   Object name (to build exception message in case it's null)
 	 * @return Object itself, never <code>null</code>
-	 * @throws IllegalArgumentException
-	 *             If the value is null
+	 * @throws IllegalArgumentException If the value is null
 	 */
 	public static <T> T nullCheck(T object, String name)
 	{
@@ -59,15 +56,11 @@ public class Utils
 
 	/**
 	 * Calculates lists for synchronization
-	 * 
-	 * @param items1
-	 *            First list
-	 * @param items2
-	 *            Second list
-	 * @param newer1
-	 *            Items which has greater version in the first list
-	 * @param newer2
-	 *            Items which has greater version in the second list
+	 *
+	 * @param items1 First list
+	 * @param items2 Second list
+	 * @param newer1 Items which has greater version in the first list
+	 * @param newer2 Items which has greater version in the second list
 	 */
 	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2, List<Versioned<T>> newer1,
 			List<Versioned<T>> newer2)
@@ -143,13 +136,10 @@ public class Utils
 
 	/**
 	 * Saves items to the service, transferring at most <code>blockSize</code> items per request
-	 * 
-	 * @param items
-	 *            Items to save
-	 * @param service
-	 *            Service to use
-	 * @param blockSize
-	 *            Max number of items to be transferred per request
+	 *
+	 * @param items     Items to save
+	 * @param service   Service to use
+	 * @param blockSize Max number of items to be transferred per request
 	 */
 	public static <T> void blockSave(List<Versioned<T>> items, DataSource<T> service, int blockSize)
 	{
