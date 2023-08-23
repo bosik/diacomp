@@ -135,15 +135,10 @@ public class TestHashUtils
 			bytes.add(HashUtils.strToByte(HashUtils.generateGuid()));
 		}
 
-		System.out.printf(Locale.US, "HashUtils.byteToStr(): %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, "HashUtils.byteToStr(): %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (byte[] b : bytes)
 			{
-				for (byte[] b : bytes)
-				{
-					HashUtils.byteToStr(b);
-				}
+				HashUtils.byteToStr(b);
 			}
 		}, 100));
 	}
@@ -159,15 +154,10 @@ public class TestHashUtils
 			values.add(Integer.toHexString(i).toLowerCase());
 		}
 
-		System.out.printf(Locale.US, "HashUtils.toInt(): %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, "HashUtils.toInt(): %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String value : values)
 			{
-				for (String value : values)
-				{
-					HashUtils.toInt(value);
-				}
+				HashUtils.toInt(value);
 			}
 		}, 10000));
 	}

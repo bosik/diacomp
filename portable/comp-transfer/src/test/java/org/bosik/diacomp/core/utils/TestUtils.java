@@ -58,14 +58,7 @@ public class TestUtils
 		}
 		final String s = sb.toString();
 
-		System.out.printf(Locale.US, "%.6f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Utils.removeNonUtf8(s);
-			}
-		}, 1000000));
+		System.out.printf(Locale.US, "%.6f ms%n", Profiler.measureInMsec(() -> Utils.removeNonUtf8(s), 1000000));
 	}
 
 	@Test
@@ -288,14 +281,7 @@ public class TestUtils
 	@Ignore("This test case is for manual performance check only")
 	public void test_performance_parseTimeUTC()
 	{
-		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Utils.parseTimeUTC("2012-04-02 00:00:00");
-			}
-		}, 1000000));
+		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(() -> Utils.parseTimeUTC("2012-04-02 00:00:00"), 1000000));
 	}
 
 	@Test
@@ -434,14 +420,7 @@ public class TestUtils
 		final Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
 		final Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
 
-		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Utils.sameDay(time1, time2);
-			}
-		}, 1000000));
+		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(() -> Utils.sameDay(time1, time2), 1000000));
 	}
 
 	private static <T> Set<T> set(T... values)

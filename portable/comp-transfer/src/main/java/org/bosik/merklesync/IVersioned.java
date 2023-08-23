@@ -21,14 +21,7 @@ import java.util.Date;
 
 public interface IVersioned<T>
 {
-	Comparator<IVersioned<?>> COMPARATOR_GUID = new Comparator<IVersioned<?>>()
-	{
-		@Override
-		public int compare(IVersioned<?> lhs, IVersioned<?> rhs)
-		{
-			return lhs.getId().compareTo(rhs.getId());
-		}
-	};
+	Comparator<IVersioned<?>> COMPARATOR_GUID = Comparator.comparing(IVersioned::getId);
 
 	String getId();
 

@@ -34,14 +34,7 @@ public final class PreferencesServiceContract
 		final int prime = 31;
 		int hash = 1;
 
-		Collections.sort(items, new Comparator<PreferenceEntry<String>>()
-		{
-			@Override
-			public int compare(PreferenceEntry<String> o1, PreferenceEntry<String> o2)
-			{
-				return o1.getId().getCode().compareTo(o2.getId().getCode());
-			}
-		});
+		items.sort(Comparator.comparing(o -> o.getId().getCode()));
 
 		for (PreferenceEntry<String> entity : items)
 		{

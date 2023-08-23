@@ -43,15 +43,10 @@ public class FakeFoodBaseService implements FoodBaseService
 
 	private static void sort(List<Versioned<FoodItem>> items)
 	{
-		Collections.sort(items, new Comparator<Versioned<FoodItem>>()
-		{
-			@Override
-			public int compare(Versioned<FoodItem> o1, Versioned<FoodItem> o2)
-			{
-				String t1 = o1.getData().getName();
-				String t2 = o2.getData().getName();
-				return t1.compareTo(t2);
-			}
+		items.sort((o1, o2) -> {
+			String t1 = o1.getData().getName();
+			String t2 = o2.getData().getName();
+			return t1.compareTo(t2);
 		});
 	}
 

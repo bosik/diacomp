@@ -43,15 +43,10 @@ public class FakeDishBaseService implements DishBaseService
 
 	private static void sort(List<Versioned<DishItem>> items)
 	{
-		Collections.sort(items, new Comparator<Versioned<DishItem>>()
-		{
-			@Override
-			public int compare(Versioned<DishItem> o1, Versioned<DishItem> o2)
-			{
-				String t1 = o1.getData().getName();
-				String t2 = o2.getData().getName();
-				return t1.compareTo(t2);
-			}
+		items.sort((o1, o2) -> {
+			String t1 = o1.getData().getName();
+			String t2 = o2.getData().getName();
+			return t1.compareTo(t2);
 		});
 	}
 

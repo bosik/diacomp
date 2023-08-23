@@ -54,16 +54,7 @@ public class FakeDiaryService implements DiaryService
 
 	private static void sort(List<Versioned<DiaryRecord>> items)
 	{
-		Collections.sort(items, new Comparator<Versioned<DiaryRecord>>()
-		{
-			@Override
-			public int compare(Versioned<DiaryRecord> o1, Versioned<DiaryRecord> o2)
-			{
-				Date t1 = o1.getData().getTime();
-				Date t2 = o2.getData().getTime();
-				return t1.compareTo(t2);
-			}
-		});
+		items.sort(Comparator.comparing(o -> o.getData().getTime()));
 	}
 
 	public boolean itemExists(String id)

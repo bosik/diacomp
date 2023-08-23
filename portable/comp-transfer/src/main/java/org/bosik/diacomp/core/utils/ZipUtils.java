@@ -75,30 +75,25 @@ public final class ZipUtils
 		final PipedOutputStream sink = new PipedOutputStream();
 		PipedInputStream source = new PipedInputStream(sink);
 
-		new Thread()
-		{
-			@Override
-			public void run()
+		new Thread(() -> {
+			try
 			{
-				try
-				{
-					ZipOutputStream zip = new ZipOutputStream(sink);
+				ZipOutputStream zip = new ZipOutputStream(sink);
 
-					for (Entry entry : entries)
-					{
-						zip.putNextEntry(new ZipEntry(entry.getName()));
-						zip.write(entry.getContent());
-						zip.closeEntry();
-					}
-
-					zip.close();
-				}
-				catch (IOException e)
+				for (Entry entry : entries)
 				{
-					e.printStackTrace();
+					zip.putNextEntry(new ZipEntry(entry.getName()));
+					zip.write(entry.getContent());
+					zip.closeEntry();
 				}
+
+				zip.close();
 			}
-		}.start();
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}).start();
 
 		return source;
 	}

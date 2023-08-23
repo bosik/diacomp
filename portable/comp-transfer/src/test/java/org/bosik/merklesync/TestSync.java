@@ -53,8 +53,8 @@ public class TestSync
 		TestCase.assertNotNull(listAct);
 		TestCase.assertEquals(listExp.size(), listAct.size());
 
-		Collections.sort(listExp, Versioned.COMPARATOR_GUID);
-		Collections.sort(listAct, Versioned.COMPARATOR_GUID);
+		listExp.sort(Versioned.COMPARATOR_GUID);
+		listAct.sort(Versioned.COMPARATOR_GUID);
 
 		for (int i = 0; i < listExp.size(); i++)
 		{

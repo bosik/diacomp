@@ -193,39 +193,24 @@ public class TestMemoryMerkleTree
 		//		MemoryMerkleTree2: 2.649 ms
 		//		MemoryMerkleTree3: 7.124 ms
 
-		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : MAX_MAP.keySet())
 			{
-				for (String key : MAX_MAP.keySet())
-				{
-					MAX_MERKLE_TREE.getHash(key);
-				}
+				MAX_MERKLE_TREE.getHash(key);
 			}
 		}, COUNT));
 
-		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : MAX_MAP.keySet())
 			{
-				for (String key : MAX_MAP.keySet())
-				{
-					MAX_MERKLE_TREE_2.getHash(key);
-				}
+				MAX_MERKLE_TREE_2.getHash(key);
 			}
 		}, COUNT));
 
-		System.out.printf(Locale.US, MemoryMerkleTree3.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree3.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : MAX_MAP.keySet())
 			{
-				for (String key : MAX_MAP.keySet())
-				{
-					MAX_MERKLE_TREE_3.getHash(key);
-				}
+				MAX_MERKLE_TREE_3.getHash(key);
 			}
 		}, COUNT));
 	}
@@ -240,39 +225,24 @@ public class TestMemoryMerkleTree
 		//		MemoryMerkleTree2: 3.097 ms
 		//		MemoryMerkleTree3: 6.763 ms
 
-		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : SHORT_KEYS)
 			{
-				for (String key : SHORT_KEYS)
-				{
-					MAX_MERKLE_TREE.getHashChildren(key);
-				}
+				MAX_MERKLE_TREE.getHashChildren(key);
 			}
 		}, COUNT));
 
-		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : SHORT_KEYS)
 			{
-				for (String key : SHORT_KEYS)
-				{
-					MAX_MERKLE_TREE_2.getHashChildren(key);
-				}
+				MAX_MERKLE_TREE_2.getHashChildren(key);
 			}
 		}, COUNT));
 
-		System.out.printf(Locale.US, MemoryMerkleTree3.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
-		{
-			@Override
-			public void run()
+		System.out.printf(Locale.US, MemoryMerkleTree3.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
+			for (String key : SHORT_KEYS)
 			{
-				for (String key : SHORT_KEYS)
-				{
-					MAX_MERKLE_TREE_3.getHashChildren(key);
-				}
+				MAX_MERKLE_TREE_3.getHashChildren(key);
 			}
 		}, COUNT));
 	}

@@ -26,14 +26,7 @@ public class Interpolation
 		final double c = dy1 - 3 * x1 * x1 * a - 2 * x1 * b;
 		final double d = y1 - x1 * x1 * x1 * a - x1 * x1 * b - x1 * c;
 
-		return new Function<Double, Double>()
-		{
-			@Override
-			public Double apply(Double x)
-			{
-				return a * x * x * x + b * x * x + c * x + d;
-			}
-		};
+		return x -> a * x * x * x + b * x * x + c * x + d;
 	}
 
 	public static Function<Double, Double> cube(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3)

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.bosik.diacomp.android"
-        minSdkVersion 14
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 18
         versionName "2.9.1"

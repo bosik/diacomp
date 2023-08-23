@@ -106,24 +106,19 @@ public class RelevantIndexator
 	{
 		final Map<String, Integer> usages = getUsages(diaryService);
 
-		Collections.sort(items, new Comparator<Versioned<? extends Named>>()
-		{
-			@Override
-			public int compare(Versioned<? extends Named> lhs, Versioned<? extends Named> rhs)
+		items.sort((Comparator<Versioned<? extends Named>>) (lhs, rhs) -> {
+			final String name1 = lhs.getData().getName();
+			final String name2 = rhs.getData().getName();
+
+			int tag1 = Utils.nullToZero(usages.get(name1));
+			int tag2 = Utils.nullToZero(usages.get(name2));
+
+			if (tag1 != tag2)
 			{
-				final String name1 = lhs.getData().getName();
-				final String name2 = rhs.getData().getName();
-
-				int tag1 = Utils.nullToZero(usages.get(name1));
-				int tag2 = Utils.nullToZero(usages.get(name2));
-
-				if (tag1 != tag2)
-				{
-					return tag2 - tag1;
-				}
-
-				return name1.compareTo(name2);
+				return tag2 - tag1;
 			}
+
+			return name1.compareTo(name2);
 		});
 	}
 }

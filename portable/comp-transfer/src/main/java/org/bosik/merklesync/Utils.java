@@ -71,8 +71,8 @@ public class Utils
 		nullCheck(newer2, "newer2");
 
 		// preparation
-		Collections.sort(items1, Versioned.COMPARATOR_GUID);
-		Collections.sort(items2, Versioned.COMPARATOR_GUID);
+		items1.sort(Versioned.COMPARATOR_GUID);
+		items2.sort(Versioned.COMPARATOR_GUID);
 		int i = 0;
 		int j = 0;
 
