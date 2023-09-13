@@ -45,7 +45,7 @@ import static org.bosik.diacomp.core.utils.CollectionUtils.filter;
 public abstract class CachedBaseService<T extends Named> implements BaseService<T>
 {
 	// caching
-	// NOTE: this suppose DB can't be changed outside app
+	// NOTE: this assumes DB can't be changed outside of the app
 	private volatile Map<String, Versioned<T>> memoryCache;
 
 	// ROUTINES
