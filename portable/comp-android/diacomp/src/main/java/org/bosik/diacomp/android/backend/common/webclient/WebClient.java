@@ -87,7 +87,7 @@ public class WebClient
 	 * @param response Server's response
 	 * @return String
 	 */
-	private static String formatResponse(HttpResponse response, String encoding)
+	private static String formatResponse(HttpResponse response)
 	{
 		if (null == response.getEntity())
 		{
@@ -96,7 +96,7 @@ public class WebClient
 
 		try
 		{
-			String s = EntityUtils.toString(response.getEntity(), encoding);
+			String s = EntityUtils.toString(response.getEntity(), ENCODING_UTF8);
 			if (s == null)
 			{
 				throw new ResponseFormatException("Bad response, response is null");
@@ -155,7 +155,7 @@ public class WebClient
 	 * @param url
 	 * @return
 	 */
-	private String doGet(String url, String encoding)
+	private String doGet(String url)
 	{
 		checkTimeout();
 
@@ -167,7 +167,7 @@ public class WebClient
 			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
 
-			return formatResponse(resp, encoding);
+			return formatResponse(resp);
 		}
 		catch (IOException e)
 		{
@@ -182,7 +182,7 @@ public class WebClient
 	 * @param params
 	 * @return
 	 */
-	private String doPost(String url, List<NameValuePair> params, String encoding)
+	private String doPost(String url, List<NameValuePair> params)
 	{
 		checkTimeout();
 
@@ -191,13 +191,13 @@ public class WebClient
 
 		try
 		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
+			HttpEntity entity = new UrlEncodedFormEntity(params, ENCODING_UTF8);
 			HttpPost post = new HttpPost(url.replace(" ", CODE_SPACE));
 			post.addHeader(entity.getContentType());
 			post.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(post);
 
-			return formatResponse(resp, encoding);
+			return formatResponse(resp);
 		}
 		catch (IOException e)
 		{
@@ -210,10 +210,9 @@ public class WebClient
 	 *
 	 * @param url
 	 * @param params
-	 * @param encoding
 	 * @return
 	 */
-	private String doPut(String url, List<NameValuePair> params, String encoding)
+	private String doPut(String url, List<NameValuePair> params)
 	{
 		checkTimeout();
 
@@ -222,13 +221,13 @@ public class WebClient
 
 		try
 		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
+			HttpEntity entity = new UrlEncodedFormEntity(params, ENCODING_UTF8);
 			HttpPut put = new HttpPut(url.replace(" ", CODE_SPACE));
 			put.addHeader(entity.getContentType());
 			put.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(put);
 
-			return formatResponse(resp, encoding);
+			return formatResponse(resp);
 		}
 		catch (IOException e)
 		{
@@ -290,54 +289,21 @@ public class WebClient
 	/* ================================ API ================================ */
 
 	/**
-	 * Performs authenticated GET request
-	 *
-	 * @param url
-	 * @param encoding
-	 * @return
-	 */
-	public String get(String url, String encoding)
-	{
-		try
-		{
-			return doGet(url, encoding);
-		}
-		catch (NotAuthorizedException e)
-		{
-			login();
-			return doGet(url, encoding);
-		}
-	}
-
-	/**
 	 * Performs authenticated GET request. Uses default UTF-8 encoding
 	 *
-	 * @param URL
+	 * @param url
 	 * @return
 	 */
-	public String get(String URL)
-	{
-		return get(URL, ENCODING_UTF8);
-	}
-
-	/**
-	 * Performs authenticated POST request
-	 *
-	 * @param URL
-	 * @param params
-	 * @param encoding
-	 * @return
-	 */
-	public String post(String URL, List<NameValuePair> params, String encoding)
+	public String get(String url)
 	{
 		try
 		{
-			return doPost(URL, params, encoding);
+			return doGet(url);
 		}
 		catch (NotAuthorizedException e)
 		{
 			login();
-			return doPost(URL, params, encoding);
+			return doGet(url);
 		}
 	}
 
@@ -350,27 +316,14 @@ public class WebClient
 	 */
 	public String post(String URL, List<NameValuePair> params)
 	{
-		return post(URL, params, ENCODING_UTF8);
-	}
-
-	/**
-	 * Performs authenticated PUT request
-	 *
-	 * @param URL
-	 * @param params
-	 * @param encoding
-	 * @return
-	 */
-	public String put(String URL, List<NameValuePair> params, String encoding)
-	{
 		try
 		{
-			return doPut(URL, params, encoding);
+			return doPost(URL, params);
 		}
 		catch (NotAuthorizedException e)
 		{
 			login();
-			return doPut(URL, params, encoding);
+			return doPost(URL, params);
 		}
 	}
 
@@ -383,7 +336,15 @@ public class WebClient
 	 */
 	public String put(String URL, List<NameValuePair> params)
 	{
-		return put(URL, params, ENCODING_UTF8);
+		try
+		{
+			return doPut(URL, params);
+		}
+		catch (NotAuthorizedException e)
+		{
+			login();
+			return doPut(URL, params);
+		}
 	}
 
 	public InputStream loadStream(String url)
@@ -421,6 +382,6 @@ public class WebClient
 
 		// send
 
-		doPost("api/auth/login/", p, ENCODING_UTF8);
+		doPost("api/auth/login/", p);
 	}
 }
