@@ -74,10 +74,10 @@
         <activity
                 android:name=".frontend.activities.ActivityMain"
                 android:label="@string/main_title"
-                android:launchMode="singleTop">
+                android:launchMode="singleTop"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -127,7 +127,8 @@
         <activity
                 android:name=".frontend.activities.ActivityRates"
                 android:parentActivityName=".frontend.activities.ActivityPreferences"
-                android:label="@string/rates_title">
+                android:label="@string/rates_title"
+                android:exported="false">
             <intent-filter>
                 <action android:name=".frontend.activities.ActivityRates"/>
                 <category android:name="android.intent.category.DEFAULT"/>
