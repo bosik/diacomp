@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
@@ -32,10 +32,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -51,7 +51,6 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView;
-import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView.OnRecordClickListener;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -264,60 +263,27 @@ public class FragmentTabDiary extends Fragment
 		textWarningTime = rootView.findViewById(R.id.textWarningTime);
 
 		// Events
-		buttonAddBlood.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showBloodEditor(null, true);
-			}
-		});
-		buttonAddIns.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showInsEditor(null, true);
-			}
-		});
-		buttonAddMeal.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showMealEditor(null, true);
-			}
-		});
-		buttonAddNote.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showNoteEditor(null, true);
-			}
-		});
+		buttonAddBlood.setOnClickListener(v -> showBloodEditor(null, true));
+		buttonAddIns.setOnClickListener(v -> showInsEditor(null, true));
+		buttonAddMeal.setOnClickListener(v -> showMealEditor(null, true));
+		buttonAddNote.setOnClickListener(v -> showNoteEditor(null, true));
 
-		list.setOnRecordClickListener(new OnRecordClickListener()
-		{
-			@Override
-			public void onRecordClick(Versioned<DiaryRecord> record)
+		list.setOnRecordClickListener(record -> {
+			if (record.getData() instanceof BloodRecord)
 			{
-				if (record.getData() instanceof BloodRecord)
-				{
-					showBloodEditor(record.castTo(BloodRecord.class), false);
-				}
-				else if (record.getData() instanceof InsRecord)
-				{
-					showInsEditor(record.castTo(InsRecord.class), false);
-				}
-				else if (record.getData() instanceof MealRecord)
-				{
-					showMealEditor(record.castTo(MealRecord.class), false);
-				}
-				else if (record.getData() instanceof NoteRecord)
-				{
-					showNoteEditor(record.castTo(NoteRecord.class), false);
-				}
+				showBloodEditor(record.castTo(BloodRecord.class), false);
+			}
+			else if (record.getData() instanceof InsRecord)
+			{
+				showInsEditor(record.castTo(InsRecord.class), false);
+			}
+			else if (record.getData() instanceof MealRecord)
+			{
+				showMealEditor(record.castTo(MealRecord.class), false);
+			}
+			else if (record.getData() instanceof NoteRecord)
+			{
+				showNoteEditor(record.castTo(NoteRecord.class), false);
 			}
 		});
 
