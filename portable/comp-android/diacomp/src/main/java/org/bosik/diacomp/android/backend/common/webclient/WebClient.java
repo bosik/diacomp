@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.common.webclient;
 
 import android.util.Log;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -64,7 +65,18 @@ public class WebClient
 	private       String     username;
 	private       String     password;
 	private       String     server;
-	private long lastRequestTime = 0;
+	private       long       lastRequestTime = 0;
+
+	/* ================================ CONSTRUCTOR ================================ */
+
+	public WebClient(int connectionTimeout)
+	{
+		mHttpClient = new DefaultHttpClient();
+		final HttpParams params = mHttpClient.getParams();
+		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+		HttpConnectionParams.setSoTimeout(params, connectionTimeout);
+		ConnManagerParams.setTimeout(params, connectionTimeout);
+	}
 
 	/* ================================ ROUTINES ================================ */
 
@@ -253,17 +265,6 @@ public class WebClient
 		{
 			throw new ConnectionException("Failed to GET " + url, e);
 		}
-	}
-
-	/* ================================ CONSTRUCTOR ================================ */
-
-	public WebClient(int connectionTimeout)
-	{
-		mHttpClient = new DefaultHttpClient();
-		final HttpParams params = mHttpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
-		HttpConnectionParams.setSoTimeout(params, connectionTimeout);
-		ConnManagerParams.setTimeout(params, connectionTimeout);
 	}
 
 	// =========================== GET / SET ===========================
