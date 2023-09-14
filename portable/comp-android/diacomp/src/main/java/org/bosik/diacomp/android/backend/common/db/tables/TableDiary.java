@@ -50,13 +50,13 @@ public final class TableDiary extends Table
 	{
 		List<Column> columns = new ArrayList<>();
 
-		columns.add(new Column(COLUMN_ID, Column.TYPE_TEXT, true, false));
-		columns.add(new Column(COLUMN_TIMESTAMP, Column.TYPE_TEXT, false, false));
-		columns.add(new Column(COLUMN_HASH, Column.TYPE_TEXT, false, false));
-		columns.add(new Column(COLUMN_VERSION, Column.TYPE_INTEGER, false, false));
-		columns.add(new Column(COLUMN_DELETED, Column.TYPE_INTEGER, false, false));
-		columns.add(new Column(COLUMN_CONTENT, Column.TYPE_BLOB, false, false));
-		columns.add(new Column(COLUMN_TIMECACHE, Column.TYPE_TEXT, false, false));
+		columns.add(new Column(COLUMN_ID, Column.Type.TEXT, true, false));
+		columns.add(new Column(COLUMN_TIMESTAMP, Column.Type.TEXT, false, false));
+		columns.add(new Column(COLUMN_HASH, Column.Type.TEXT, false, false));
+		columns.add(new Column(COLUMN_VERSION, Column.Type.INTEGER, false, false));
+		columns.add(new Column(COLUMN_DELETED, Column.Type.INTEGER, false, false));
+		columns.add(new Column(COLUMN_CONTENT, Column.Type.BLOB, false, false));
+		columns.add(new Column(COLUMN_TIMECACHE, Column.Type.TEXT, false, false));
 
 		return columns;
 	}

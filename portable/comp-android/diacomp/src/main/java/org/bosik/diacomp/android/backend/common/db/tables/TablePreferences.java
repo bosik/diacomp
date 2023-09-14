@@ -46,9 +46,9 @@ public final class TablePreferences extends Table
 	{
 		List<Column> columns = new ArrayList<>();
 
-		columns.add(new Column(COLUMN_KEY, Column.TYPE_TEXT, true, false));
-		columns.add(new Column(COLUMN_VALUE, Column.TYPE_TEXT, false, false));
-		columns.add(new Column(COLUMN_VERSION, Column.TYPE_INTEGER, false, false));
+		columns.add(new Column(COLUMN_KEY, Column.Type.TEXT, true, false));
+		columns.add(new Column(COLUMN_VALUE, Column.Type.TEXT, false, false));
+		columns.add(new Column(COLUMN_VERSION, Column.Type.INTEGER, false, false));
 
 		return columns;
 	}

@@ -93,7 +93,7 @@ public class DiaryContentProvider extends ContentProvider
 				for (Column c : table.getColumns())
 				{
 					s.append(c.getName()).append(" ");
-					s.append(c.getType()).append(" ");
+					s.append(c.getSqlType()).append(" ");
 					if (c.isPrimary())
 					{
 						s.append("PRIMARY KEY ");

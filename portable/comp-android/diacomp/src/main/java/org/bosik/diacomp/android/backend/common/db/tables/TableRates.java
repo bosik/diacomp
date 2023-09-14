@@ -47,10 +47,10 @@ public final class TableRates extends Table
 	{
 		List<Column> columns = new ArrayList<>();
 
-		columns.add(new Column(COLUMN_TIME, Column.TYPE_INTEGER, true, false));
-		columns.add(new Column(COLUMN_VALUE_K, Column.TYPE_REAL, false, false));
-		columns.add(new Column(COLUMN_VALUE_Q, Column.TYPE_REAL, false, false));
-		columns.add(new Column(COLUMN_VALUE_P, Column.TYPE_REAL, false, false));
+		columns.add(new Column(COLUMN_TIME, Column.Type.INTEGER, true, false));
+		columns.add(new Column(COLUMN_VALUE_K, Column.Type.REAL, false, false));
+		columns.add(new Column(COLUMN_VALUE_Q, Column.Type.REAL, false, false));
+		columns.add(new Column(COLUMN_VALUE_P, Column.Type.REAL, false, false));
 
 		return columns;
 	}

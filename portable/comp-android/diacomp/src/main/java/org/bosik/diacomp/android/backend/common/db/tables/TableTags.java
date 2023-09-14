@@ -45,8 +45,8 @@ public final class TableTags extends Table
 	{
 		List<Column> columns = new ArrayList<>();
 
-		columns.add(new Column(COLUMN_ID, Column.TYPE_TEXT, true, false));
-		columns.add(new Column(COLUMN_TAG, Column.TYPE_INTEGER, false, false));
+		columns.add(new Column(COLUMN_ID, Column.Type.TEXT, true, false));
+		columns.add(new Column(COLUMN_TAG, Column.Type.INTEGER, false, false));
 
 		return columns;
 	}
