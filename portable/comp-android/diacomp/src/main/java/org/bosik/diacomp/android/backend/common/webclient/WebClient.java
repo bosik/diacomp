@@ -62,15 +62,16 @@ public class WebClient
 	/* ================ FIELDS ================ */
 
 	private final HttpClient mHttpClient;
+	private final String     server;
 	private       String     username;
 	private       String     password;
-	private       String     server;
 	private       long       lastRequestTime = 0;
 
 	/* ================================ CONSTRUCTOR ================================ */
 
-	public WebClient(int connectionTimeout)
+	public WebClient(String serverURL, int connectionTimeout)
 	{
+		this.server = ensureEndsWithSlash(serverURL);
 		mHttpClient = new DefaultHttpClient();
 		final HttpParams params = mHttpClient.getParams();
 		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
@@ -267,6 +268,13 @@ public class WebClient
 		}
 	}
 
+	private static String ensureEndsWithSlash(String url)
+	{
+		return !url.endsWith("/")
+				? url + "/"
+				: url;
+	}
+
 	// =========================== GET / SET ===========================
 
 	public void setUsername(String username)
@@ -277,16 +285,6 @@ public class WebClient
 	public void setPassword(String password)
 	{
 		this.password = password;
-	}
-
-	public void setServer(String server)
-	{
-		if (!server.endsWith("/"))
-		{
-			server = server + "/";
-		}
-
-		this.server = server;
 	}
 
 	/* ================================ API ================================ */

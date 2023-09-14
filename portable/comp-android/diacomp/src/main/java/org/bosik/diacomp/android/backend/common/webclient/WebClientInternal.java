@@ -32,21 +32,15 @@ public class WebClientInternal
 
 	public static synchronized WebClient getInstance(Context context, String username, String password)
 	{
-		// reading parameters
-
-		String serverURL = context.getString(R.string.server_url);
-		String timeoutS = context.getString(R.string.server_timeout);
-		int connectionTimeout = Integer.parseInt(timeoutS);
-
-		// building client
-
 		if (instance == null)
 		{
 			Log.i(TAG, "Web client initialization...");
-			instance = new WebClient(connectionTimeout);
+			final String serverURL = context.getString(R.string.server_url);
+			final int connectionTimeout = Integer.parseInt(context.getString(R.string.server_timeout));
+
+			instance = new WebClient(serverURL, connectionTimeout);
 		}
 
-		instance.setServer(serverURL);
 		instance.setUsername(username);
 		instance.setPassword(password);
 
