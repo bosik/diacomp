@@ -25,8 +25,11 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableDishbase extends Table
+public final class TableDishbase extends Table
 {
+	public static final Table INSTANCE    = new TableDishbase();
+	public static final Uri   CONTENT_URI = INSTANCE.getUri();
+
 	public static final String TABLE_NAME       = "dishbase";
 	public static final String COLUMN_ID        = "GUID";
 	public static final String COLUMN_TIMESTAMP = "TimeStamp";
@@ -35,8 +38,6 @@ public class TableDishbase extends Table
 	public static final String COLUMN_DELETED   = "Deleted";
 	public static final String COLUMN_DATA      = "Data";
 	public static final String COLUMN_NAMECACHE = "NameCache";
-
-	public static final Uri CONTENT_URI = new TableDishbase().getUri();
 
 	@Override
 	public String getName()
@@ -58,5 +59,9 @@ public class TableDishbase extends Table
 		columns.add(new Column(COLUMN_DATA, Column.TYPE_TEXT, false, false));
 
 		return columns;
+	}
+
+	private TableDishbase()
+	{
 	}
 }

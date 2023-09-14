@@ -23,6 +23,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+
 import org.bosik.diacomp.android.backend.common.CachedBaseService;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
@@ -158,7 +159,7 @@ public class FoodBaseLocalService extends CachedBaseService<FoodItem> implements
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
-		new PlainDataImporter(context, new TableFoodbase(), "1")
+		new PlainDataImporter(context, TableFoodbase.INSTANCE, "1")
 		{
 			@Override
 			protected void parseEntry(String[] items, ContentValues newValues)

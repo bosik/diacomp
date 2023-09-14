@@ -23,6 +23,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+
 import org.bosik.diacomp.android.backend.common.CachedBaseService;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
@@ -158,7 +159,7 @@ public class DishBaseLocalService extends CachedBaseService<DishItem> implements
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
-		new PlainDataImporter(context, new TableDishbase(), "1")
+		new PlainDataImporter(context, TableDishbase.INSTANCE, "1")
 		{
 			@Override
 			protected void parseEntry(String[] items, ContentValues newValues)

@@ -25,14 +25,15 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TablePreferences extends Table
+public final class TablePreferences extends Table
 {
+	public static final Table INSTANCE    = new TablePreferences();
+	public static final Uri   CONTENT_URI = INSTANCE.getUri();
+
 	public static final String TABLE_NAME     = "preferences";
 	public static final String COLUMN_KEY     = "Key";
 	public static final String COLUMN_VALUE   = "Value";
 	public static final String COLUMN_VERSION = "Version";
-
-	public static final Uri CONTENT_URI = new TablePreferences().getUri();
 
 	@Override
 	public String getName()
@@ -50,5 +51,9 @@ public class TablePreferences extends Table
 		columns.add(new Column(COLUMN_VERSION, Column.TYPE_INTEGER, false, false));
 
 		return columns;
+	}
+
+	private TablePreferences()
+	{
 	}
 }

@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -61,12 +62,12 @@ public class DiaryContentProvider extends ContentProvider
 	{
 		tables = new ArrayList<>();
 
-		tables.add(new TableDiary());
-		tables.add(new TableFoodbase());
-		tables.add(new TableDishbase());
-		tables.add(new TableTags());
-		tables.add(new TablePreferences());
-		tables.add(new TableRates());
+		tables.add(TableDiary.INSTANCE);
+		tables.add(TableFoodbase.INSTANCE);
+		tables.add(TableDishbase.INSTANCE);
+		tables.add(TableTags.INSTANCE);
+		tables.add(TablePreferences.INSTANCE);
+		tables.add(TableRates.INSTANCE);
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		for (int i = 0; i < tables.size(); i++)
@@ -139,7 +140,7 @@ public class DiaryContentProvider extends ContentProvider
 			{
 				case 1: // --> 2
 				{
-					TableRates tableRates = new TableRates();
+					Table tableRates = TableRates.INSTANCE;
 
 					db.execSQL(buildDropTableStatement(tableRates));
 					db.execSQL(buildCreateTableStatement(tableRates));

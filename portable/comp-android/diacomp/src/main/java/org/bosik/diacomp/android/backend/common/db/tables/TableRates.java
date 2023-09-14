@@ -18,25 +18,28 @@
 package org.bosik.diacomp.android.backend.common.db.tables;
 
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableRates extends Table
+public final class TableRates extends Table
 {
+	public static final Table INSTANCE    = new TableRates();
+	public static final Uri   CONTENT_URI = INSTANCE.getUri();
+
+	public static final String TABLE_NAME     = "koofs";
 	public static final String COLUMN_TIME    = "_Time";
 	public static final String COLUMN_VALUE_K = "_K";
 	public static final String COLUMN_VALUE_Q = "_Q";
 	public static final String COLUMN_VALUE_P = "_P";
 
-	public static final Uri CONTENT_URI = new TableRates().getUri();
-
 	@Override
 	public String getName()
 	{
-		return "koofs";
+		return TABLE_NAME;
 	}
 
 	@Override
@@ -50,5 +53,9 @@ public class TableRates extends Table
 		columns.add(new Column(COLUMN_VALUE_P, Column.TYPE_REAL, false, false));
 
 		return columns;
+	}
+
+	private TableRates()
+	{
 	}
 }

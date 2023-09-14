@@ -18,23 +18,26 @@
 package org.bosik.diacomp.android.backend.common.db.tables;
 
 import android.net.Uri;
+
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableTags extends Table
+public final class TableTags extends Table
 {
-	private static final String COLUMN_ID  = "GUID";
-	private static final String COLUMN_TAG = "Tag";
+	public static final Table INSTANCE    = new TableTags();
+	public static final Uri   CONTENT_URI = INSTANCE.getUri();
 
-	public static final Uri CONTENT_URI = new TableTags().getUri();
+	public static final String TABLE_NAME = "tag";
+	public static final String COLUMN_ID  = "GUID";
+	public static final String COLUMN_TAG = "Tag";
 
 	@Override
 	public String getName()
 	{
-		return "tag";
+		return TABLE_NAME;
 	}
 
 	@Override
@@ -46,5 +49,9 @@ public class TableTags extends Table
 		columns.add(new Column(COLUMN_TAG, Column.TYPE_INTEGER, false, false));
 
 		return columns;
+	}
+
+	private TableTags()
+	{
 	}
 }

@@ -25,8 +25,11 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableDiary extends Table
+public final class TableDiary extends Table
 {
+	public static final Table INSTANCE    = new TableDiary();
+	public static final Uri   CONTENT_URI = INSTANCE.getUri();
+
 	public static final String TABLE_NAME       = "diary";
 	public static final String COLUMN_ID        = "_GUID";
 	public static final String COLUMN_TIMESTAMP = "_TimeStamp";
@@ -35,8 +38,6 @@ public class TableDiary extends Table
 	public static final String COLUMN_DELETED   = "_Deleted";
 	public static final String COLUMN_CONTENT   = "_Content";
 	public static final String COLUMN_TIMECACHE = "_TimeCache";
-
-	public static final Uri CONTENT_URI = new TableDiary().getUri();
 
 	@Override
 	public String getName()
@@ -58,5 +59,9 @@ public class TableDiary extends Table
 		columns.add(new Column(COLUMN_TIMECACHE, Column.TYPE_TEXT, false, false));
 
 		return columns;
+	}
+
+	private TableDiary()
+	{
 	}
 }

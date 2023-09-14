@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
@@ -28,8 +28,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.JsonReader;
 import android.util.Log;
+
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
-import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.DiaryRecordVersionedReader;
@@ -72,8 +72,8 @@ public class DiaryLocalService implements DiaryService, Importable
 
 	/* ============================ FIELDS ============================ */
 
-	private final Context         context;
-	private final ContentResolver resolver;
+	private final Context                 context;
+	private final ContentResolver         resolver;
 	private final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
 	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
@@ -586,7 +586,7 @@ public class DiaryLocalService implements DiaryService, Importable
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
-		new PlainDataImporter(context, new TableDiary(), "6")
+		new PlainDataImporter(context, TableDiary.INSTANCE, "6")
 		{
 			@Override
 			protected void parseEntry(String[] items, ContentValues newValues)
@@ -614,8 +614,6 @@ public class DiaryLocalService implements DiaryService, Importable
 		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
 		try
 		{
-			Table table = new TableDiary();
-
 			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
 			db.beginTransaction();
 			try
@@ -637,7 +635,7 @@ public class DiaryLocalService implements DiaryService, Importable
 					newValues.put(TableDiary.COLUMN_CONTENT, serializer.write(record.getData()));
 					newValues.put(TableDiary.COLUMN_TIMECACHE, Utils.formatTimeUTC(record.getData().getTime()));
 
-					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+					db.insertWithOnConflict(TableDiary.TABLE_NAME, null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
 
 					if (++count % 1000 == 0)
 					{

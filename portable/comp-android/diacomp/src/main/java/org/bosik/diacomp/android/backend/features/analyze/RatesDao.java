@@ -22,8 +22,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
-import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableRates;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.analyze.entities.RateList;
@@ -52,7 +52,6 @@ public class RatesDao
 		db.beginTransaction();
 		try
 		{
-			Table table = new TableRates();
 			for (int i = 0; i < Utils.MinPerDay; i++)
 			{
 				ContentValues values = new ContentValues();
@@ -60,10 +59,10 @@ public class RatesDao
 				values.put(TableRates.COLUMN_VALUE_Q, rateList.getRate(i).getQ());
 				values.put(TableRates.COLUMN_VALUE_P, rateList.getRate(i).getP());
 
-				if (db.update(table.getName(), values, TableRates.COLUMN_TIME + " = ?", new String[] { String.valueOf(i) }) == 0)
+				if (db.update(TableRates.TABLE_NAME, values, TableRates.COLUMN_TIME + " = ?", new String[] { String.valueOf(i) }) == 0)
 				{
 					values.put(TableRates.COLUMN_TIME, i);
-					db.insert(table.getName(), null, values);
+					db.insert(TableRates.TABLE_NAME, null, values);
 				}
 			}
 			db.setTransactionSuccessful();

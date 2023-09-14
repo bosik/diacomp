@@ -24,8 +24,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
-import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -242,7 +242,7 @@ public class PreferencesLocalService implements PreferencesService, Importable
 			throw new IllegalArgumentException("Context is null");
 		}
 
-		new PlainDataImporter(context, new TablePreferences(), "1")
+		new PlainDataImporter(context, TablePreferences.INSTANCE, "1")
 		{
 			@Override
 			protected void parseEntry(String[] items, ContentValues newValues)
@@ -269,8 +269,6 @@ public class PreferencesLocalService implements PreferencesService, Importable
 		String s = Utils.readStream(stream);
 		List<PreferenceEntry<String>> items = serializer.readAll(s);
 
-		Table table = new TablePreferences();
-
 		SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
 		db.beginTransaction();
 		try
@@ -283,7 +281,7 @@ public class PreferencesLocalService implements PreferencesService, Importable
 				newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
 				newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
 
-				db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+				db.insertWithOnConflict(TablePreferences.TABLE_NAME, null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
 			}
 
 			db.setTransactionSuccessful();
