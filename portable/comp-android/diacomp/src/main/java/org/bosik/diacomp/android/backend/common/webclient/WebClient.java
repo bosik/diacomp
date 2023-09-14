@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.common.webclient;
 
@@ -424,12 +424,5 @@ public class WebClient
 		// send
 
 		doPost("api/auth/login/", p, ENCODING_UTF8);
-	}
-
-	@Deprecated
-	public void sendMail(String string)
-	{
-		// TODO: move it to mailing service
-		throw new UnsupportedOperationException("Sending mail is not implemented yet");
 	}
 }
