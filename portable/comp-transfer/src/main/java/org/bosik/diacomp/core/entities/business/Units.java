@@ -33,7 +33,7 @@ public final class Units
 		 */
 		BU("56ce855fac9846698a78edf2cacf4cfe");
 
-		private String code;
+		private final String code;
 
 		Mass(String code)
 		{
@@ -112,7 +112,7 @@ public final class Units
 		 */
 		MG_DL("88101cf56630428aada7fe82388b4b99");
 
-		private String code;
+		private final String code;
 
 		BloodSugar(String code)
 		{
