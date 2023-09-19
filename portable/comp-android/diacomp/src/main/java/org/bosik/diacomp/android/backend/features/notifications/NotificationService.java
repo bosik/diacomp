@@ -296,8 +296,7 @@ class UpdateNotificationTask extends AsyncTask<Void, Void, ElapsedTimeInfo>
 	@Override
 	protected ElapsedTimeInfo doInBackground(Void... arg0)
 	{
-		final List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(
-				diary, new Date(), (long) Utils.SecPerDay);
+		final List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, new Date(), Utils.SecPerDay);
 
 		final ElapsedTimeInfo info = new ElapsedTimeInfo();
 		info.setLastMealTime(getLastMealTime(records));
