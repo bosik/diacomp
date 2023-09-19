@@ -32,6 +32,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
+
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 public class NotificationService extends Service
 {
@@ -58,10 +60,10 @@ public class NotificationService extends Service
 	private static final String ACTION_FORCE_RUN                = "runRightNow";
 	private static final int    CACHED_INFO_INVALIDATION_PERIOD = 60; // mins
 
-	private Timer           timer  = new Timer();
-	private ElapsedTimeInfo cachedInfo;
-	private String          cachedMessage;
-	private int             ticker = 0;
+	private final Timer           timer  = new Timer();
+	private       ElapsedTimeInfo cachedInfo;
+	private       String          cachedMessage;
+	private       int             ticker = 0;
 
 	public static void start(Context context)
 	{
@@ -132,14 +134,9 @@ public class NotificationService extends Service
 
 	public void runNotificationUpdateAsync()
 	{
-		new UpdateNotificationTask(NotificationService.this, new Consumer<ElapsedTimeInfo>()
-		{
-			@Override
-			public void accept(ElapsedTimeInfo info)
-			{
-				updateNotification(info);
-				cachedInfo = info;
-			}
+		new UpdateNotificationTask(this, info -> {
+			updateNotification(info);
+			cachedInfo = info;
 		}).execute();
 	}
 
@@ -314,10 +311,4 @@ class UpdateNotificationTask extends AsyncTask<Void, Void, ElapsedTimeInfo>
 	{
 		callback.accept(info);
 	}
-}
-
-// java.util.function.Consumer required API level 24
-interface Consumer<T>
-{
-	void accept(T t);
 }
