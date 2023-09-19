@@ -36,7 +36,7 @@
     <string name="common_button_cancel">Cancel</string>
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass, g</string>
-    <string name="common_hint_search">Search&#8230;</string>
+    <string name="common_hint_search">Search…</string>
     <string name="common_rate_k">Carb correction factor</string>
     <string name="common_rate_k_description">A CCF is how many points your blood sugar will increase with one unit of carbs</string>
     <string name="common_rate_q">Insulin correction factor</string>
@@ -190,6 +190,7 @@
         <item>Right hand, index</item>
         <item>Right hand, thumb</item>
     </string-array>
+
     <string-array name="fingers_short">
         <item>TL</item>
         <item>1L</item>
@@ -218,11 +219,11 @@
     </string-array>
 
     <string-array name="meal_format_titles">
-        <item>Top carbohydrated</item>
+        <item>Single item (most carbohydrated)</item>
         <item>Total carbohydrates, g</item>
         <item>Total BU</item>
         <item>Total carbohydrates and BU</item>
-        <item>List</item>
-        <item>List (by carbohydrates)</item>
+        <item>All items (default order)</item>
+        <item>All items (by carbohydrates)</item>
     </string-array>
 </resources>
