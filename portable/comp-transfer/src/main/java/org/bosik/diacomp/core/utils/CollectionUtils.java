@@ -29,7 +29,7 @@ public class CollectionUtils
 
 	public static <T> List<T> filter(Iterable<T> items, Predicate<T> predicate)
 	{
-		List<T> result = new ArrayList<>();
+		final List<T> result = new ArrayList<>();
 
 		for (T item : items)
 		{

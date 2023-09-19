@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -63,10 +63,10 @@ public enum PreferenceID implements Coded
 	 */
 	ANDROID_DIARY_USE_SEPARATOR("ba9c6c26873e4bc19b96b8838901ed7a", Type.BOOLEAN, "true", true);
 
-	private String  key;
-	private Type    type;
-	private String  defaultValue;
-	private boolean syncable;
+	private final String  key;
+	private final Type    type;
+	private final String  defaultValue;
+	private final boolean syncable;
 
 	PreferenceID(String key, Type type, String defaultValue, boolean syncable)
 	{
