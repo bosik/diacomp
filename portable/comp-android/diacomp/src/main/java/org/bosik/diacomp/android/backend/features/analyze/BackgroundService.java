@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
+
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
@@ -73,26 +74,7 @@ public class BackgroundService extends Service
 
 	private void performUpdateAsync()
 	{
-		new AsyncTask<Void, Void, Void>()
-		{
-			@Override
-			protected Void doInBackground(Void... arg0)
-			{
-				performUpdate(BackgroundService.this);
-				return null;
-			}
-
-			private void performUpdate(Context context)
-			{
-				// Relevant indexation
-				DiaryService diary = LocalDiary.getInstance(context);
-				RelevantIndexator.index(diary);
-
-				// Rates
-				RateServiceInternal.getInstanceAuto(context).update();
-				RateServiceInternal.getInstanceManual(context).update();
-			}
-		}.execute();
+		new BackgroundTask().execute(this);
 	}
 
 	@Override
@@ -111,5 +93,23 @@ public class BackgroundService extends Service
 	public void onDestroy()
 	{
 		timer.cancel();
+	}
+
+	private static class BackgroundTask extends AsyncTask<Context, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Context... args)
+		{
+			final Context context = args[0];
+
+			// Relevant indexation
+			DiaryService diary = LocalDiary.getInstance(context);
+			RelevantIndexator.index(diary);
+
+			// Rates
+			RateServiceInternal.getInstanceAuto(context).update();
+			RateServiceInternal.getInstanceManual(context).update();
+			return null;
+		}
 	}
 }
