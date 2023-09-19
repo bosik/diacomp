@@ -18,81 +18,56 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
-import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobParameters;
+import android.app.job.JobScheduler;
+import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.IBinder;
 
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.utils.Utils;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-public class BackgroundService extends Service
+public class BackgroundService extends JobService
 {
-	private static final String ACTION_FORCE_RUN = "runRightNow";
-	private static final long   TIMER_DELAY      = 2 * Utils.MsecPerSec;    // ms
-	private static final long   TIMER_INTERVAL   = 10 * Utils.MsecPerMin;
-
-	private final Timer timer          = new Timer();
-	private       long  lastForcedTime = 0L;
+	private static final long TIMER_INTERVAL = 60 * Utils.MsecPerMin;
+	private static final long TIMER_FLEX     = 5 * Utils.MsecPerMin;
+	private static final int  JOB_ID         = 1000;
 
 	public static void start(Context context)
 	{
-		context.startService(new Intent(context, BackgroundService.class));
+		final ComponentName jobService = new ComponentName(context, BackgroundService.class);
+		final JobInfo job = new JobInfo.Builder(JOB_ID, jobService)
+				.setPeriodic(TIMER_INTERVAL, TIMER_FLEX)
+				// .setRequiresBatteryNotLow(true) // requires API 26+
+				.build();
+		context.getSystemService(JobScheduler.class)
+				.schedule(job);
 	}
 
 	public static void forceRun(Context context)
 	{
-		context.startService(new Intent(ACTION_FORCE_RUN, null, context, BackgroundService.class));
+		final ComponentName jobService = new ComponentName(context, BackgroundService.class);
+		final JobInfo job = new JobInfo.Builder(JOB_ID, jobService)
+				.build();
+		context.getSystemService(JobScheduler.class)
+				.schedule(job);
 	}
 
 	@Override
-	public IBinder onBind(Intent intent)
-	{
-		return null;
-	}
-
-	@Override
-	public void onCreate()
-	{
-		super.onCreate();
-
-		timer.scheduleAtFixedRate(new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				performUpdateAsync();
-			}
-		}, TIMER_DELAY, TIMER_INTERVAL);
-	}
-
-	private void performUpdateAsync()
+	public boolean onStartJob(JobParameters params)
 	{
 		new BackgroundTask().execute(this);
+		return true;
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
+	public boolean onStopJob(JobParameters params)
 	{
-		if (intent != null && ACTION_FORCE_RUN.equals(intent.getAction()) && (System.nanoTime() - lastForcedTime) > TIMER_INTERVAL * 1000000L)
-		{
-			lastForcedTime = System.nanoTime();
-			performUpdateAsync();
-		}
-
-		return super.onStartCommand(intent, flags, startId);
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		timer.cancel();
+		return true; // re-schedule
 	}
 
 	private static class BackgroundTask extends AsyncTask<Context, Void, Void>
