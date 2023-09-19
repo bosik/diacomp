@@ -21,7 +21,6 @@ package org.bosik.diacomp.android.backend.features.notifications;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 
@@ -32,16 +31,8 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver
 	{
 		if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction()))
 		{
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-			{
-				context.startForegroundService(new Intent(context, NotificationService.class));
-				context.startService(new Intent(context, BackgroundService.class));
-			}
-			else
-			{
-				context.startService(new Intent(context, NotificationService.class));
-				context.startService(new Intent(context, BackgroundService.class));
-			}
+			NotificationService.start(context);
+			BackgroundService.start(context);
 		}
 	}
 }
