@@ -38,6 +38,9 @@ public class Profiler
 		return System.nanoTime() - startTime;
 	}
 
+	/**
+	 * @return Time passed since the last call of this method (or Profiler construction if no call was done yet), in nanoseconds
+	 */
 	public long sinceLastCheck()
 	{
 		long result = System.nanoTime() - lastCheckTime;
@@ -49,7 +52,7 @@ public class Profiler
 	 *
 	 * @param r
 	 * @param executionCount
-	 * @return Evergae execution time, in nanoseconds
+	 * @return Average execution time, in nanoseconds
 	 */
 	public static long measure(Runnable r, int executionCount)
 	{
