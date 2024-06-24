@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="server_url" translatable="false">https://diacomp.net/</string>
-    <string name="server_timeout" translatable="false">30000</string>
+    <integer name="server_timeout">60000</integer>
     <integer name="sync_interval_sec">3600</integer>
 
 </resources>

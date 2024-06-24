@@ -36,7 +36,7 @@ public class WebClientInternal
 		{
 			Log.i(TAG, "Web client initialization...");
 			final String serverURL = context.getString(R.string.server_url);
-			final int connectionTimeout = Integer.parseInt(context.getString(R.string.server_timeout));
+			final int connectionTimeout = context.getResources().getInteger(R.integer.server_timeout);
 
 			instance = new WebClient(serverURL, connectionTimeout);
 		}
