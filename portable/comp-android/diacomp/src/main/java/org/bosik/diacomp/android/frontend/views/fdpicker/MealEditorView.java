@@ -47,6 +47,7 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MealEditorView extends LinearLayout
 {
@@ -218,15 +219,8 @@ public class MealEditorView extends LinearLayout
 
 	public void setData(List<FoodMassed> data)
 	{
-		if (data != null)
-		{
-			this.data = data;
-			showData();
-		}
-		else
-		{
-			throw new IllegalArgumentException("Data is null");
-		}
+		this.data = Objects.requireNonNull(data, "Data is null");
+		showData();
 	}
 
 	public void setOnChangeListener(OnChangeListener l)
