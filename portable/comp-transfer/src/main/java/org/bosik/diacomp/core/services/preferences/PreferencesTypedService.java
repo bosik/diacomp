@@ -188,7 +188,7 @@ public class PreferencesTypedService implements PreferencesService
 	 * @param preferenceID
 	 * @param value
 	 */
-	public void setDoubleValue(PreferenceID preferenceID, Float value)
+	public void setDoubleValue(PreferenceID preferenceID, Double value)
 	{
 		service.setString(buildEntry(preferenceID, String.valueOf(value)));
 	}
