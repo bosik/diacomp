@@ -14,11 +14,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
 import android.os.SystemClock;
+
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.utils.Utils;
 
@@ -27,13 +28,12 @@ import java.util.Date;
 public class ServerTimeService
 {
 	// REST methods
-	private static final String	API_PREFERENCES			= "api/system/time";
+	private static final String API_PREFERENCES       = "api/system/time";
+	private static final long   CACHE_EXPIRATION_TIME = Utils.MsecPerHour;    // ms
 
-	private static final long	CACHE_EXPIRATION_TIME	= Utils.MsecPerHour;	// ms
-
-	private final WebClient		webClient;
-	private Date				cachedServerTime;
-	private long				cachedDeviceOffset;								// ms
+	private final WebClient webClient;
+	private       Date      cachedServerTime;
+	private       long      cachedDeviceOffset;                                // ms
 
 	public ServerTimeService(WebClient webClient)
 	{
@@ -48,12 +48,12 @@ public class ServerTimeService
 	private Date getServerTime()
 	{
 		// time-variant actions
-		long before = SystemClock.elapsedRealtime();
-		String resp = webClient.get(API_PREFERENCES);
-		long after = SystemClock.elapsedRealtime();
+		final long before = SystemClock.elapsedRealtime();
+		final String resp = webClient.get(API_PREFERENCES);
+		final long after = SystemClock.elapsedRealtime();
 
 		// time-invariant actions
-		Date serverTime = new Date(Utils.parseTimeUTC(resp).getTime() + (after - before) / 2);
+		final Date serverTime = new Date(Utils.parseTimeUTC(resp).getTime() + (after - before) / 2);
 
 		cachedServerTime = serverTime;
 		cachedDeviceOffset = after;
@@ -65,9 +65,8 @@ public class ServerTimeService
 	 * <b>Thread-blocking</b>. Fetches current server's time <i>at the moment method returns</i>.
 	 * Fail-soft.
 	 *
-	 * @param cacheAllowed
-	 *            If <code>true</code>, the time might be calculated using previously fetched server
-	 *            time; otherwise the server will be contacted
+	 * @param cacheAllowed If <code>true</code>, the time might be calculated using previously fetched server
+	 *                     time; otherwise the server will be contacted
 	 * @return Server's time if available, <code>null</code> otherwise.
 	 */
 	public synchronized Date getServerTime(boolean cacheAllowed)
