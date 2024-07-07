@@ -14,12 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
@@ -55,9 +58,10 @@ import java.util.Locale;
 
 class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 {
-	private List<Versioned<? extends Named>> itemsAll;
-	private List<Versioned<? extends Named>> suggestions;
-	private int                              viewResourceId;
+	private final List<Versioned<? extends Named>> itemsAll;
+	private final List<Versioned<? extends Named>> suggestions;
+	private final int                              viewResourceId;
+	private       List<String>                     tokens;
 
 	public ItemAdapter(Context context, int viewResourceId, List<Versioned<? extends Named>> items)
 	{
@@ -83,7 +87,11 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 			Versioned<? extends Named> item = suggestions.get(position);
 
 			TextView itemCaption = v.findViewById(R.id.itemDescription);
-			itemCaption.setText(item.getData().getName());
+			itemCaption.setText(highlightOccurrences(
+					item.getData().getName(),
+					tokens,
+					getContext().getResources().getColor(R.color.search_highlight, null)
+			));
 
 			// FIXME: use separated resources (not button's)
 			if (item.getData() instanceof FoodItem)
@@ -103,13 +111,36 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 		return v;
 	}
 
+	private static SpannableString highlightOccurrences(String text, List<String> tokens, int color)
+	{
+		final SpannableString s = new SpannableString(text);
+		text = text.toLowerCase(Locale.US);
+
+		if (tokens != null)
+		{
+			for (String t : tokens)
+			{
+				if (t.length() > 1)
+				{
+					final int start = text.indexOf(t);
+					if (start >= 0)
+					{
+						s.setSpan(new BackgroundColorSpan(color), start, start + t.length(), 0);
+					}
+				}
+			}
+		}
+
+		return s;
+	}
+
 	@Override
 	public Filter getFilter()
 	{
 		return filter;
 	}
 
-	private Filter filter = new Filter()
+	private final Filter filter = new Filter()
 	{
 		@Override
 		public String convertResultToString(Object resultValue)
@@ -122,27 +153,16 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 		{
 			if (constraint != null)
 			{
-				List<Versioned<? extends Named>> firstList = new ArrayList<>();
-				List<Versioned<? extends Named>> secondList = new ArrayList<>();
+				tokens = Utils.parseTokens(constraint.toString());
+				suggestions.clear();
 
-				String search = constraint.toString().toLowerCase(Locale.US);
 				for (Versioned<? extends Named> item : itemsAll)
 				{
-					String line = item.getData().getName().toLowerCase(Locale.US);
-
-					if (Utils.hasWordStartedWith(line, search))
+					if (Utils.matchesTokens(item.getData().getName(), tokens))
 					{
-						firstList.add(item);
-					}
-					else if (line.contains(search))
-					{
-						secondList.add(item);
+						suggestions.add(item);
 					}
 				}
-
-				suggestions.clear();
-				suggestions.addAll(firstList);
-				suggestions.addAll(secondList);
 
 				FilterResults filterResults = new FilterResults();
 				filterResults.values = suggestions;

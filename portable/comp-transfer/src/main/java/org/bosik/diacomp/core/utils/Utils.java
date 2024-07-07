@@ -46,6 +46,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Utils
 {
@@ -1301,6 +1303,19 @@ public class Utils
 			s.append("*");
 		}
 		return s.toString();
+	}
+
+	public static List<String> parseTokens(String query) {
+		return Stream.of(query.toLowerCase(Locale.US).split(" "))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toList());
+	}
+
+	public static boolean matchesTokens(String s, List<String> tokens)
+	{
+		final String lowercase = s.toLowerCase(Locale.US);
+		return tokens.stream().allMatch(lowercase::contains);
 	}
 
 	/**

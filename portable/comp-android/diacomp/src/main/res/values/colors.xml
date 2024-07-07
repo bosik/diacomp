@@ -28,6 +28,7 @@
     <color name="font_gray">#A0A0A0</color>
     <color name="meal_correction_negative">#CC0000</color>
     <color name="meal_correction_positive">#00CC00</color>
+    <color name="search_highlight">#FCF378</color>
     <color name="warning_background">#F7CCDD</color>
 
 </resources>

@@ -26,6 +26,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.CollectionUtils;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -205,13 +206,13 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 	{
 		if (filter != null)
 		{
-			final String filterLow = filter.toLowerCase(Locale.US);
+			final List<String> tokens = Utils.parseTokens(filter);
 			return clone(filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
 			{
 				@Override
 				public boolean test(Versioned<T> item)
 				{
-					return item.getData().getName().toLowerCase(Locale.US).contains(filterLow) && !item.isDeleted();
+					return Utils.matchesTokens(item.getData().getName(), tokens) &&  !item.isDeleted();
 				}
 			}));
 		}
