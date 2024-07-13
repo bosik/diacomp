@@ -14,11 +14,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
 import android.util.JsonReader;
+
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 
@@ -41,22 +42,22 @@ public class DishItemReader extends StreamReader<DishItem>
 
 			switch (name)
 			{
-				case "name":
+				case DishItem.FIELD_NAME:
 				{
 					item.setName(json.nextString());
 					break;
 				}
-				case "tag":
+				case DishItem.FIELD_TAG:
 				{
 					item.setTag(json.nextInt());
 					break;
 				}
-				case "mass":
+				case DishItem.FIELD_MASS:
 				{
 					item.setMass(json.nextDouble());
 					break;
 				}
-				case "content":
+				case DishItem.FIELD_CONTENT:
 				{
 					List<FoodMassed> items = foodMassedReader.readAll(json);
 					for (FoodMassed f : items)

@@ -1,23 +1,24 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.bosik.diacomp.core.entities.business;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.entities.business.interfaces.Relative;
 
@@ -30,19 +31,25 @@ public class Food implements Serializable, Named, Relative
 {
 	private static final long serialVersionUID = -659635365362405228L;
 
-	@JsonProperty("name")
+	public static final String FIELD_NAME  = "name";
+	public static final String FIELD_PROTS = "prots";
+	public static final String FIELD_FATS  = "fats";
+	public static final String FIELD_CARBS = "carbs";
+	public static final String FIELD_VALUE = "value";
+
+	@JsonProperty(FIELD_NAME)
 	private String name;
 
-	@JsonProperty("prots")
+	@JsonProperty(FIELD_PROTS)
 	private double relProts;
 
-	@JsonProperty("fats")
+	@JsonProperty(FIELD_FATS)
 	private double relFats;
 
-	@JsonProperty("carbs")
+	@JsonProperty(FIELD_CARBS)
 	private double relCarbs;
 
-	@JsonProperty("value")
+	@JsonProperty(FIELD_VALUE)
 	private double relValue;
 
 	public Food()

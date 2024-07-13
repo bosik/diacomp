@@ -14,11 +14,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
 import android.util.JsonReader;
+
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 
 import java.io.IOException;
@@ -37,37 +38,37 @@ public class FoodItemReader extends StreamReader<FoodItem>
 
 			switch (name)
 			{
-				case "name":
+				case FoodItem.FIELD_NAME:
 				{
 					item.setName(json.nextString());
 					break;
 				}
-				case "prots":
+				case FoodItem.FIELD_PROTS:
 				{
 					item.setRelProts(json.nextDouble());
 					break;
 				}
-				case "fats":
+				case FoodItem.FIELD_FATS:
 				{
 					item.setRelFats(json.nextDouble());
 					break;
 				}
-				case "carbs":
+				case FoodItem.FIELD_CARBS:
 				{
 					item.setRelCarbs(json.nextDouble());
 					break;
 				}
-				case "value":
+				case FoodItem.FIELD_VALUE:
 				{
 					item.setRelValue(json.nextDouble());
 					break;
 				}
-				case "tag":
+				case FoodItem.FIELD_TAG:
 				{
 					item.setTag(json.nextInt());
 					break;
 				}
-				case "table":
+				case FoodItem.FIELD_TABLE:
 				{
 					item.setFromTable(json.nextBoolean());
 					break;
