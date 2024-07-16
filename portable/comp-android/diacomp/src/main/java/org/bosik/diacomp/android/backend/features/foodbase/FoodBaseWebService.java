@@ -111,11 +111,11 @@ public class FoodBaseWebService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
+	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
 	{
 		try
 		{
-			String url = String.format(API_FOOD_FIND_ALL, Utils.formatBooleanInt(includeRemoved));
+			String url = String.format(API_FOOD_FIND_ALL, Utils.formatBooleanInt(includeDeleted));
 			String resp = webClient.get(url);
 			return serializer.readAll(resp);
 		}

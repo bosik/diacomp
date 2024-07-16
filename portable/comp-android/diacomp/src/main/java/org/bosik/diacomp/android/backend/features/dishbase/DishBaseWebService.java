@@ -111,11 +111,11 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll(boolean includeRemoved)
+	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
 	{
 		try
 		{
-			String url = String.format(API_DISH_FIND_ALL, Utils.formatBooleanInt(includeRemoved));
+			String url = String.format(API_DISH_FIND_ALL, Utils.formatBooleanInt(includeDeleted));
 			String resp = webClient.get(url);
 			return serializer.readAll(resp);
 		}
