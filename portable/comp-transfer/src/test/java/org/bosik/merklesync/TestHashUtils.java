@@ -101,10 +101,10 @@ public class TestHashUtils
 	{
 		assertArraysEquals(null, HashUtils.strToByte(null));
 		assertArraysEquals(new byte[] {}, HashUtils.strToByte(""));
-		assertArraysEquals(new byte[] { 0 - 128 }, HashUtils.strToByte("00"));
-		assertArraysEquals(new byte[] { 16 - 128 }, HashUtils.strToByte("10"));
-		assertArraysEquals(new byte[] { 255 - 128 }, HashUtils.strToByte("ff"));
-		assertArraysEquals(new byte[] { 171 - 128, 205 - 128 }, HashUtils.strToByte("abcd"));
+		assertArraysEquals(new byte[] { 0 }, HashUtils.strToByte("00"));
+		assertArraysEquals(new byte[] { 16 }, HashUtils.strToByte("10"));
+		assertArraysEquals(new byte[] { 255 - 256 }, HashUtils.strToByte("ff"));
+		assertArraysEquals(new byte[] { 171 - 256, 205 - 256 }, HashUtils.strToByte("abcd"));
 	}
 
 	@Test
@@ -112,10 +112,10 @@ public class TestHashUtils
 	{
 		assertEquals(null, HashUtils.byteToStr(null));
 		assertEquals("", HashUtils.byteToStr(new byte[] {}));
-		assertEquals("00", HashUtils.byteToStr(new byte[] { 0 - 128 }));
-		assertEquals("10", HashUtils.byteToStr(new byte[] { 16 - 128 }));
-		assertEquals("ff", HashUtils.byteToStr(new byte[] { 255 - 128 }));
-		assertEquals("abcd", HashUtils.byteToStr(new byte[] { 171 - 128, 205 - 128 }));
+		assertEquals("00", HashUtils.byteToStr(new byte[] { 0 }));
+		assertEquals("10", HashUtils.byteToStr(new byte[] { 16 }));
+		assertEquals("ff", HashUtils.byteToStr(new byte[] { 255 - 256 }));
+		assertEquals("abcd", HashUtils.byteToStr(new byte[] { 171 - 256, 205 - 256 }));
 	}
 
 	@Test

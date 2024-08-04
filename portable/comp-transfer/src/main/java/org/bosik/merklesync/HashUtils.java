@@ -1,13 +1,13 @@
 /*
  * MerkleSync - Data synchronization routine based on Merkle hash trees
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,7 +77,9 @@ public class HashUtils
 		byte[] result = new byte[value.length() >> 1];
 		for (int i = 0; i < result.length; i++)
 		{
-			result[i] = (byte) ((CHAR_TO_BYTE[value.charAt(i << 1)] << 4) + CHAR_TO_BYTE[value.charAt((i << 1) + 1)] - 128);
+			final char c1 = value.charAt(i << 1);
+			final char c2 = value.charAt((i << 1) + 1);
+			result[i] = (byte) ((CHAR_TO_BYTE[c1] << 4) + CHAR_TO_BYTE[c2]);
 		}
 
 		return result;
@@ -94,9 +96,7 @@ public class HashUtils
 		int i = 0;
 		for (int b : bytes)
 		{
-			int n = b + 128;
-			//			chars[i++] = BYTE_TO_CHAR[n >> 4];
-			//			chars[i++] = BYTE_TO_CHAR[n % 16];
+			int n = (b + 256) % 256;
 			chars[i++] = BYTE_HIGH[n];
 			chars[i++] = BYTE_LOW[n];
 		}
