@@ -17,14 +17,16 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import java.util.Date;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.mocks.MockFoodMassed;
 import org.junit.Test;
+
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestMealRecord
 {

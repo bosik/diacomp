@@ -17,12 +17,14 @@
  */
 package org.bosik.diacomp.core.mocks;
 
-import static junit.framework.TestCase.assertEquals;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+
+import static org.junit.Assert.assertEquals;
 
 public class MockDishItem implements Mock<DishItem>
 {
