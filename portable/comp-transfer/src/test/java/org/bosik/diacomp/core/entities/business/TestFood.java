@@ -17,13 +17,17 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Test;
 
-public class TestFood extends TestCase
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class TestFood
 {
 	private Food	food	= new Food();
 
+	@Test
 	public void testName()
 	{
 		// нормальный тест
@@ -57,6 +61,7 @@ public class TestFood extends TestCase
 		//		}
 	}
 
+	@Test
 	public void testRelProts()
 	{
 		// нормальный тест
@@ -86,6 +91,7 @@ public class TestFood extends TestCase
 		}
 	}
 
+	@Test
 	public void testRelFats()
 	{
 		// нормальный тест
@@ -115,6 +121,7 @@ public class TestFood extends TestCase
 		}
 	}
 
+	@Test
 	public void testRelCarbs()
 	{
 		// нормальный тест
@@ -144,6 +151,7 @@ public class TestFood extends TestCase
 		}
 	}
 
+	@Test
 	public void testRelValue()
 	{
 		// нормальный тест

@@ -17,12 +17,16 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
-import java.util.Date;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Test;
 
-public class TestInsRecord extends TestCase
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+
+public class TestInsRecord
 {
+	@Test
 	public void testInsRecord()
 	{
 		Date time = new Date();

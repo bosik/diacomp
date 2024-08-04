@@ -17,11 +17,6 @@
  */
 package org.bosik.diacomp.core.mocks;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -29,6 +24,13 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {
@@ -122,8 +124,8 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 	@Override
 	public void compare(DiaryRecord exp, DiaryRecord act)
 	{
-		TestCase.assertEquals(Utils.formatTimeUTC(exp.getTime()), Utils.formatTimeUTC(act.getTime()));
-		TestCase.assertEquals(exp.getClass(), act.getClass());
+		assertEquals(Utils.formatTimeUTC(exp.getTime()), Utils.formatTimeUTC(act.getTime()));
+		assertEquals(exp.getClass(), act.getClass());
 
 		// @formatter:off
 		if (exp.getClass() == BloodRecord.class) compareBloodRecords((BloodRecord)exp, (BloodRecord)act);
@@ -135,19 +137,19 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 	private static void compareBloodRecords(BloodRecord exp, BloodRecord act)
 	{
-		TestCase.assertEquals(exp.getValue(), act.getValue(), Utils.EPS);
-		TestCase.assertEquals(exp.getFinger(), act.getFinger());
+		assertEquals(exp.getValue(), act.getValue(), Utils.EPS);
+		assertEquals(exp.getFinger(), act.getFinger());
 	}
 
 	private static void compareInsRecords(InsRecord exp, InsRecord act)
 	{
-		TestCase.assertEquals(exp.getValue(), act.getValue(), Utils.EPS);
+		assertEquals(exp.getValue(), act.getValue(), Utils.EPS);
 	}
 
 	private void compareMealRecords(MealRecord exp, MealRecord act)
 	{
-		TestCase.assertEquals(exp.getShortMeal(), act.getShortMeal());
-		TestCase.assertEquals(exp.count(), act.count());
+		assertEquals(exp.getShortMeal(), act.getShortMeal());
+		assertEquals(exp.count(), act.count());
 
 		for (int j = 0; j < exp.count(); j++)
 		{
@@ -157,6 +159,6 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 	private static void compareNoteRecords(NoteRecord expRecord, NoteRecord actRecord)
 	{
-		TestCase.assertEquals(expRecord.getText(), actRecord.getText());
+		assertEquals(expRecord.getText(), actRecord.getText());
 	}
 }

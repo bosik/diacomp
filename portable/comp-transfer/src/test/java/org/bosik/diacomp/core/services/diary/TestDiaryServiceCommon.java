@@ -17,20 +17,27 @@
  */
 package org.bosik.diacomp.core.services.diary;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.test.VersionedUtils;
 import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.test.VersionedUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("unchecked")
-public abstract class TestDiaryServiceCommon extends TestCase implements TestDiaryService
+public abstract class TestDiaryServiceCommon implements TestDiaryService
 {
 	private DiaryService								diaryService;
 	private static final Mock<DiaryRecord>				mockDiaryRecord	= new MockDiaryRecord();
@@ -102,16 +109,14 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 	protected abstract DiaryService getService();
 
-	@Override
+	@Before
 	public void setUp()
 	{
 		diaryService = getService();
-		if (diaryService == null)
-		{
-			fail("Diary service can't be null");
-		}
+		assertNotNull("Diary service can't be null", diaryService);
 	}
 
+	@Test
 	@Override
 	public void test_PostRecordsGetRecords_Deleting_Removed()
 	{
@@ -195,6 +200,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		compareItems(originalItems, restoredItems, true);
 	}
 
+	@Test
 	@Override
 	public void test_PostRecordsGetRecordsViaGuid_Normal_RestoredOK()
 	{
@@ -213,6 +219,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		}
 	}
 
+	@Test
 	@Override
 	public void test_PostRecordsGetRecordsViaGuid_Update_UpdatedOk()
 	{
@@ -250,6 +257,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		}
 	}
 
+	@Test
 	@SuppressWarnings("null")
 	@Override
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK()
@@ -290,6 +298,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		compareItems(originalItems, restoredItems, true);
 	}
 
+	@Test
 	@SuppressWarnings("null")
 	@Override
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered()
@@ -330,6 +339,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		checkTimeOrder(restoredItems);
 	}
 
+	@Test
 	@Override
 	public void test_PostRecordsGetRecordsViaTimestamp_Normal_RestoredOK()
 	{

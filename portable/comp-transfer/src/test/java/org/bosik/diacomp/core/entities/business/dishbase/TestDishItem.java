@@ -17,45 +17,52 @@
  */
 package org.bosik.diacomp.core.entities.business.dishbase;
 
-import static junit.framework.TestCase.assertEquals;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class TestDishItem
 {
-	private DishItem	dish	= new DishItem();
+	private DishItem dish = new DishItem();
 
+	@Test
 	public void test_setName_normal_ok()
 	{
 		dish.setName("My test name");
 		assertEquals("My test name", dish.getName());
 	}
 
+	@Test
 	public void test_setMassdouble_notNull_ok()
 	{
 		dish.setMass(123.5);
 		assertEquals(123.5, dish.getMass(), Utils.EPS);
 	}
 
+	@Test
 	public void test_setMassDouble_notNull_ok()
 	{
-		dish.setMass((Double)123.5);
+		dish.setMass((Double) 123.5);
 		assertEquals(123.5, dish.getMass(), Utils.EPS);
 	}
 
+	@Test
 	public void test_setMass_null_ok()
 	{
 		dish.setMass(null);
 		assertEquals(null, dish.getMass());
 	}
 
+	@Test
 	public void test_setTag_normal_ok()
 	{
 		dish.setTag(42);
 		assertEquals(42, dish.getTag());
 	}
 
+	@Test
 	public void test_getRels_withoutMass_ok()
 	{
 		dish.add(new FoodMassed("Item", 10.0, 20.0, 30.0, 40.0, 100));
@@ -65,6 +72,7 @@ public class TestDishItem
 		assertEquals(40.0, dish.getRelValue(), Utils.EPS);
 	}
 
+	@Test
 	public void test_getRels_withMass_ok()
 	{
 		dish.add(new FoodMassed("Item", 10.0, 20.0, 30.0, 40.0, 100));
@@ -81,6 +89,7 @@ public class TestDishItem
 		dish.add(null);
 	}
 
+	@Test
 	public void test_remove_normal_ok()
 	{
 		dish.add(new FoodMassed("Item", 10.0, 20.0, 30.0, 40.0, 100));

@@ -17,18 +17,23 @@
  */
 package org.bosik.diacomp.core.services.base.food;
 
-import java.util.Date;
-import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.mocks.MockFoodItem;
 import org.bosik.diacomp.core.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.merklesync.Versioned;
+import org.junit.Before;
 import org.junit.Test;
 
-public abstract class TestFoodbaseServiceCommon extends TestCase implements TestFoodbaseService
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+public abstract class TestFoodbaseServiceCommon implements TestFoodbaseService
 {
 	private FoodBaseService						foodBaseService;
 	private static Mock<Versioned<FoodItem>>	mockGenerator	= new MockVersionedConverter<>(
@@ -36,7 +41,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 	protected abstract FoodBaseService getService();
 
-	@Override
+	@Before
 	protected void setUp()
 	{
 		init();
@@ -48,6 +53,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		assertNotNull(foodBaseService);
 	}
 
+	@Test
 	@Override
 	public void test_addFindById_single_PersistedOk()
 	{
@@ -69,6 +75,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		mockGenerator.compare(org, restored);
 	}
 
+	@Test
 	@Override
 	public void test_addFindChanged_single_ReturnedNonEmpty()
 	{
@@ -108,23 +115,16 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	//		}
 	//	}
 
+	@Test(expected = NotFoundException.class)
 	@Override
-	@Test
 	public void test_delete_notFound_exceptionRaised()
 	{
-		try
-		{
-			Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
-			foodBaseService.delete(org.getId());
-			foodBaseService.delete(org.getId());
-			fail("NotFoundException expected");
-		}
-		catch (NotFoundException e)
-		{
-			// it's ok, just as planned
-		}
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		foodBaseService.delete(org.getId());
+		foodBaseService.delete(org.getId());
 	}
 
+	@Test
 	@Override
 	public void test_addFindAll_single_ReturnedNonEmpty()
 	{
@@ -145,6 +145,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		assertTrue(!restored.isEmpty());
 	}
 
+	@Test
 	@Override
 	public void test_addFindAny_single_ok()
 	{

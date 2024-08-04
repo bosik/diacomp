@@ -17,15 +17,18 @@
  */
 package org.bosik.diacomp.core.mocks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import junit.framework.ComparisonFailure;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
 import org.junit.Ignore;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Ignore
 public class MockVersionedConverter<T> implements Mock<Versioned<T>>
@@ -70,16 +73,16 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 	@Override
 	public void compare(Versioned<T> exp, Versioned<T> act)
 	{
-		TestCase.assertNotNull(exp);
-		TestCase.assertNotNull(act);
+		assertNotNull(exp);
+		assertNotNull(act);
 
 		try
 		{
-			TestCase.assertEquals(exp.getId(), act.getId());
-			TestCase.assertEquals(Utils.formatTimeUTC(exp.getTimeStamp()), Utils.formatTimeUTC(act.getTimeStamp()));
-			TestCase.assertEquals(exp.getVersion(), act.getVersion());
-			TestCase.assertEquals(exp.isDeleted(), act.isDeleted());
-			TestCase.assertEquals(exp, act);
+			assertEquals(exp.getId(), act.getId());
+			assertEquals(Utils.formatTimeUTC(exp.getTimeStamp()), Utils.formatTimeUTC(act.getTimeStamp()));
+			assertEquals(exp.getVersion(), act.getVersion());
+			assertEquals(exp.isDeleted(), act.isDeleted());
+			assertEquals(exp, act);
 			generator.compare(exp.getData(), act.getData());
 		}
 		catch (ComparisonFailure e)

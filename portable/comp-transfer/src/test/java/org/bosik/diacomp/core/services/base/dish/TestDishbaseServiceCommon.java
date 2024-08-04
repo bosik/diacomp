@@ -17,18 +17,23 @@
  */
 package org.bosik.diacomp.core.services.base.dish;
 
-import java.util.Date;
-import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.mocks.MockDishItem;
 import org.bosik.diacomp.core.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.merklesync.Versioned;
+import org.junit.Before;
 import org.junit.Test;
 
-public abstract class TestDishbaseServiceCommon extends TestCase implements TestDishbaseService
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+public abstract class TestDishbaseServiceCommon implements TestDishbaseService
 {
 	private DishBaseService						dishBaseService;
 	private static Mock<Versioned<DishItem>>	mockGenerator	= new MockVersionedConverter<>(
@@ -36,7 +41,7 @@ public abstract class TestDishbaseServiceCommon extends TestCase implements Test
 
 	protected abstract DishBaseService getService();
 
-	@Override
+	@Before
 	protected void setUp()
 	{
 		init();
@@ -48,6 +53,7 @@ public abstract class TestDishbaseServiceCommon extends TestCase implements Test
 		assertNotNull(dishBaseService);
 	}
 
+	@Test
 	@Override
 	public void test_addFindById_single_PersistedOk()
 	{
@@ -69,6 +75,7 @@ public abstract class TestDishbaseServiceCommon extends TestCase implements Test
 		mockGenerator.compare(org, restored);
 	}
 
+	@Test
 	@Override
 	public void test_addFindChanged_single_ReturnedNonEmpty()
 	{
@@ -108,23 +115,16 @@ public abstract class TestDishbaseServiceCommon extends TestCase implements Test
 	//		}
 	//	}
 
+	@Test(expected = NotFoundException.class)
 	@Override
-	@Test
 	public void test_delete_notFound_exceptionRaised()
 	{
-		try
-		{
-			Versioned<DishItem> org = mockGenerator.getSamples().get(0);
-			dishBaseService.delete(org.getId());
-			dishBaseService.delete(org.getId());
-			fail("NotFoundException expected");
-		}
-		catch (NotFoundException e)
-		{
-			// it's ok, just as planned
-		}
+		Versioned<DishItem> org = mockGenerator.getSamples().get(0);
+		dishBaseService.delete(org.getId());
+		dishBaseService.delete(org.getId());
 	}
 
+	@Test
 	@Override
 	public void test_addFindAll_single_ReturnedNonEmpty()
 	{
@@ -145,6 +145,7 @@ public abstract class TestDishbaseServiceCommon extends TestCase implements Test
 		assertTrue(!restored.isEmpty());
 	}
 
+	@Test
 	@Override
 	public void test_addFindAny_single_ok()
 	{

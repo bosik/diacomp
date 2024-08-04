@@ -17,13 +17,15 @@
  */
 package org.bosik.diacomp.core.mocks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
 
 public class MockFoodMassed implements Mock<FoodMassed>
 {
@@ -65,6 +67,6 @@ public class MockFoodMassed implements Mock<FoodMassed>
 	{
 		mockFood.compare(exp, act);
 
-		TestCase.assertEquals(exp.getMass(), act.getMass(), Utils.EPS);
+		assertEquals(exp.getMass(), act.getMass(), Utils.EPS);
 	}
 }

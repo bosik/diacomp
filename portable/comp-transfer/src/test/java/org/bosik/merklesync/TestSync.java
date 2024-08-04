@@ -16,8 +16,8 @@
  */
 package org.bosik.merklesync;
 
-import junit.framework.TestCase;
 import org.bosik.merklesync.SyncUtils.Synchronizer2;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -26,8 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({ "unchecked", "deprecation", "static-method" })
 public class TestSync
@@ -39,19 +37,19 @@ public class TestSync
 		assertNotNull(exp);
 		assertNotNull(act);
 
-		TestCase.assertEquals(exp.getId(), act.getId());
-		TestCase.assertEquals(exp.getVersion(), act.getVersion());
-		TestCase.assertEquals(exp.getTimeStamp(), act.getTimeStamp());
-		TestCase.assertEquals(exp.isDeleted(), act.isDeleted());
+		Assert.assertEquals(exp.getId(), act.getId());
+		Assert.assertEquals(exp.getVersion(), act.getVersion());
+		Assert.assertEquals(exp.getTimeStamp(), act.getTimeStamp());
+		Assert.assertEquals(exp.isDeleted(), act.isDeleted());
 
-		TestCase.assertEquals(exp.getData(), act.getData());
+		Assert.assertEquals(exp.getData(), act.getData());
 	}
 
 	private static void assertEquals(List<Versioned<String>> listExp, List<Versioned<String>> listAct)
 	{
-		TestCase.assertNotNull(listExp);
-		TestCase.assertNotNull(listAct);
-		TestCase.assertEquals(listExp.size(), listAct.size());
+		assertNotNull(listExp);
+		assertNotNull(listAct);
+		Assert.assertEquals(listExp.size(), listAct.size());
 
 		listExp.sort(Versioned.COMPARATOR_GUID);
 		listAct.sort(Versioned.COMPARATOR_GUID);
