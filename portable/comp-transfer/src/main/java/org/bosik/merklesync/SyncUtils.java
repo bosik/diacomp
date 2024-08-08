@@ -86,70 +86,66 @@ public class SyncUtils
 	}
 
 	/**
-	 * Single item data synchronizer based on version comparison.
+	 * Synchronizes a single given entry between provided data sources:
+	 * <ul>
+	 * <li>If entry isn't found in any of sources, nothing happens; 0 is returned</li>
+	 * <li>If entry is found in only one source, it's copied to another source; 1 is returned</li>
+	 * <li>If entry is found in both sources, versions are compared:
+	 * <ul>
+	 * <li>If versions are different, an entry with higher version is copied to another source; 1 is returned</li>
+	 * <li>If versions are equal, nothing happens; 0 is returned</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
 	 *
-	 * @param <T> Type of data source objects
+	 * @param service1 First service
+	 * @param service2 Second service
+	 * @param id       Entry ID
+	 * @param <T>      Type of data source objects
+	 * @return Total number of transferred items (either 0 or 1)
 	 */
-	public static class SingleSynchronizer<T> implements Synchronizer
+	public static <T> int synchronizeSingle(DataSource<T> service1, DataSource<T> service2, String id)
 	{
-		private final DataSource<T> service1;
-		private final DataSource<T> service2;
-		private final String        id;
+		Utils.nullCheck(service1, "service1");
+		Utils.nullCheck(service2, "service2");
+		Utils.nullCheck(id, "id");
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1 First service
-		 * @param service2 Second service
-		 * @param id       Object ID to sync
-		 */
-		public SingleSynchronizer(DataSource<T> service1, DataSource<T> service2, String id)
+		// requesting items
+		final Versioned<T> item1 = service1.findById(id);
+		final Versioned<T> item2 = service2.findById(id);
+
+		if (item1 == null)
 		{
-			this.service1 = Utils.nullCheck(service1, "service1");
-			this.service2 = Utils.nullCheck(service2, "service2");
-			this.id = Utils.nullCheck(id, "id");
-		}
-
-		@Override
-		public int synchronize()
-		{
-			// requesting items
-			Versioned<T> item1 = service1.findById(id);
-			Versioned<T> item2 = service2.findById(id);
-
-			if (item1 == null)
-			{
-				if (item2 == null)
-				{
-					return 0; // item was not found in any sources
-				}
-				else
-				{
-					service1.save(Collections.singletonList(item2));
-					return 1;
-				}
-			}
-
 			if (item2 == null)
 			{
-				service2.save(Collections.singletonList(item1));
-				return 1;
+				return 0; // item was not found in any sources
 			}
-
-			if (item1.getVersion() < item2.getVersion())
+			else
 			{
 				service1.save(Collections.singletonList(item2));
 				return 1;
 			}
-
-			if (item1.getVersion() > item2.getVersion())
-			{
-				service2.save(Collections.singletonList(item1));
-				return 1;
-			}
-
-			return 0;
 		}
+
+		if (item2 == null)
+		{
+			service2.save(Collections.singletonList(item1));
+			return 1;
+		}
+
+		if (item1.getVersion() < item2.getVersion())
+		{
+			service1.save(Collections.singletonList(item2));
+			return 1;
+		}
+
+		if (item1.getVersion() > item2.getVersion())
+		{
+			service2.save(Collections.singletonList(item1));
+			return 1;
+		}
+
+		return 0;
 	}
 
 	/* ============================ SYNC METHODS: HASH-BASED ============================ */
