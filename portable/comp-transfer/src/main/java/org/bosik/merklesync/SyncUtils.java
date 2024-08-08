@@ -148,6 +148,29 @@ public class SyncUtils
 		return 0;
 	}
 
+	/**
+	 * Transfers a given entry from one source to another; no version comparison happens
+	 *
+	 * @param sourceFrom Original source
+	 * @param sourceTo   Destination source
+	 * @param id         Entry ID
+	 * @param <T>        Type of data source objects
+	 * @return Total number of transferred items (either 0 or 1)
+	 */
+	public static <T> int transferSingle(DataSource<T> sourceFrom, DataSource<T> sourceTo, String id)
+	{
+		final Versioned<T> entry = sourceFrom.findById(id);
+		if (entry != null)
+		{
+			sourceTo.save(Collections.singletonList(entry));
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	/* ============================ SYNC METHODS: HASH-BASED ============================ */
 
 	/**
