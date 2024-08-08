@@ -51,52 +51,38 @@ public class SyncUtils
 	/* ============================ SYNC METHODS: NAIVE ============================ */
 
 	/**
-	 * Data synchronizer based on version comparison. The sync scope is limited by the modification time.
+	 * Synchronizes two data sources, fetching all items modified after specified time and comparing items' versions
 	 *
-	 * @param <T> Type of data source objects
+	 * @param service1      First service
+	 * @param service2      Second service
+	 * @param since         Only items modified after this time stamp will be synced
+	 * @param maxItemsWrite Max number of items to be saved per request
+	 * @param <T>           Type of data source objects
+	 * @return Total number of transferred items
 	 */
-	public static class TimeSynchronizer<T> implements Synchronizer
+	public static <T> int synchronizeModifiedAfter(DataSource<T> service1, DataSource<T> service2, Date since, int maxItemsWrite)
 	{
-		private final DataSource<T> service1;
-		private final DataSource<T> service2;
-		private final Date          since;
-		private final int           maxItemsWrite;
+		Utils.nullCheck(service1, "service1");
+		Utils.nullCheck(service2, "service2");
+		Utils.nullCheck(since, "since date");
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1      First service
-		 * @param service2      Second service
-		 * @param since         Modification time limiter: items modified after this time is taking into account only
-		 * @param maxItemsWrite Max number of items to be saved to service per request
-		 */
-		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since, int maxItemsWrite)
-		{
-			this.service1 = Utils.nullCheck(service1, "service1");
-			this.service2 = Utils.nullCheck(service2, "service2");
-			this.since = Utils.nullCheck(since, "since date");
-			this.maxItemsWrite = maxItemsWrite;
-		}
+		final List<Versioned<T>> items1 = service1.findChanged(since);
+		final List<Versioned<T>> items2 = service2.findChanged(since);
+		return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
+	}
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1 First service
-		 * @param service2 Second service
-		 * @param since    Modification time limiter: items modified after this time is taking into account only
-		 */
-		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since)
-		{
-			this(service1, service2, since, Integer.MAX_VALUE);
-		}
-
-		@Override
-		public int synchronize()
-		{
-			List<Versioned<T>> items1 = service1.findChanged(since);
-			List<Versioned<T>> items2 = service2.findChanged(since);
-			return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
-		}
+	/**
+	 * Synchronizes two data sources, fetching all items modified after specified time and comparing items' versions
+	 *
+	 * @param service1 First service
+	 * @param service2 Second service
+	 * @param since    Only items modified after this time stamp will be synced
+	 * @param <T>      Type of data source objects
+	 * @return Total number of transferred items
+	 */
+	public static <T> int synchronizeModifiedAfter(DataSource<T> service1, DataSource<T> service2, Date since)
+	{
+		return synchronizeModifiedAfter(service1, service2, since, Integer.MAX_VALUE);
 	}
 
 	/**
