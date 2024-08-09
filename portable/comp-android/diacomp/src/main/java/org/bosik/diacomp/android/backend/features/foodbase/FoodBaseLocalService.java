@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
@@ -46,8 +46,8 @@ public class FoodBaseLocalService extends CachedBaseService<FoodItem> implements
 {
 	private static final String TAG = FoodBaseLocalService.class.getSimpleName();
 
-	private final Context         context;
-	private final ContentResolver resolver;
+	private final Context              context;
+	private final ContentResolver      resolver;
 	private final Serializer<FoodItem> serializer = new SerializerAdapter<>(new ParserFoodItem());
 
 	// =============================================================================================================================
@@ -83,15 +83,13 @@ public class FoodBaseLocalService extends CachedBaseService<FoodItem> implements
 	@Override
 	protected List<Versioned<FoodItem>> loadAllFromDb()
 	{
-		Cursor cursor = resolver.query(TableFoodbase.CONTENT_URI, null, "", new String[] {}, null);
-
-		if (cursor == null)
+		try (Cursor cursor = resolver.query(TableFoodbase.CONTENT_URI, null, "", new String[] {}, null))
 		{
-			throw new IllegalStateException("Cursor is null");
-		}
+			if (cursor == null)
+			{
+				throw new IllegalStateException("Cursor is null");
+			}
 
-		try
-		{
 			List<Versioned<FoodItem>> map = new ArrayList<>();
 
 			int indexId = cursor.getColumnIndex(TableFoodbase.COLUMN_ID);
@@ -117,10 +115,6 @@ public class FoodBaseLocalService extends CachedBaseService<FoodItem> implements
 			}
 
 			return map;
-		}
-		finally
-		{
-			cursor.close();
 		}
 	}
 

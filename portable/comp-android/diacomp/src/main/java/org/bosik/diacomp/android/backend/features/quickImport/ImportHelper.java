@@ -14,12 +14,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.quickImport;
 
 import android.content.Context;
 import android.util.Log;
+
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -102,8 +103,7 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			final InputStream stream = client.loadStream(URL_EXPORT_PLAIN);
-			try
+			try (InputStream stream = client.loadStream(URL_EXPORT_PLAIN))
 			{
 				Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
 
@@ -117,8 +117,7 @@ public class ImportHelper
 				{
 					if (entry.getName() != null)
 					{
-						final InputStream data = new ByteArrayInputStream(entry.getContent());
-						try
+						try (InputStream data = new ByteArrayInputStream(entry.getContent()))
 						{
 							switch (entry.getName())
 							{
@@ -161,16 +160,8 @@ public class ImportHelper
 								}
 							}
 						}
-						finally
-						{
-							data.close();
-						}
 					}
 				}
-			}
-			finally
-			{
-				stream.close();
 			}
 		}
 		catch (IOException e)

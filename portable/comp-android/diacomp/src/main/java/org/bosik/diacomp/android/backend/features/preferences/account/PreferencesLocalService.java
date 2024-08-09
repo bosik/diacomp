@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
@@ -78,9 +78,7 @@ public class PreferencesLocalService implements PreferencesService, Importable
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
-
-		try
+		try (Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder))
 		{
 			if (cursor != null)
 			{
@@ -115,13 +113,6 @@ public class PreferencesLocalService implements PreferencesService, Importable
 				throw new IllegalArgumentException("Cursor is null");
 			}
 		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
-		}
 	}
 
 	@Override
@@ -143,9 +134,7 @@ public class PreferencesLocalService implements PreferencesService, Importable
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
-
-		try
+		try (Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder))
 		{
 			if (cursor != null)
 			{
@@ -170,13 +159,6 @@ public class PreferencesLocalService implements PreferencesService, Importable
 			else
 			{
 				throw new IllegalArgumentException("Cursor is null");
-			}
-		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
 			}
 		}
 	}
@@ -219,18 +201,9 @@ public class PreferencesLocalService implements PreferencesService, Importable
 		final String[] whereArgs = { key };
 		final String sortOrder = null;
 
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, select, where, whereArgs, sortOrder);
-
-		try
+		try (Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, select, where, whereArgs, sortOrder))
 		{
 			return cursor != null && cursor.moveToFirst();
-		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
 		}
 	}
 

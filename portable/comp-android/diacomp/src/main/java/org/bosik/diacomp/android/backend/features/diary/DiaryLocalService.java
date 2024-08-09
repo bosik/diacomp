@@ -55,6 +55,7 @@ import org.bosik.merklesync.Versioned;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -195,9 +196,7 @@ public class DiaryLocalService implements DiaryService, Importable
 		String clause = String.format("%s LIKE ?", TableDiary.COLUMN_ID);
 		String[] clauseArgs = { prefix + "%" };
 
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, null);
-
-		try
+		try (Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, null))
 		{
 			if (cursor != null)
 			{
@@ -207,13 +206,6 @@ public class DiaryLocalService implements DiaryService, Importable
 			else
 			{
 				throw new IllegalArgumentException("Cursor is null");
-			}
-		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
 			}
 		}
 	}
@@ -342,18 +334,9 @@ public class DiaryLocalService implements DiaryService, Importable
 		final String[] whereArgs = { id };
 		final String sortOrder = null;
 
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, where, whereArgs, sortOrder);
-
-		try
+		try (Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, where, whereArgs, sortOrder))
 		{
 			return cursor != null && cursor.moveToFirst();
-		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
 		}
 	}
 
@@ -420,32 +403,32 @@ public class DiaryLocalService implements DiaryService, Importable
 		final String[] whereArgs = null;
 
 		// execute query
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, where, whereArgs, null);
-
-		// analyze response
-		int indexId = cursor.getColumnIndex(TableDiary.COLUMN_ID);
-		int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
-
-		SortedMap<String, String> result = new TreeMap<>();
-
-		while (cursor.moveToNext())
+		try (Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, where, whereArgs, null))
 		{
-			String id = cursor.getString(indexId);
-			String hash = cursor.getString(indexHash);
+			// analyze response
+			int indexId = cursor.getColumnIndex(TableDiary.COLUMN_ID);
+			int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
 
-			if (id == null || id.length() < ID_PREFIX_SIZE)
+			SortedMap<String, String> result = new TreeMap<>();
+
+			while (cursor.moveToNext())
 			{
-				Log.w(TAG, String.format("Invalid hash ignored: %s = %s", id, hash));
+				String id = cursor.getString(indexId);
+				String hash = cursor.getString(indexHash);
+
+				if (id == null || id.length() < ID_PREFIX_SIZE)
+				{
+					Log.w(TAG, String.format("Invalid hash ignored: %s = %s", id, hash));
+				}
+				else
+				{
+					// THINK: probably storing entries is unnecessary, so we should process it as we go
+					result.put(id, hash);
+				}
 			}
-			else
-			{
-				// THINK: probably storing entries is unnecessary, so we should process it as we go
-				result.put(id, hash);
-			}
+
+			return result;
 		}
-
-		cursor.close();
-		return result;
 	}
 
 	@Override
@@ -611,8 +594,7 @@ public class DiaryLocalService implements DiaryService, Importable
 	{
 		StreamReader<Versioned<DiaryRecord>> reader = new DiaryRecordVersionedReader();
 
-		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
-		try
+		try (JsonReader json = new JsonReader(new InputStreamReader(stream, StandardCharsets.UTF_8)))
 		{
 			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
 			db.beginTransaction();
@@ -654,10 +636,6 @@ public class DiaryLocalService implements DiaryService, Importable
 				db.close();
 				resolver.notifyChange(TableDiary.CONTENT_URI, null);
 			}
-		}
-		finally
-		{
-			json.close();
 		}
 	}
 }

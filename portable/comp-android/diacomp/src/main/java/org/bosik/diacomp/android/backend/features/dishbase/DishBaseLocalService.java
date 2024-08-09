@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
@@ -46,8 +46,8 @@ public class DishBaseLocalService extends CachedBaseService<DishItem> implements
 {
 	private static final String TAG = org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService.class.getSimpleName();
 
-	private final Context         context;
-	private final ContentResolver resolver;
+	private final Context              context;
+	private final ContentResolver      resolver;
 	private final Serializer<DishItem> serializer = new SerializerAdapter<>(new ParserDishItem());
 
 	// =============================================================================================================================
@@ -83,15 +83,13 @@ public class DishBaseLocalService extends CachedBaseService<DishItem> implements
 	@Override
 	protected List<Versioned<DishItem>> loadAllFromDb()
 	{
-		Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, null, "", new String[] {}, null);
-
-		if (cursor == null)
+		try (Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, null, "", new String[] {}, null))
 		{
-			throw new IllegalStateException("Cursor is null");
-		}
+			if (cursor == null)
+			{
+				throw new IllegalStateException("Cursor is null");
+			}
 
-		try
-		{
 			List<Versioned<DishItem>> map = new ArrayList<>();
 
 			int indexId = cursor.getColumnIndex(TableDishbase.COLUMN_ID);
@@ -117,10 +115,6 @@ public class DishBaseLocalService extends CachedBaseService<DishItem> implements
 			}
 
 			return map;
-		}
-		finally
-		{
-			cursor.close();
 		}
 	}
 

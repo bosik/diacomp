@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,8 +31,8 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class RatesDao
 {
-	private ContentResolver	resolver;
-	private Context			context;
+	private ContentResolver resolver;
+	private Context         context;
 
 	public RatesDao(Context context)
 	{
@@ -83,11 +83,9 @@ public class RatesDao
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TableRates.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
-
-		if (cursor != null)
+		try (Cursor cursor = resolver.query(TableRates.CONTENT_URI, projection, clause, clauseArgs, sortOrder))
 		{
-			try
+			if (cursor != null)
 			{
 				int indexK = cursor.getColumnIndexOrThrow(TableRates.COLUMN_VALUE_K);
 				int indexQ = cursor.getColumnIndexOrThrow(TableRates.COLUMN_VALUE_Q);
@@ -101,10 +99,6 @@ public class RatesDao
 
 					return new Rate(k, q, p);
 				}
-			}
-			finally
-			{
-				cursor.close();
 			}
 		}
 

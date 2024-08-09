@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -40,8 +40,8 @@ public final class ZipUtils
 
 	public static class Entry
 	{
-		private String	name;
-		private byte[]	content;
+		private String name;
+		private byte[] content;
 
 		public Entry(String name, byte[] content)
 		{
@@ -76,18 +76,14 @@ public final class ZipUtils
 		PipedInputStream source = new PipedInputStream(sink);
 
 		new Thread(() -> {
-			try
+			try (ZipOutputStream zip = new ZipOutputStream(sink))
 			{
-				ZipOutputStream zip = new ZipOutputStream(sink);
-
 				for (Entry entry : entries)
 				{
 					zip.putNextEntry(new ZipEntry(entry.getName()));
 					zip.write(entry.getContent());
 					zip.closeEntry();
 				}
-
-				zip.close();
 			}
 			catch (IOException e)
 			{
