@@ -56,15 +56,34 @@ public class HashUtils
 
 	// --------------------------------------------------------------------------------------
 
-	public static int toInt(String key)
+	public static int toInt(String s)
+	{
+		return toInt(s, s.length());
+	}
+
+	public static int toInt(String s, int prefixSize)
 	{
 		int value = 0;
-		for (int i = 0; i < key.length(); i++)
+
+		for (int i = 0; i < prefixSize; i++)
 		{
 			value *= 16;
-			value += CHAR_TO_BYTE[key.charAt(i)];
+			value += CHAR_TO_BYTE[s.charAt(i)];
 		}
+
 		return value;
+	}
+
+	public static String toHex(int n, int size)
+	{
+		String s = "";
+		while (s.length() < size)
+		{
+			s = BYTE_TO_CHAR[n % 16] + s;
+			n /= 16;
+		}
+
+		return s;
 	}
 
 	public static byte[] strToByte(String value)
