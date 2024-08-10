@@ -462,33 +462,11 @@ public class DiaryLocalService implements DiaryService, Importable
 	{
 		if (cursor != null)
 		{
-			int indexID = cursor.getColumnIndex(TableDiary.COLUMN_ID);
-			int indexTimestamp = cursor.getColumnIndex(TableDiary.COLUMN_TIMESTAMP);
-			int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
-			int indexVersion = cursor.getColumnIndex(TableDiary.COLUMN_VERSION);
-			int indexDeleted = cursor.getColumnIndex(TableDiary.COLUMN_DELETED);
-			int indexContent = cursor.getColumnIndex(TableDiary.COLUMN_CONTENT);
-
 			List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 			while (cursor.moveToNext())
 			{
-				String id = cursor.getString(indexID);
-				Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
-				String hash = cursor.getString(indexHash);
-				int version = cursor.getInt(indexVersion);
-				boolean deleted = (cursor.getInt(indexDeleted) == 1);
-				String content = cursor.getString(indexContent);
-				DiaryRecord record = serializer.read(content);
-
-				Versioned<DiaryRecord> item = new Versioned<>(record);
-				item.setId(id);
-				item.setTimeStamp(timestamp);
-				item.setHash(hash);
-				item.setVersion(version);
-				item.setDeleted(deleted);
-
-				result.add(item);
+				result.add(parseEntry(cursor));
 
 				if (limit > 0 && result.size() > limit)
 				{
@@ -504,6 +482,27 @@ public class DiaryLocalService implements DiaryService, Importable
 		{
 			throw new CommonServiceException(new IllegalArgumentException("Cursor is null"));
 		}
+	}
+
+	private Versioned<DiaryRecord> parseEntry(Cursor cursor)
+	{
+		final int indexID = cursor.getColumnIndex(TableDiary.COLUMN_ID);
+		final int indexTimestamp = cursor.getColumnIndex(TableDiary.COLUMN_TIMESTAMP);
+		final int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
+		final int indexVersion = cursor.getColumnIndex(TableDiary.COLUMN_VERSION);
+		final int indexDeleted = cursor.getColumnIndex(TableDiary.COLUMN_DELETED);
+		final int indexContent = cursor.getColumnIndex(TableDiary.COLUMN_CONTENT);
+
+		final DiaryRecord record = serializer.read(cursor.getString(indexContent));
+
+		final Versioned<DiaryRecord> item = new Versioned<>(record);
+		item.setId(cursor.getString(indexID));
+		item.setTimeStamp(Utils.parseTimeUTC(cursor.getString(indexTimestamp)));
+		item.setHash(cursor.getString(indexHash));
+		item.setVersion(cursor.getInt(indexVersion));
+		item.setDeleted((cursor.getInt(indexDeleted) == 1));
+
+		return item;
 	}
 
 	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor)
