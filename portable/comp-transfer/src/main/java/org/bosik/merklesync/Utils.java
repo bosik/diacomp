@@ -17,8 +17,8 @@
 package org.bosik.merklesync;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Utils
 {
@@ -59,11 +59,11 @@ public class Utils
 	 *
 	 * @param items1 First list
 	 * @param items2 Second list
-	 * @param newer1 Items which has greater version in the first list
-	 * @param newer2 Items which has greater version in the second list
+	 * @param newer1 Callback for items that have greater version in the first list
+	 * @param newer2 Callback for items that have greater version in the second list
 	 */
-	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2, List<Versioned<T>> newer1,
-			List<Versioned<T>> newer2)
+	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2, Consumer<Versioned<T>> newer1,
+			Consumer<Versioned<T>> newer2)
 	{
 		nullCheck(items1, "items1");
 		nullCheck(items2, "items2");
@@ -84,34 +84,34 @@ public class Utils
 			int c = Versioned.COMPARATOR_GUID.compare(p1, p2);
 			if (c < 0)
 			{
-				newer1.add(p1);
+				newer1.accept(p1);
 				i++;
 			}
 			else if (c > 0)
 			{
-				newer2.add(p2);
+				newer2.accept(p2);
 				j++;
 			}
 			else
 			{
 				if (p1.getVersion() > p2.getVersion())
 				{
-					newer1.add(p1);
+					newer1.accept(p1);
 				}
 				else if (p1.getVersion() < p2.getVersion())
 				{
-					newer2.add(p2);
+					newer2.accept(p2);
 				}
 				else if (!p1.getHash().equals(p2.getHash()))
 				{
 					// We have a conflict
 					if (p1.getTimeStamp().after(p2.getTimeStamp()))
 					{
-						newer1.add(p1);
+						newer1.accept(p1);
 					}
 					else
 					{
-						newer2.add(p2);
+						newer2.accept(p2);
 					}
 				}
 				i++;
@@ -122,16 +122,35 @@ public class Utils
 		// finish first list
 		while (i < items1.size())
 		{
-			newer1.add(items1.get(i));
+			newer1.accept(items1.get(i));
 			i++;
 		}
 
 		// finish second list
 		while (j < items2.size())
 		{
-			newer2.add(items2.get(j));
+			newer2.accept(items2.get(j));
 			j++;
 		}
+	}
+
+	/**
+	 * Calculates lists for synchronization
+	 *
+	 * @param items1 First list
+	 * @param items2 Second list
+	 * @param newer1 Items which has greater version in the first list
+	 * @param newer2 Items which has greater version in the second list
+	 */
+	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2, List<Versioned<T>> newer1,
+			List<Versioned<T>> newer2)
+	{
+		nullCheck(items1, "items1");
+		nullCheck(items2, "items2");
+		nullCheck(newer1, "newer1");
+		nullCheck(newer2, "newer2");
+
+		getOverLists(items1, items2, newer1::add, newer2::add);
 	}
 
 	/**
