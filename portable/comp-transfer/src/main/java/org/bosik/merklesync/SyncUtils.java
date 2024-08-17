@@ -174,82 +174,76 @@ public class SyncUtils
 	/* ============================ SYNC METHODS: HASH-BASED ============================ */
 
 	/**
-	 * General-purpose data source synchronizer based on tree hashes and version comparison.
+	 * Synchronizes two data sources based on tree hashes and version comparison
 	 *
-	 * @param <T> Type of data source objects
-	 * @deprecated This implementation checks only one hash per request and doesn't support progress callbacking. Use
-	 * {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 * @param service1      First service
+	 * @param service2      Second service
+	 * @param maxItemsWrite Max number of items to be saved to service per request
+	 * @param <T>           Type of data source objects
+	 * @return Total number of transferred items
+	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
 	 */
 	@Deprecated
-	public static class Synchronizer1<T> implements Synchronizer
+	public static <T> int synchronizeByHash(DataSource<T> service1, DataSource<T> service2, int maxItemsWrite)
 	{
-		private final DataSource<T> service1;
-		private final DataSource<T> service2;
-		private       MerkleTree    tree1;
-		private       MerkleTree    tree2;
-		private final int           maxItemsWrite;
+		Utils.nullCheck(service1, "service1");
+		Utils.nullCheck(service2, "service2");
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1      First service
-		 * @param service2      Second service
-		 * @param maxItemsWrite Max number of items to be saved to service per request
-		 */
-		public Synchronizer1(DataSource<T> service1, DataSource<T> service2, int maxItemsWrite)
+		final MerkleTree hashTree1 = Utils.nullCheck(service1.getHashTree(), "hashTree1");
+		final MerkleTree hashTree2 = Utils.nullCheck(service2.getHashTree(), "hashTree2");
+
+		return synchronizeHashPrefix(service1, service2, hashTree1, hashTree2, maxItemsWrite, "");
+	}
+
+	/**
+	 * Synchronizes two data sources based on tree hashes and version comparison
+	 *
+	 * @param service1 First service
+	 * @param service2 Second service
+	 * @param <T>      Type of data source objects
+	 * @return Total number of transferred items
+	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 */
+	@Deprecated
+	public static <T> int synchronizeByHash(DataSource<T> service1, DataSource<T> service2)
+	{
+		return synchronizeByHash(service1, service2, Integer.MAX_VALUE);
+	}
+
+	private static <T> int synchronizeHashPrefix(
+			DataSource<T> service1,
+			DataSource<T> service2,
+			MerkleTree hashTree1,
+			MerkleTree hashTree2,
+			int maxItemsWrite,
+			String prefix)
+	{
+
+		final String hash1 = hashTree1.getHash(prefix);
+		final String hash2 = hashTree2.getHash(prefix);
+
+		if (Utils.equals(hash1, hash2))
 		{
-			this.service1 = Utils.nullCheck(service1, "service1");
-			this.service2 = Utils.nullCheck(service2, "service2");
-			this.maxItemsWrite = maxItemsWrite;
+			return 0;
 		}
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1 First service
-		 * @param service2 Second service
-		 */
-		public Synchronizer1(DataSource<T> service1, DataSource<T> service2)
+		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
 		{
-			this(service1, service2, Integer.MAX_VALUE);
+			int result = 0;
+
+			for (int i = 0; i < 16; i++)
+			{
+				result += synchronizeHashPrefix(service1, service2, hashTree1, hashTree2, maxItemsWrite, prefix + HashUtils.byteToChar(i));
+			}
+
+			return result;
 		}
-
-		@Override
-		public int synchronize()
+		else
 		{
-			tree1 = Utils.nullCheck(service1.getHashTree(), "tree1");
-			tree2 = Utils.nullCheck(service2.getHashTree(), "tree2");
-			return synchronizePrefix("");
-		}
+			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
 
-		private int synchronizePrefix(String prefix)
-		{
-			String hash1 = tree1.getHash(prefix);
-			String hash2 = tree2.getHash(prefix);
-
-			if (Utils.equals(hash1, hash2))
-			{
-				return 0;
-			}
-
-			if (prefix.length() < DataSource.ID_PREFIX_SIZE)
-			{
-				int result = 0;
-
-				for (int i = 0; i < 16; i++)
-				{
-					result += synchronizePrefix(prefix + HashUtils.byteToChar(i));
-				}
-
-				return result;
-			}
-			else
-			{
-				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-
-				return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
-			}
+			return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
 		}
 	}
 
