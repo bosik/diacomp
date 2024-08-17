@@ -53,9 +53,9 @@ public class MemoryMerkleTree implements MerkleTree
 		{
 			Map<String, String> directChildren = new HashMap<>();
 
-			for (char c : HashUtils.BYTE_TO_CHAR)
+			for (int i = 0; i < 16; i++)
 			{
-				String key = prefix + c;
+				String key = prefix + HashUtils.byteToChar(i);
 				String value = map.get(key);
 				if (value != null)
 				{

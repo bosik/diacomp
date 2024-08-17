@@ -77,7 +77,7 @@ public class MemoryMerkleTree3 implements MerkleTree
 				byte[] value = table[prefix.length() + 1][from + i];
 				if (value != null)
 				{
-					directChildren.put(prefix + HashUtils.BYTE_TO_CHAR[i], HashUtils.byteToStr(value));
+					directChildren.put(prefix + HashUtils.byteToChar(i), HashUtils.byteToStr(value));
 				}
 			}
 

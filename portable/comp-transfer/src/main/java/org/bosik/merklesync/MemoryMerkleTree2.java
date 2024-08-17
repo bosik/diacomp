@@ -76,7 +76,7 @@ public class MemoryMerkleTree2 implements MerkleTree
 				String value = table[prefix.length() + 1][from + i];
 				if (value != null)
 				{
-					directChildren.put(prefix + HashUtils.BYTE_TO_CHAR[i], value);
+					directChildren.put(prefix + HashUtils.byteToChar(i), value);
 				}
 			}
 

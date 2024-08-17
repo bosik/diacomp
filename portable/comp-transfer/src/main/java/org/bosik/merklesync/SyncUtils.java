@@ -236,9 +236,9 @@ public class SyncUtils
 			{
 				int result = 0;
 
-				for (char c : HashUtils.BYTE_TO_CHAR)
+				for (int i = 0; i < 16; i++)
 				{
-					result += synchronizePrefix(prefix + c);
+					result += synchronizePrefix(prefix + HashUtils.byteToChar(i));
 				}
 
 				return result;
@@ -368,14 +368,14 @@ public class SyncUtils
 					}
 					case 1:
 					{
-						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16;
+						int progress = HashUtils.charToByte(prefix.charAt(0)) * 16;
 						callback.onProgress(progress, 256);
 						break;
 					}
 					case 2:
 					{
-						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16
-								+ HashUtils.CHAR_TO_BYTE[prefix.charAt(1)];
+						int progress = HashUtils.charToByte(prefix.charAt(0)) * 16
+								+ HashUtils.charToByte(prefix.charAt(1));
 						callback.onProgress(progress, 256);
 						break;
 					}
@@ -389,9 +389,9 @@ public class SyncUtils
 				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
 				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
 
-				for (char c : HashUtils.BYTE_TO_CHAR)
+				for (int i = 0; i < 16; i++)
 				{
-					String key = prefix + c;
+					String key = prefix + HashUtils.byteToChar(i);
 					String hash1 = hashes1.get(key);
 					String hash2 = hashes2.get(key);
 					if (!Utils.equals(hash1, hash2))

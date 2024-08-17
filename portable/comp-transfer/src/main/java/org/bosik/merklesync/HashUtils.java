@@ -27,8 +27,8 @@ import java.util.UUID;
 
 public class HashUtils
 {
-	public static final char[] BYTE_TO_CHAR = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-	public static final byte[] CHAR_TO_BYTE = new byte[65536];
+	private static final char[] BYTE_TO_CHAR = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	private static final byte[] CHAR_TO_BYTE = new byte[65536];
 
 	static
 	{
@@ -54,6 +54,8 @@ public class HashUtils
 		}
 	}
 
+	// --------------------------------------------------------------------------------------
+	// CONVERSION
 	// --------------------------------------------------------------------------------------
 
 	public static int toInt(String s)
@@ -84,6 +86,16 @@ public class HashUtils
 		}
 
 		return s;
+	}
+
+	public static char byteToChar(int x)
+	{
+		return BYTE_TO_CHAR[x];
+	}
+
+	public static byte charToByte(char c)
+	{
+		return CHAR_TO_BYTE[c];
 	}
 
 	public static byte[] strToByte(String value)
