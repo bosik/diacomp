@@ -21,6 +21,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
@@ -173,6 +174,23 @@ public class TestHashUtils
 				HashUtils.sum("88888888888888888888888888888888", "77777777777777777777777777777777"));
 		assertEquals("00000000000000000000000000000000",
 				HashUtils.sum("88888888888888888888888888888888", "88888888888888888888888888888888"));
+	}
+
+	@Test
+	public void test_sumIterable()
+	{
+		// given
+		final List<String> hashes = Arrays.asList(
+				"00000000000000000000000000000000",
+				"11111111111111111111111111111111",
+				"22222222222222222222222222222222"
+		);
+
+		// when
+		final String sum = HashUtils.sum(hashes);
+
+		// then
+		assertEquals("33333333333333333333333333333333", sum);
 	}
 
 	@Test

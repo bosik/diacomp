@@ -17,7 +17,6 @@
 package org.bosik.merklesync;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -185,11 +184,11 @@ public class HashUtils
 		return new String(c_array);
 	}
 
-	public static String calculateHash(Collection<String> collection)
+	public static String sum(Iterable<String> hashes)
 	{
 		String result = null;
 
-		for (String hash : collection)
+		for (String hash : hashes)
 		{
 			result = sum(result, hash);
 		}
@@ -232,7 +231,7 @@ public class HashUtils
 			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
 			{
 				String key = prevKey.substring(0, prefixSize);
-				String value = calculateHash(buffer);
+				String value = sum(buffer);
 				result.put(key, value);
 				buffer.clear();
 			}
@@ -243,7 +242,7 @@ public class HashUtils
 		if (!buffer.isEmpty())
 		{
 			@SuppressWarnings("null") String key = prevKey.substring(0, prefixSize);
-			String value = calculateHash(buffer);
+			String value = sum(buffer);
 			result.put(key, value);
 		}
 
