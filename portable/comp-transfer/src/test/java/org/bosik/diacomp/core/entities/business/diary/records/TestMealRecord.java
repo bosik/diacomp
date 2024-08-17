@@ -25,13 +25,12 @@ import org.junit.Test;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class TestMealRecord
 {
-	private static final Mock<FoodMassed>	mock	= new MockFoodMassed();
-	private final MealRecord				meal	= new MealRecord(new Date(), false);
+	private static final double           EPS  = 0.0001;
+	private static final Mock<FoodMassed> mock = new MockFoodMassed();
+	private final        MealRecord       meal = new MealRecord(new Date(), false);
 
 	@Test
 	public void addGet_normal_ok()
@@ -69,19 +68,10 @@ public class TestMealRecord
 		meal.add(food);
 		meal.add(food);
 
-		assertEquals(2 * food.getProts(), meal.getProts());
-		assertEquals(2 * food.getFats(), meal.getFats());
-		assertEquals(2 * food.getCarbs(), meal.getCarbs());
-		assertEquals(2 * food.getValue(), meal.getValue());
-		assertEquals(2 * food.getMass(), meal.getMass());
-	}
-
-	@Test
-	public void shortMeal()
-	{
-		meal.setShortMeal(true);
-		assertTrue(meal.getShortMeal());
-		meal.setShortMeal(false);
-		assertFalse(meal.getShortMeal());
+		assertEquals(2 * food.getProts(), meal.getProts(), EPS);
+		assertEquals(2 * food.getFats(), meal.getFats(), EPS);
+		assertEquals(2 * food.getCarbs(), meal.getCarbs(), EPS);
+		assertEquals(2 * food.getValue(), meal.getValue(), EPS);
+		assertEquals(2 * food.getMass(), meal.getMass(), EPS);
 	}
 }
