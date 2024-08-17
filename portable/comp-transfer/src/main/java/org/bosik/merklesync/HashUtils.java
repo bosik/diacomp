@@ -187,14 +187,14 @@ public class HashUtils
 
 	public static String sum(Iterable<String> hashes)
 	{
-		String result = null;
+		byte[] sum = null;
 
 		for (String hash : hashes)
 		{
-			result = sum(result, hash);
+			sum = add(sum, strToByte(hash));
 		}
 
-		return result;
+		return byteToStr(sum);
 	}
 
 	public static byte[] add(byte[] a, byte[] b)
