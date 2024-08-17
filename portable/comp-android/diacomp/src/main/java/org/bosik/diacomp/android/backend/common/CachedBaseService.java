@@ -25,14 +25,11 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.core.utils.CollectionUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -40,8 +37,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.bosik.diacomp.core.utils.CollectionUtils.filter;
+import java.util.stream.Collectors;
 
 public abstract class CachedBaseService<T extends Named> implements BaseService<T>
 {
@@ -63,7 +59,7 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 		return map;
 	}
 
-	private <X> Versioned<X> clone(Versioned<X> item)
+	private static <X> Versioned<X> clone(Versioned<X> item)
 	{
 		if (item != null)
 		{
@@ -78,18 +74,6 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 		{
 			return null;
 		}
-	}
-
-	private <X> List<Versioned<X>> clone(Collection<Versioned<X>> items)
-	{
-		List<Versioned<X>> cloned = new ArrayList<>();
-
-		for (Versioned<X> item : items)
-		{
-			cloned.add(clone(item));
-		}
-
-		return cloned;
 	}
 
 	// INTERNALS
@@ -184,21 +168,10 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 	@Override
 	public List<Versioned<T>> findAll(final boolean includeDeleted)
 	{
-		if (includeDeleted)
-		{
-			return clone(memoryCache.values());
-		}
-		else
-		{
-			return clone(filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
-			{
-				@Override
-				public boolean test(Versioned<T> item)
-				{
-					return !item.isDeleted();
-				}
-			}));
-		}
+		return memoryCache.values().stream()
+				.filter(item -> includeDeleted || !item.isDeleted())
+				.map(CachedBaseService::clone)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -207,14 +180,10 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 		if (filter != null)
 		{
 			final List<String> tokens = Utils.parseTokens(filter);
-			return clone(filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
-			{
-				@Override
-				public boolean test(Versioned<T> item)
-				{
-					return Utils.matchesTokens(item.getData().getName(), tokens) &&  !item.isDeleted();
-				}
-			}));
+			return memoryCache.values().stream()
+					.filter(item -> Utils.matchesTokens(item.getData().getName(), tokens) && !item.isDeleted())
+					.map(CachedBaseService::clone)
+					.collect(Collectors.toList());
 		}
 		else
 		{
@@ -227,16 +196,11 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 	{
 		final String exactNameTrim = exactName.trim().toLowerCase(Locale.US);
 
-		List<Versioned<T>> items = filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
-		{
-			@Override
-			public boolean test(Versioned<T> item)
-			{
-				return !item.isDeleted() && item.getData().getName().trim().toLowerCase(Locale.US).equals(exactNameTrim);
-			}
-		});
-
-		return !items.isEmpty() ? clone(items.get(0)) : null;
+		return memoryCache.values().stream()
+				.filter(item -> !item.isDeleted() && item.getData().getName().trim().toLowerCase(Locale.US).equals(exactNameTrim))
+				.findFirst()
+				.map(CachedBaseService::clone)
+				.orElse(null);
 	}
 
 	@Override
@@ -253,41 +217,19 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 	@Override
 	public List<Versioned<T>> findByIdPrefix(final String prefix) throws CommonServiceException
 	{
-		if (prefix == null)
-		{
-			return clone(memoryCache.values());
-		}
-		else
-		{
-			return clone(filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
-			{
-				@Override
-				public boolean test(Versioned<T> item)
-				{
-					return item.getId().startsWith(prefix);
-				}
-			}));
-		}
+		return memoryCache.values().stream()
+				.filter(item -> prefix == null || item.getId().startsWith(prefix))
+				.map(CachedBaseService::clone)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Versioned<T>> findChanged(final Date since)
 	{
-		if (since == null)
-		{
-			return clone(memoryCache.values());
-		}
-		else
-		{
-			return clone(filter(memoryCache.values(), new CollectionUtils.Predicate<Versioned<T>>()
-			{
-				@Override
-				public boolean test(Versioned<T> item)
-				{
-					return item.getTimeStamp().after(since);
-				}
-			}));
-		}
+		return memoryCache.values().stream()
+				.filter(item -> since == null || item.getTimeStamp().after(since))
+				.map(CachedBaseService::clone)
+				.collect(Collectors.toList());
 	}
 
 	@Override
