@@ -135,6 +135,10 @@ public class HashUtils
 		return new String(chars);
 	}
 
+	// --------------------------------------------------------------------------------------
+	// ARITHMETIC
+	// --------------------------------------------------------------------------------------
+
 	/**
 	 * null + a = a<br/>
 	 * null + null = null
@@ -143,7 +147,7 @@ public class HashUtils
 	 * @param b
 	 * @return
 	 */
-	public static String sumHash(String a, String b)
+	public static String sum(String a, String b)
 	{
 		if (a != null && a.length() != DataSource.HASH_SIZE)
 		{
@@ -187,11 +191,15 @@ public class HashUtils
 
 		for (String hash : collection)
 		{
-			result = sumHash(result, hash);
+			result = sum(result, hash);
 		}
 
 		return result;
 	}
+
+	// --------------------------------------------------------------------------------------
+	// MERKLE TREE OPERATIONS
+	// --------------------------------------------------------------------------------------
 
 	public static SortedMap<String, String> buildParentHashes(SortedMap<String, String> map, int prefixSize)
 	{

@@ -130,7 +130,7 @@ public class TestHashUtils
 	public void test_performance_byteToStr()
 	{
 		final List<byte[]> bytes = new ArrayList<>();
-		for (int i = 0; i < 1000000; i++)
+		for (int i = 0; i < 1_000_000; i++)
 		{
 			bytes.add(HashUtils.strToByte(HashUtils.generateGuid()));
 		}
@@ -163,16 +163,16 @@ public class TestHashUtils
 	}
 
 	@Test
-	public void test_sumHash()
+	public void test_sumStrings()
 	{
 		assertEquals("00000000000000000000000000000000",
-				HashUtils.sumHash("00000000000000000000000000000000", "00000000000000000000000000000000"));
+				HashUtils.sum("00000000000000000000000000000000", "00000000000000000000000000000000"));
 		assertEquals("22222222222222222222222222222222",
-				HashUtils.sumHash("11111111111111111111111111111111", "11111111111111111111111111111111"));
+				HashUtils.sum("11111111111111111111111111111111", "11111111111111111111111111111111"));
 		assertEquals("ffffffffffffffffffffffffffffffff",
-				HashUtils.sumHash("88888888888888888888888888888888", "77777777777777777777777777777777"));
+				HashUtils.sum("88888888888888888888888888888888", "77777777777777777777777777777777"));
 		assertEquals("00000000000000000000000000000000",
-				HashUtils.sumHash("88888888888888888888888888888888", "88888888888888888888888888888888"));
+				HashUtils.sum("88888888888888888888888888888888", "88888888888888888888888888888888"));
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class TestHashUtils
 	{
 		long time = System.currentTimeMillis();
 		SortedMap<String, String> data = new TreeMap<>();
-		for (int i = 0; i < 500000; i++)
+		for (int i = 0; i < 500_000; i++)
 		{
 			String id = HashUtils.generateGuid();
 			String hash = HashUtils.generateGuid();
