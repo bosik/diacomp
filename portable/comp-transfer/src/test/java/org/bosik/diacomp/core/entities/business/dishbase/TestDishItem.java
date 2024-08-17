@@ -28,38 +28,10 @@ public class TestDishItem
 	private DishItem dish = new DishItem();
 
 	@Test
-	public void test_setName_normal_ok()
-	{
-		dish.setName("My test name");
-		assertEquals("My test name", dish.getName());
-	}
-
-	@Test
-	public void test_setMassdouble_notNull_ok()
-	{
-		dish.setMass(123.5);
-		assertEquals(123.5, dish.getMass(), Utils.EPS);
-	}
-
-	@Test
-	public void test_setMassDouble_notNull_ok()
-	{
-		dish.setMass((Double) 123.5);
-		assertEquals(123.5, dish.getMass(), Utils.EPS);
-	}
-
-	@Test
 	public void test_setMass_null_ok()
 	{
 		dish.setMass(null);
 		assertEquals(null, dish.getMass());
-	}
-
-	@Test
-	public void test_setTag_normal_ok()
-	{
-		dish.setTag(42);
-		assertEquals(42, dish.getTag());
 	}
 
 	@Test

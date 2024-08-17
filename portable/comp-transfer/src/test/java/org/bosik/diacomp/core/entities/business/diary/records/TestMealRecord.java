@@ -20,6 +20,7 @@ package org.bosik.diacomp.core.entities.business.diary.records;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.mocks.MockFoodMassed;
+import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Test;
 
 import java.util.Date;
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 
 public class TestMealRecord
 {
-	private static final double           EPS  = 0.0001;
 	private static final Mock<FoodMassed> mock = new MockFoodMassed();
 	private final        MealRecord       meal = new MealRecord(new Date(), false);
 
@@ -68,10 +68,10 @@ public class TestMealRecord
 		meal.add(food);
 		meal.add(food);
 
-		assertEquals(2 * food.getProts(), meal.getProts(), EPS);
-		assertEquals(2 * food.getFats(), meal.getFats(), EPS);
-		assertEquals(2 * food.getCarbs(), meal.getCarbs(), EPS);
-		assertEquals(2 * food.getValue(), meal.getValue(), EPS);
-		assertEquals(2 * food.getMass(), meal.getMass(), EPS);
+		assertEquals(2 * food.getProts(), meal.getProts(), Utils.EPS);
+		assertEquals(2 * food.getFats(), meal.getFats(), Utils.EPS);
+		assertEquals(2 * food.getCarbs(), meal.getCarbs(), Utils.EPS);
+		assertEquals(2 * food.getValue(), meal.getValue(), Utils.EPS);
+		assertEquals(2 * food.getMass(), meal.getMass(), Utils.EPS);
 	}
 }
