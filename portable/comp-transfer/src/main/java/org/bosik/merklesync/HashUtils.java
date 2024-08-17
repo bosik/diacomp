@@ -17,6 +17,7 @@
 package org.bosik.merklesync;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -194,6 +195,81 @@ public class HashUtils
 		}
 
 		return result;
+	}
+
+	public static byte[] add(byte[] a, byte[] b)
+	{
+		if (b == null)
+		{
+			return a;
+		}
+
+		if (a == null)
+		{
+			return Arrays.copyOf(b, b.length);
+		}
+
+		if (a.length != b.length)
+		{
+			throw new IllegalArgumentException(String.format(
+					Locale.US,
+					"Mismatched array size: %d != %d",
+					a.length,
+					b.length
+			));
+		}
+
+		for (int i = 0; i < a.length; i++)
+		{
+			int highA = (a[i] + 128) / 16;
+			int lowA = (a[i] + 128) % 16;
+
+			int highB = (b[i] + 128) / 16;
+			int lowB = (b[i] + 128) % 16;
+
+			final int highC = (highA + highB) % 16;
+			final int lowC = (lowA + lowB) % 16;
+
+			a[i] = (byte) ((highC * 16 + lowC + 256) % 256);
+		}
+
+		return a;
+	}
+
+	public static byte[] sub(byte[] a, byte[] b)
+	{
+		if (b == null) // a - 0
+		{
+			return a;
+		}
+
+		if (a != null && a.length != b.length)
+		{
+			throw new IllegalArgumentException(String.format(
+					Locale.US,
+					"Mismatched array size: %d != %d",
+					a.length,
+					b.length
+			));
+		}
+
+		final byte[] c = new byte[b.length];
+
+		for (int i = 0; i < b.length; i++)
+		{
+			final int highA = a == null ? 0 : ((a[i] + 256) % 256) / 16;
+			final int lowA = a == null ? 0 : ((a[i] + 256) % 256) % 16;
+
+			final int highB = ((b[i] + 256) % 256) / 16;
+			final int lowB = ((b[i] + 256) % 256) % 16;
+
+			final int highC = (16 + highA - highB) % 16;
+			final int lowC = (16 + lowA - lowB) % 16;
+
+			c[i] = (byte) ((highC * 16 + lowC + 256) % 256);
+		}
+
+		return c;
 	}
 
 	// --------------------------------------------------------------------------------------

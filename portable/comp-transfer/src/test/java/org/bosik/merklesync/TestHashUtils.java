@@ -27,8 +27,8 @@ import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static junit.framework.Assert.fail;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("static-method")
 public class TestHashUtils
@@ -174,6 +174,71 @@ public class TestHashUtils
 				HashUtils.sum("88888888888888888888888888888888", "77777777777777777777777777777777"));
 		assertEquals("00000000000000000000000000000000",
 				HashUtils.sum("88888888888888888888888888888888", "88888888888888888888888888888888"));
+	}
+
+	@Test
+	public void test_subHash()
+	{
+		// corner cases
+		assertArraysEquals(new byte[] {}, HashUtils.sub(new byte[] {}, new byte[] {}));
+		assertArraysEquals(new byte[] { 1, 2, 3 }, HashUtils.sub(new byte[] { 1, 2, 3 }, null));
+
+		// "000000" - "010203" = "0f0e0d"
+		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(new byte[] { 0, 0, 0 }, new byte[] { 1, 2, 3 }));
+		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(null, new byte[] { 1, 2, 3 }));
+
+		// "0f0e0d" - "000000" = "0f0e0d"
+		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(new byte[] { 15, 14, 13 }, new byte[] { 0, 0, 0 }));
+
+		// normal cases
+		assertArraysEquals(new byte[] { 0, 0, 0 }, HashUtils.sub(new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }));
+		// "7f" - "ff" = "80"
+		assertArraysEquals(new byte[] { -128 }, HashUtils.sub(new byte[] { 127 }, new byte[] { -1 }));
+
+		// "7f" = 127
+		// "02" = 2
+		// "01" = 1
+		// "00" = 0
+		// "ff" = -1
+		// "fe" = -2
+		// ..
+		// "82" = -126
+		// "81" = -127
+		// "80" = -128
+
+		assertArraysEquals(HashUtils.strToByte("8f"), HashUtils.sub(
+				HashUtils.strToByte("80"),
+				HashUtils.strToByte("01")
+		));
+	}
+
+	@Test
+	public void test_addSubHash()
+	{
+		// given
+		final byte[] a = { 127, -128, 0 };
+		final byte[] b = { 4, 5, 6 };
+
+		// when / then
+		assertArraysEquals(new byte[] { 127, -128, 0 }, HashUtils.sub(HashUtils.add(a, b), b));
+	}
+
+	@Test
+	public void test_addHash()
+	{
+		// given
+		final byte[] data = new byte[] { 0, 0, 0, 0 };
+
+		// when
+		HashUtils.add(data, null);
+		HashUtils.add(data, new byte[] { 0, 0, 0, 0 });
+		HashUtils.add(data, new byte[] { 1, 2, 3, 4 });
+
+		// then
+		assertEquals(
+				HashUtils.byteToStr(new byte[] { 1, 2, 3, 4 }),
+				HashUtils.byteToStr(data)
+		);
 	}
 
 	@Test
