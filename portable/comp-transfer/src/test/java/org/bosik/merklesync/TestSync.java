@@ -16,7 +16,6 @@
  */
 package org.bosik.merklesync;
 
-import org.bosik.merklesync.SyncUtils.Synchronizer2;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -249,6 +248,6 @@ public class TestSync
 
 	private static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2)
 	{
-		return new Synchronizer2<>(service1, service2).synchronize();
+		return SyncUtils.synchronizeByHashChildren(service1, service2, Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
 }

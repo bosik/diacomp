@@ -16,38 +16,15 @@
  */
 package org.bosik.merklesync;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class SyncUtils
 {
-	/* ============================ HELPER CLASSES ============================ */
-
-	public interface ProgressCallback
-	{
-		/**
-		 * Called on progress change. The percentage value may be calculated as
-		 * <code>progress * 100 / max</code>
-		 *
-		 * @param progress Current progress value
-		 * @param max      Out-of value
-		 */
-		void onProgress(int progress, int max);
-	}
-
-	public interface Synchronizer
-	{
-		/**
-		 * Perform synchronizing
-		 *
-		 * @return Total number of transferred items
-		 */
-		int synchronize();
-	}
-
 	/* ============================ SYNC METHODS: NAIVE ============================ */
 
 	/**
@@ -181,7 +158,7 @@ public class SyncUtils
 	 * @param maxItemsWrite Max number of items to be saved to service per request
 	 * @param <T>           Type of data source objects
 	 * @return Total number of transferred items
-	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils#synchronizeByHashChildren(DataSource, DataSource, int, int) synchronizeByHashChildren} instead.
 	 */
 	@Deprecated
 	public static <T> int synchronizeByHash(DataSource<T> service1, DataSource<T> service2, int maxItemsWrite)
@@ -202,7 +179,7 @@ public class SyncUtils
 	 * @param service2 Second service
 	 * @param <T>      Type of data source objects
 	 * @return Total number of transferred items
-	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 * @deprecated This implementation checks only one hash per request. Use {@link org.bosik.merklesync.SyncUtils#synchronizeByHashChildren(DataSource, DataSource, int, int) synchronizeByHashChildren} instead.
 	 */
 	@Deprecated
 	public static <T> int synchronizeByHash(DataSource<T> service1, DataSource<T> service2)
@@ -248,170 +225,93 @@ public class SyncUtils
 	}
 
 	/**
-	 * General-purpose data source synchronizer based on tree hashes and version comparison.
+	 * Synchronize two data sources
 	 *
-	 * @param <T> Type of data source objects
+	 * @param source1       First source
+	 * @param source2       Second source
+	 * @param maxItemsRead  Max number of items to be read from a source per request
+	 * @param maxItemsWrite Max number of items to be saved to a source per request
 	 */
-	public static class Synchronizer2<T> implements Synchronizer
+	public static <T> int synchronizeByHashChildren(DataSource<T> source1, DataSource<T> source2, int maxItemsRead, int maxItemsWrite)
 	{
-		private final DataSource<T>      service1;
-		private final DataSource<T>      service2;
-		private       MerkleTree         tree1;
-		private       MerkleTree         tree2;
-		private       List<Versioned<T>> newer1;
-		private       List<Versioned<T>> newer2;
-		private final int                maxItemsRead;
-		private final int                maxItemsWrite;
-		private final ProgressCallback   callback;
+		final BufferedDataSource<T> bufferedSource1 = new BufferedDataSource<>(Utils.nullCheck(source1, "source1"), maxItemsWrite);
+		final BufferedDataSource<T> bufferedSource2 = new BufferedDataSource<>(Utils.nullCheck(source2, "source2"), maxItemsWrite);
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1      First service
-		 * @param service2      Second service
-		 * @param maxItemsRead  Max number of items to be read from service per request
-		 * @param maxItemsWrite Max number of items to be saved to service per request
-		 * @param callback      Callback to inform about sync progress (optional, may be <code>null<code>)
-		 */
-		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite,
-				ProgressCallback callback)
-		{
-			this.service1 = Utils.nullCheck(service1, "service1");
-			this.service2 = Utils.nullCheck(service2, "service2");
-			this.maxItemsRead = maxItemsRead;
-			this.maxItemsWrite = maxItemsWrite;
-			this.callback = callback;
-		}
+		final AtomicInteger count = new AtomicInteger(0);
 
-		/**
-		 * Constructor
-		 *
-		 * @param service1      First service
-		 * @param service2      Second service
-		 * @param maxItemsRead  Max number of items to be read from service per request
-		 * @param maxItemsWrite Max number of items to be saved to service per request
-		 */
-		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite)
-		{
-			this(service1, service2, maxItemsRead, maxItemsWrite, null);
-		}
-
-		/**
-		 * Constructor
-		 *
-		 * @param service1 First service
-		 * @param service2 Second service
-		 * @param callback Callback to inform about sync progress (optional, may be <code>null<code>)
-		 */
-		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
-		{
-			this(service1, service2, Integer.MAX_VALUE, Integer.MAX_VALUE, callback);
-		}
-
-		/**
-		 * Constructor
-		 *
-		 * @param service1 First service
-		 * @param service2 Second service
-		 */
-		public Synchronizer2(DataSource<T> service1, DataSource<T> service2)
-		{
-			this(service1, service2, Integer.MAX_VALUE, Integer.MAX_VALUE, null);
-		}
-
-		@Override
-		public int synchronize()
-		{
-			if (callback != null)
-			{
-				callback.onProgress(0, 256);
-			}
-
-			newer1 = new ArrayList<>();
-			newer2 = new ArrayList<>();
-			tree1 = service1.getHashTree();
-			tree2 = service2.getHashTree();
-			String hash1 = tree1.getHash("");
-			String hash2 = tree2.getHash("");
-
-			if (!Utils.equals(hash1, hash2))
-			{
-				synchronizeChildren("");
-				Utils.blockSave(newer1, service2, maxItemsWrite);
-				Utils.blockSave(newer2, service1, maxItemsWrite);
-			}
-
-			if (callback != null)
-			{
-				callback.onProgress(256, 256);
-			}
-
-			return newer1.size() + newer2.size();
-		}
-
-		private void synchronizeChildren(String prefix)
-		{
-			if (callback != null)
-			{
-				switch (prefix.length())
+		compare(source1, source2, source1.getHashTree(), source2.getHashTree(), item ->
 				{
-					case 0:
-					{
-						callback.onProgress(0, 256);
-						break;
-					}
-					case 1:
-					{
-						int progress = HashUtils.charToByte(prefix.charAt(0)) * 16;
-						callback.onProgress(progress, 256);
-						break;
-					}
-					case 2:
-					{
-						int progress = HashUtils.charToByte(prefix.charAt(0)) * 16
-								+ HashUtils.charToByte(prefix.charAt(1));
-						callback.onProgress(progress, 256);
-						break;
-					}
+					bufferedSource2.save(item);
+					count.incrementAndGet();
+				},
+				item ->
+				{
+					bufferedSource1.save(item);
+					count.incrementAndGet();
+				},
+				maxItemsRead
+		);
+
+		bufferedSource1.flush();
+		bufferedSource2.flush();
+
+		return count.get();
+	}
+
+	private static <T> void compare(
+			DataSource<T> source1,
+			DataSource<T> source2,
+			MerkleTree hashTree1,
+			MerkleTree hashTree2,
+			Consumer<Versioned<T>> handlerNewer1,
+			Consumer<Versioned<T>> handlerNewer2,
+			int maxItemsRead)
+	{
+		final String hash1 = hashTree1.getHash("");
+		final String hash2 = hashTree2.getHash("");
+
+		if (!Utils.equals(hash1, hash2))
+		{
+			compareChildren(source1, source2, source1.getHashTree(), source2.getHashTree(), maxItemsRead, handlerNewer1, handlerNewer2, "");
+		}
+	}
+
+	private static <T> void compareChildren(
+			DataSource<T> source1,
+			DataSource<T> source2,
+			MerkleTree hashTree1,
+			MerkleTree hashTree2,
+			int maxItemsRead,
+			Consumer<Versioned<T>> handlerNewer1,
+			Consumer<Versioned<T>> handlerNewer2,
+			String prefix)
+	{
+		if ((prefix.length() < DataSource.ID_PREFIX_SIZE)
+				&& (source1.count(prefix) > maxItemsRead || source2.count(prefix) > maxItemsRead))
+		{
+			// ok, finer separation required
+			final Map<String, String> hashes1 = hashTree1.getHashChildren(prefix);
+			final Map<String, String> hashes2 = hashTree2.getHashChildren(prefix);
+
+			for (int i = 0; i < 16; i++)
+			{
+				final String key = prefix + HashUtils.byteToChar(i);
+				final String hash1 = hashes1.get(key);
+				final String hash2 = hashes2.get(key);
+
+				if (!Utils.equals(hash1, hash2))
+				{
+					compareChildren(source1, source2, hashTree1, hashTree2, maxItemsRead, handlerNewer1, handlerNewer2, key);
 				}
 			}
+		}
+		else
+		{
+			// we can't granulate anymore / there are not too many items, so we can process them all at once
+			final List<Versioned<T>> items1 = source1.findByIdPrefix(prefix);
+			final List<Versioned<T>> items2 = source2.findByIdPrefix(prefix);
 
-			if ((prefix.length() < DataSource.ID_PREFIX_SIZE)
-					&& (service1.count(prefix) > maxItemsRead || service2.count(prefix) > maxItemsRead))
-			{
-				// ok, finer separation required
-				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
-				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
-
-				for (int i = 0; i < 16; i++)
-				{
-					String key = prefix + HashUtils.byteToChar(i);
-					String hash1 = hashes1.get(key);
-					String hash2 = hashes2.get(key);
-					if (!Utils.equals(hash1, hash2))
-					{
-						synchronizeChildren(key);
-					}
-				}
-			}
-			else
-			{
-				// we can't granulate anymore / there are not too many items, so we can process it at once
-				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-				Utils.getOverLists(items1, items2, newer1, newer2);
-
-				if (newer1.size() > maxItemsWrite * 4)
-				{
-					Utils.blockSave(newer1, service2, maxItemsWrite);
-					newer1.clear();
-				}
-				if (newer2.size() > maxItemsWrite * 4)
-				{
-					Utils.blockSave(newer2, service1, maxItemsWrite);
-					newer2.clear();
-				}
-			}
+			Utils.getOverLists(items1, items2, handlerNewer1, handlerNewer2);
 		}
 	}
 }

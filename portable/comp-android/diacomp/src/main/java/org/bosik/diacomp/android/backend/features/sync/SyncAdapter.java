@@ -37,12 +37,8 @@ import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesWebService;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.preferences.PreferencesSync;
-import org.bosik.merklesync.SyncUtils.Synchronizer2;
+import org.bosik.merklesync.SyncUtils;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
@@ -101,10 +97,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			final DiaryService localDiary = new DiaryLocalService(getContext());
-			final DiaryService webDiary = new DiaryWebService(webClient);
-			final int counterDiary = new Synchronizer2<>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE).synchronize();
-			Log.v(TAG, "Synchronized diary entries: " + counterDiary);
+			final int counter = SyncUtils.synchronizeByHashChildren(
+					new DiaryLocalService(getContext()),
+					new DiaryWebService(webClient),
+					MAX_DIARY_READ,
+					MAX_DIARY_WRITE
+			);
+			Log.v(TAG, "Synchronized diary entries: " + counter);
 		}
 		catch (Exception e)
 		{
@@ -117,10 +116,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			final FoodBaseService localFoodBase = FoodBaseLocalService.getInstance(getContext());
-			final FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
-			final int counterFood = new Synchronizer2<>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE).synchronize();
-			Log.v(TAG, "Synchronized food entries: " + counterFood);
+			final int counter = SyncUtils.synchronizeByHashChildren(
+					FoodBaseLocalService.getInstance(getContext()),
+					new FoodBaseWebService(webClient),
+					MAX_FOOD_READ,
+					MAX_FOOD_WRITE
+			);
+			Log.v(TAG, "Synchronized food entries: " + counter);
 		}
 		catch (Exception e)
 		{
@@ -133,10 +135,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			final DishBaseService localDishBase = DishBaseLocalService.getInstance(getContext());
-			final DishBaseService webDishBase = new DishBaseWebService(webClient);
-			final int counterDish = new Synchronizer2<>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE).synchronize();
-			Log.v(TAG, "Synchronized dish entries: " + counterDish);
+			final int counter = SyncUtils.synchronizeByHashChildren(
+					DishBaseLocalService.getInstance(getContext()),
+					new DishBaseWebService(webClient),
+					MAX_DISH_READ,
+					MAX_DISH_WRITE
+			);
+			Log.v(TAG, "Synchronized dish entries: " + counter);
 		}
 		catch (Exception e)
 		{
@@ -149,10 +154,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			final PreferencesService localPreferences = new PreferencesLocalService(getContext());
-			final PreferencesService webPreferences = new PreferencesWebService(webClient);
-			final int counterPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
-			Log.v(TAG, "Synchronized preference entries: " + counterPreferences);
+			final int counter = PreferencesSync.synchronizePreferences(
+					new PreferencesLocalService(getContext()),
+					new PreferencesWebService(webClient)
+			) ? 1 : 0;
+			Log.v(TAG, "Synchronized preference entries: " + counter);
 		}
 		catch (Exception e)
 		{
