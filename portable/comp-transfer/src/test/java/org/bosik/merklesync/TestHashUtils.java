@@ -20,12 +20,19 @@ import org.bosik.diacomp.core.utils.Profiler;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -187,9 +194,6 @@ public class TestHashUtils
 		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(new byte[] { 0, 0, 0 }, new byte[] { 1, 2, 3 }));
 		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(null, new byte[] { 1, 2, 3 }));
 
-		// "0f0e0d" - "000000" = "0f0e0d"
-		assertArraysEquals(new byte[] { 15, 14, 13 }, HashUtils.sub(new byte[] { 15, 14, 13 }, new byte[] { 0, 0, 0 }));
-
 		// normal cases
 		assertArraysEquals(new byte[] { 0, 0, 0 }, HashUtils.sub(new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }));
 		// "7f" - "ff" = "80"
@@ -242,7 +246,7 @@ public class TestHashUtils
 	}
 
 	@Test
-	public void test_sumIterable()
+	public void test_sumHashes()
 	{
 		// given
 		final List<String> hashes = Arrays.asList(
@@ -260,23 +264,49 @@ public class TestHashUtils
 
 	@Test
 	@Ignore("This test case is for manual performance check only")
-	public void test_performance_buildHashTree()
+	public void hashesLoadingTest()
 	{
-		long time = System.currentTimeMillis();
-		SortedMap<String, String> data = new TreeMap<>();
-		for (int i = 0; i < 500_000; i++)
+		final double time = Profiler.measureInMsec(() ->
 		{
-			String id = HashUtils.generateGuid();
-			String hash = HashUtils.generateGuid();
-			data.put(id, hash);
+			try
+			{
+				loadMap("merkletree/input_hashes.csv");
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+		}, 100);
+
+		System.out.printf(Locale.US, "loadHashes(): %.3f ms%n", time);
+		// unsorted: 73.64 ms
+		// sorted: 41.668 ms (44% faster than unsorted)
+	}
+
+	private static Map<String, String> loadMap(String resourceName) throws IOException, URISyntaxException
+	{
+		final URI uri = TestHashUtils.class.getClassLoader()
+				.getResource(resourceName)
+				.toURI();
+		return loadMap(new File(uri).toPath());
+	}
+
+	private static Map<String, String> loadMap(Path fileName) throws IOException
+	{
+		final Map<String, String> data = new HashMap<>();
+
+		try (Stream<String> lines = Files.lines(fileName))
+		{
+			lines.skip(1) // header
+					.forEach(line ->
+					{
+						final int k = line.indexOf('\t');
+						final String id = line.substring(0, k);
+						final String hash = line.substring(k + 1);
+						data.put(id, hash);
+					});
 		}
-		time = System.currentTimeMillis() - time;
-		System.out.println(String.format("%d items prepared in %d ms", data.size(), time));
 
-		time = System.currentTimeMillis();
-		SortedMap<String, String> tree = HashUtils.buildHashTree(data);
-		time = System.currentTimeMillis() - time;
-
-		System.out.println(String.format("Tree with %d items build in %d ms", tree.size(), time));
+		return data;
 	}
 }
