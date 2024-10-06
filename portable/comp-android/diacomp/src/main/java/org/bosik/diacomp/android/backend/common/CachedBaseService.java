@@ -83,15 +83,20 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 		memoryCache = index(loadAllFromDb());
 	}
 
-	private void insert(Versioned<T> item)
+	private synchronized void putEntry(Versioned<T> item)
 	{
 		memoryCache.put(item.getId(), clone(item));
+	}
+
+	private void insert(Versioned<T> item)
+	{
+		putEntry(item);
 		insertDb(item);
 	}
 
 	private void update(Versioned<T> item)
 	{
-		memoryCache.put(item.getId(), clone(item));
+		putEntry(item);
 		updateDb(item);
 	}
 
