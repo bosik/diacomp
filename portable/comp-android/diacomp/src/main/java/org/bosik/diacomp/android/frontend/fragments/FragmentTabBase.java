@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.frontend.fragments;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -409,7 +410,7 @@ public class FragmentTabBase extends Fragment
 							TextView textName = convertView.findViewById(R.id.baseItemFoodName);
 							textName.setText(food.getName());
 							TextView textInfo = convertView.findViewById(R.id.baseItemFoodInfo);
-							textInfo.setText(getInfo(food));
+							textInfo.setText(getInfo(getActivity(), food));
 							break;
 						}
 						case TYPE_DISH:
@@ -424,7 +425,7 @@ public class FragmentTabBase extends Fragment
 							TextView textName = convertView.findViewById(R.id.baseItemDishName);
 							textName.setText(dish.getName());
 							TextView textInfo = convertView.findViewById(R.id.baseItemDishInfo);
-							textInfo.setText(getInfo(dish));
+							textInfo.setText(getInfo(getActivity(), dish));
 							break;
 						}
 						default:
@@ -456,20 +457,18 @@ public class FragmentTabBase extends Fragment
 		}
 	}
 
-	private String getInfo(NamedRelative item)
+	private static String getInfo(Context context, NamedRelative item)
 	{
-		String labelProts = getString(R.string.base_subinfo_prots);
-		String labelFats = getString(R.string.base_subinfo_fats);
-		String labelCarbs = getString(R.string.base_subinfo_carbs);
-		String labelValue = getString(R.string.base_subinfo_value);
+		String labelProts = context.getString(R.string.base_subinfo_prots);
+		String labelFats = context.getString(R.string.base_subinfo_fats);
+		String labelCarbs = context.getString(R.string.base_subinfo_carbs);
+		String labelValue = context.getString(R.string.base_subinfo_value);
 
-		StringBuilder s = new StringBuilder();
-		s.append(labelProts).append(' ').append(Utils.formatDoubleShort(item.getRelProts())).append("\t\t");
-		s.append(labelFats).append(' ').append(Utils.formatDoubleShort(item.getRelFats())).append("\t\t");
-		s.append(labelCarbs).append(' ').append(Utils.formatDoubleShort(item.getRelCarbs())).append("\t\t");
-		s.append(labelValue).append(' ').append(Utils.formatDoubleShort(item.getRelValue()));
-
-		return s.toString();
+		return String.format("%s %s\t\t%s %s\t\t%s %s\t\t%s %s",
+				labelProts, Utils.formatDoubleShort(item.getRelProts()),
+				labelFats, Utils.formatDoubleShort(item.getRelFats()),
+				labelCarbs, Utils.formatDoubleShort(item.getRelCarbs()),
+				labelValue, Utils.formatDoubleShort(item.getRelValue()));
 	}
 
 	private void showFoodEditor(Versioned<FoodItem> food, boolean createMode)
