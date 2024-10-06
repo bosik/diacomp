@@ -19,6 +19,7 @@ package org.bosik.diacomp.core.persistence.serializers.foodmassed;
 
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodMassedPlain;
+import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Test;
 
 import java.text.DecimalFormatSymbols;
@@ -27,8 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestSerializerFoodMassedPlain
 {
-	private static final double                    EPS        = 0.01;
-	private final        SerializerFoodMassedPlain serializer = new SerializerFoodMassedPlain();
+	private final SerializerFoodMassedPlain serializer = new SerializerFoodMassedPlain();
 
 	@Test
 	public void test_read_normalDots_Ok()
@@ -36,11 +36,11 @@ public class TestSerializerFoodMassedPlain
 		// with dots
 		FoodMassed food = serializer.read("Колбаса[12.7|19.1|0|270]:40");
 		assertEquals("Колбаса", food.getName());
-		assertEquals(12.7, food.getRelProts(), EPS);
-		assertEquals(19.1, food.getRelFats(), EPS);
-		assertEquals(0.0, food.getRelCarbs(), EPS);
-		assertEquals(270.0, food.getRelValue(), EPS);
-		assertEquals(40.0, food.getMass(), EPS);
+		assertEquals(12.7, food.getRelProts(), Utils.EPS);
+		assertEquals(19.1, food.getRelFats(), Utils.EPS);
+		assertEquals(0.0, food.getRelCarbs(), Utils.EPS);
+		assertEquals(270.0, food.getRelValue(), Utils.EPS);
+		assertEquals(40.0, food.getMass(), Utils.EPS);
 	}
 
 	@Test
@@ -49,11 +49,11 @@ public class TestSerializerFoodMassedPlain
 		// with both dots and commas
 		FoodMassed food = serializer.read("Колбаса[12,7|19.1|0|270]:40");
 		assertEquals("Колбаса", food.getName());
-		assertEquals(12.7, food.getRelProts(), EPS);
-		assertEquals(19.1, food.getRelFats(), EPS);
-		assertEquals(0.0, food.getRelCarbs(), EPS);
-		assertEquals(270.0, food.getRelValue(), EPS);
-		assertEquals(40.0, food.getMass(), EPS);
+		assertEquals(12.7, food.getRelProts(), Utils.EPS);
+		assertEquals(19.1, food.getRelFats(), Utils.EPS);
+		assertEquals(0.0, food.getRelCarbs(), Utils.EPS);
+		assertEquals(270.0, food.getRelValue(), Utils.EPS);
+		assertEquals(40.0, food.getMass(), Utils.EPS);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
