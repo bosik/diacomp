@@ -1,6 +1,6 @@
 /*
  * MerkleSync - Data synchronization routine based on Merkle hash trees
- * Copyright (C) 2024 Nikita Bosik
+ * Copyright (C) 2023 Nikita Bosik
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@ package org.bosik.merklesync;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Proxy around regular DataSource; groups items provided to save() method to store them in chunks
  */
 public class BufferedDataSource<T> implements DataSource<T>
 {
-	private final DataSource<T> dataSource;
-	private final int           bufferSize;
+	private final DataSource<T>      dataSource;
+	private final int                bufferSize;
 	private final List<Versioned<T>> buffer = new ArrayList<>();
 
 	public BufferedDataSource(DataSource<T> dataSource, int bufferSize)
@@ -102,8 +103,14 @@ public class BufferedDataSource<T> implements DataSource<T>
 	}
 
 	@Override
-	public MerkleTree getHashTree()
+	public String getHash(String prefix)
 	{
-		return dataSource.getHashTree();
+		return dataSource.getHash(prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix)
+	{
+		return dataSource.getHashChildren(prefix);
 	}
 }

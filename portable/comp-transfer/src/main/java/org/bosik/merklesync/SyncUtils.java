@@ -166,10 +166,7 @@ public class SyncUtils
 		Utils.nullCheck(service1, "service1");
 		Utils.nullCheck(service2, "service2");
 
-		final MerkleTree hashTree1 = Utils.nullCheck(service1.getHashTree(), "hashTree1");
-		final MerkleTree hashTree2 = Utils.nullCheck(service2.getHashTree(), "hashTree2");
-
-		return synchronizeHashPrefix(service1, service2, hashTree1, hashTree2, maxItemsWrite, "");
+		return synchronizeHashPrefix(service1, service2, maxItemsWrite, "");
 	}
 
 	/**
@@ -190,14 +187,11 @@ public class SyncUtils
 	private static <T> int synchronizeHashPrefix(
 			DataSource<T> service1,
 			DataSource<T> service2,
-			MerkleTree hashTree1,
-			MerkleTree hashTree2,
 			int maxItemsWrite,
 			String prefix)
 	{
-
-		final String hash1 = hashTree1.getHash(prefix);
-		final String hash2 = hashTree2.getHash(prefix);
+		final String hash1 = service1.getHash(prefix);
+		final String hash2 = service2.getHash(prefix);
 
 		if (Utils.equals(hash1, hash2))
 		{
@@ -210,7 +204,7 @@ public class SyncUtils
 
 			for (int i = 0; i < 16; i++)
 			{
-				result += synchronizeHashPrefix(service1, service2, hashTree1, hashTree2, maxItemsWrite, prefix + HashUtils.byteToChar(i));
+				result += synchronizeHashPrefix(service1, service2, maxItemsWrite, prefix + HashUtils.byteToChar(i));
 			}
 
 			return result;
@@ -239,7 +233,8 @@ public class SyncUtils
 
 		final AtomicInteger count = new AtomicInteger(0);
 
-		compare(source1, source2, source1.getHashTree(), source2.getHashTree(), item ->
+		compare(source1, source2,
+				item ->
 				{
 					bufferedSource2.save(item);
 					count.incrementAndGet();
@@ -261,26 +256,22 @@ public class SyncUtils
 	private static <T> void compare(
 			DataSource<T> source1,
 			DataSource<T> source2,
-			MerkleTree hashTree1,
-			MerkleTree hashTree2,
 			Consumer<Versioned<T>> handlerNewer1,
 			Consumer<Versioned<T>> handlerNewer2,
 			int maxItemsRead)
 	{
-		final String hash1 = hashTree1.getHash("");
-		final String hash2 = hashTree2.getHash("");
+		final String hash1 = source1.getHash("");
+		final String hash2 = source2.getHash("");
 
 		if (!Utils.equals(hash1, hash2))
 		{
-			compareChildren(source1, source2, source1.getHashTree(), source2.getHashTree(), maxItemsRead, handlerNewer1, handlerNewer2, "");
+			compareChildren(source1, source2, maxItemsRead, handlerNewer1, handlerNewer2, "");
 		}
 	}
 
 	private static <T> void compareChildren(
 			DataSource<T> source1,
 			DataSource<T> source2,
-			MerkleTree hashTree1,
-			MerkleTree hashTree2,
 			int maxItemsRead,
 			Consumer<Versioned<T>> handlerNewer1,
 			Consumer<Versioned<T>> handlerNewer2,
@@ -290,8 +281,8 @@ public class SyncUtils
 				&& (source1.count(prefix) > maxItemsRead || source2.count(prefix) > maxItemsRead))
 		{
 			// ok, finer separation required
-			final Map<String, String> hashes1 = hashTree1.getHashChildren(prefix);
-			final Map<String, String> hashes2 = hashTree2.getHashChildren(prefix);
+			final Map<String, String> hashes1 = source1.getHashChildren(prefix);
+			final Map<String, String> hashes2 = source2.getHashChildren(prefix);
 
 			for (int i = 0; i < 16; i++)
 			{
@@ -301,7 +292,7 @@ public class SyncUtils
 
 				if (!Utils.equals(hash1, hash2))
 				{
-					compareChildren(source1, source2, hashTree1, hashTree2, maxItemsRead, handlerNewer1, handlerNewer2, key);
+					compareChildren(source1, source2, maxItemsRead, handlerNewer1, handlerNewer2, key);
 				}
 			}
 		}

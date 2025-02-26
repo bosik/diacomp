@@ -17,22 +17,21 @@
  */
 package org.bosik.diacomp.core.services.fakes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.mocks.Mock;
+import org.bosik.diacomp.core.mocks.MockDishItem;
+import org.bosik.diacomp.core.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.mocks.Mock;
-import org.bosik.diacomp.core.mocks.MockDishItem;
-import org.bosik.diacomp.core.mocks.MockVersionedConverter;
-import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class FakeDishBaseService implements DishBaseService
 {
@@ -218,7 +217,13 @@ public class FakeDishBaseService implements DishBaseService
 	}
 
 	@Override
-	public MerkleTree getHashTree()
+	public String getHash(String prefix)
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

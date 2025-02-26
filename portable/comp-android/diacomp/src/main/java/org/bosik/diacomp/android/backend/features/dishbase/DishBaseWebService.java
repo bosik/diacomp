@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
@@ -31,7 +31,6 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class DishBaseWebService implements DishBaseService
 	private static final String API_DISH_HASHES            = "api/dish/hashes/%s";
 	private static final String API_DISH_SAVE              = "api/dish/";
 
-	private final WebClient webClient;
+	private final WebClient                       webClient;
 	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
@@ -201,47 +200,40 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public MerkleTree getHashTree()
+	public String getHash(String prefix)
 	{
-		return new MerkleTree()
+		try
 		{
-			@Override
-			public String getHash(String prefix)
-			{
-				try
-				{
-					String query = String.format(API_DISH_HASH, prefix);
-					return webClient.get(query);
-				}
-				catch (CommonServiceException e)
-				{
-					throw e;
-				}
-				catch (Exception e)
-				{
-					throw new CommonServiceException(e);
-				}
-			}
+			String query = String.format(API_DISH_HASH, prefix);
+			return webClient.get(query);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
 
-			@Override
-			public Map<String, String> getHashChildren(String prefix)
-			{
-				try
-				{
-					String query = String.format(API_DISH_HASHES, prefix);
-					String resp = webClient.get(query);
-					return serializerMap.read(resp);
-				}
-				catch (CommonServiceException e)
-				{
-					throw e;
-				}
-				catch (Exception e)
-				{
-					throw new CommonServiceException(e);
-				}
-			}
-		};
+	@Override
+	public Map<String, String> getHashChildren(String prefix)
+	{
+		try
+		{
+			String query = String.format(API_DISH_HASHES, prefix);
+			String resp = webClient.get(query);
+			return serializerMap.read(resp);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override

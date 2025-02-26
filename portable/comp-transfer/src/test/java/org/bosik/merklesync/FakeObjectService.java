@@ -19,16 +19,14 @@ package org.bosik.merklesync;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.merklesync.DataSource;
-import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MerkleTree;
-import org.bosik.merklesync.Versioned;
 
 public class FakeObjectService implements DataSource<String>
 {
 	private final List<Versioned<String>> data = new ArrayList<>();
+	private MerkleTree merkleTree;
 
 	@Override
 	public int count(String prefix)
@@ -119,17 +117,35 @@ public class FakeObjectService implements DataSource<String>
 
 			}
 		}
+
+		merkleTree = null;
+	}
+
+	private synchronized MerkleTree getHashTree()
+	{
+		if (merkleTree == null)
+		{
+			SortedMap<String, String> hashes = new TreeMap<>();
+			for (Versioned<String> item : data)
+			{
+				hashes.put(item.getId(), item.getHash());
+			}
+
+			merkleTree = HashUtils.buildMerkleTree(hashes);
+		}
+
+		return merkleTree;
 	}
 
 	@Override
-	public MerkleTree getHashTree()
+	public String getHash(String prefix)
 	{
-		SortedMap<String, String> hashes = new TreeMap<>();
-		for (Versioned<String> item : data)
-		{
-			hashes.put(item.getId(), item.getHash());
-		}
+		return getHashTree().getHash(prefix);
+	}
 
-		return HashUtils.buildMerkleTree(hashes);
+	@Override
+	public Map<String, String> getHashChildren(String prefix)
+	{
+		return getHashTree().getHashChildren(prefix);
 	}
 }

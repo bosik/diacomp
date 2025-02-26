@@ -27,15 +27,13 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -237,17 +235,33 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public MerkleTree getHashTree()
+	private List<String> getDataHashes(String prefix)
 	{
-		SortedMap<String, String> hashes = new TreeMap<>();
+		return memoryCache.values()
+				.stream()
+				.filter(e -> e.getId().startsWith(prefix))
+				.map(Versioned::getHash)
+				.collect(Collectors.toList());
+	}
 
-		for (Versioned<T> item : memoryCache.values())
+	@Override
+	public String getHash(String prefix)
+	{
+		return HashUtils.sum(getDataHashes(prefix));
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix)
+	{
+		final Map<String, String> map = new HashMap<>();
+
+		for (int i = 0; i < 16; i++)
 		{
-			hashes.put(item.getId(), item.getHash());
+			final String key = prefix + HashUtils.byteToChar(i);
+			map.put(key, HashUtils.sum(getDataHashes(key)));
 		}
 
-		return HashUtils.buildMerkleTree(hashes);
+		return map;
 	}
 
 	@Override

@@ -18,6 +18,7 @@ package org.bosik.merklesync;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface DataSource<T>
 {
@@ -59,9 +60,21 @@ public interface DataSource<T>
 	List<Versioned<T>> findChanged(Date since);
 
 	/**
-	 * @return Hash tree
+	 * Returns hash for the specified prefix
+	 *
+	 * @param prefix
+	 *            Must be 0..ID_PREFIX_SIZE chars long
+	 * @return Hash for specified ID prefix, or null if hash not found
 	 */
-	MerkleTree getHashTree();
+	String getHash(String prefix);
+
+	/**
+	 * Returns key-values pairs for direct children
+	 *
+	 * @param prefix Must be less than ID_PREFIX_SIZE chars long
+	 * @return Map (prefix + one_char, hash)
+	 */
+	Map<String, String> getHashChildren(String prefix);
 
 	/**
 	 * Persists items (creates if not exist, updates otherwise)

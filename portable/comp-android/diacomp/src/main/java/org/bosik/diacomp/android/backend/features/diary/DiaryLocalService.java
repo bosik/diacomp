@@ -21,15 +21,12 @@ package org.bosik.diacomp.android.backend.features.diary;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Handler;
 import android.util.JsonReader;
 import android.util.Log;
-
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.CursorIterator;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.DiaryRecordVersionedReader;
@@ -49,7 +46,6 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
 import java.io.IOException;
@@ -60,10 +56,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class DiaryLocalService implements DiaryService, Importable
 {
@@ -78,29 +75,6 @@ public class DiaryLocalService implements DiaryService, Importable
 	private final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
 	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
-	private        MyObserver observer;
-	private static MerkleTree hashTree;
-
-	class MyObserver extends ContentObserver
-	{
-		public MyObserver(Handler handler)
-		{
-			super(handler);
-		}
-
-		@Override
-		public void onChange(boolean selfChange)
-		{
-			this.onChange(selfChange, null);
-		}
-
-		@Override
-		public void onChange(boolean selfChange, Uri uri)
-		{
-			hashTree = null;
-		}
-	}
-
 	/* ============================ CONSTRUCTOR ============================ */
 
 	/**
@@ -110,23 +84,8 @@ public class DiaryLocalService implements DiaryService, Importable
 	 */
 	public DiaryLocalService(Context context)
 	{
-		if (context == null)
-		{
-			throw new IllegalArgumentException("context is null");
-		}
-		this.context = context;
+		this.context = Objects.requireNonNull(context, "context is null");
 		this.resolver = context.getContentResolver();
-
-		observer = new MyObserver(null);
-		resolver.registerContentObserver(TableDiary.CONTENT_URI, true, observer);
-	}
-
-	@Override
-	protected void finalize() throws Throwable
-	{
-		// TODO: check for the memory leaks
-		resolver.unregisterContentObserver(observer);
-		super.finalize();
 	}
 
 	/* ============================ DB ============================ */
@@ -243,7 +202,9 @@ public class DiaryLocalService implements DiaryService, Importable
 
 		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
 
-		return recs.isEmpty() ? null : recs.get(0);
+		return recs.isEmpty() ?
+				null :
+				recs.get(0);
 	}
 
 	@Override
@@ -390,63 +351,49 @@ public class DiaryLocalService implements DiaryService, Importable
 		}
 	}
 
-	/**
-	 * Returns sorted map (ID, Hash) for all items
-	 *
-	 * @return
-	 */
-	private SortedMap<String, String> getDataHashes()
+	private CursorIterator<String> getDataHashes(String prefix)
 	{
 		// constructing parameters
-		final String[] select = { TableDiary.COLUMN_ID, TableDiary.COLUMN_HASH };
-		final String where = null;
-		final String[] whereArgs = null;
+		final String[] select = { TableDiary.COLUMN_HASH };
+		final boolean hasPrefix = prefix != null && prefix.length() > 0;
+		final String selection = hasPrefix ?
+				String.format("%s LIKE ?", TableDiary.COLUMN_ID) :
+				null;
+		final String[] selectionArgs = hasPrefix ?
+				new String[] { prefix + "%" } :
+				null;
 
-		// execute query
-		try (Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, where, whereArgs, null))
+		final Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, selection, selectionArgs, null);
+		return cursor != null ?
+				new CursorIterator<>(cursor, c -> cursor.getString(0)) :
+				CursorIterator.empty();
+	}
+
+	@Override
+	public String getHash(String prefix)
+	{
+		try (CursorIterator<String> hashes = getDataHashes(prefix))
 		{
-			// analyze response
-			int indexId = cursor.getColumnIndex(TableDiary.COLUMN_ID);
-			int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
-
-			SortedMap<String, String> result = new TreeMap<>();
-
-			while (cursor.moveToNext())
-			{
-				String id = cursor.getString(indexId);
-				String hash = cursor.getString(indexHash);
-
-				if (id == null || id.length() < ID_PREFIX_SIZE)
-				{
-					Log.w(TAG, String.format("Invalid hash ignored: %s = %s", id, hash));
-				}
-				else
-				{
-					// THINK: probably storing entries is unnecessary, so we should process it as we go
-					result.put(id, hash);
-				}
-			}
-
-			return result;
+			return HashUtils.sum(hashes);
 		}
 	}
 
 	@Override
-	public MerkleTree getHashTree()
+	public Map<String, String> getHashChildren(String prefix)
 	{
-		// /**/Profiler p = new Profiler();
+		final Map<String, String> map = new HashMap<>();
 
-		if (hashTree == null)
+		for (int i = 0; i < 16; i++)
 		{
-			SortedMap<String, String> hashes = getDataHashes();
-			// /**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
+			final String key = prefix + HashUtils.byteToChar(i);
 
-			hashTree = HashUtils.buildMerkleTree(hashes);
-			// /**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
+			try (CursorIterator<String> hashes = getDataHashes(key))
+			{
+				map.put(key, HashUtils.sum(hashes));
+			}
 		}
 
-		// /**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
-		return hashTree;
+		return map;
 	}
 
 	/* ======================= ROUTINES ========================= */

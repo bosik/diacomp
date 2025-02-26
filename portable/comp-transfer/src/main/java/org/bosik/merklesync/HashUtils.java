@@ -325,11 +325,11 @@ public class HashUtils
 		return result;
 	}
 
-	public static SortedMap<String, String> buildHashTree(SortedMap<String, String> map)
+	private static SortedMap<String, String> buildHashTree(SortedMap<String, String> map, int maxPrefixSize)
 	{
 		SortedMap<String, String> result = new TreeMap<>();
 
-		for (int i = DataSource.ID_PREFIX_SIZE; i >= 0; i--)
+		for (int i = maxPrefixSize; i >= 0; i--)
 		{
 			map = buildParentHashes(map, i);
 			result.putAll(map);
@@ -346,8 +346,7 @@ public class HashUtils
 	 */
 	public static MerkleTree buildMerkleTree(SortedMap<String, String> hashes)
 	{
-		// headers (0..4 chars id)
-		return new MemoryMerkleTree3(buildHashTree(hashes));
+		return new MemoryMerkleTree3(buildHashTree(hashes, DataSource.ID_PREFIX_SIZE));
 	}
 
 	/**
