@@ -22,11 +22,19 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-
+import org.bosik.diacomp.android.backend.common.AccountUtils;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.db.Table;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
+import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
+import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -42,7 +50,8 @@ import org.bosik.merklesync.SyncUtils;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	private static final String TAG = SyncAdapter.class.getSimpleName();
+	private static final String TAG         = SyncAdapter.class.getSimpleName();
+	private static final String CONTENT_KEY = "content.key";
 
 	// Average diary entry size: 177.8 bytes
 	// Average food entry size: 128.6 bytes
@@ -71,6 +80,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 		mAccountManager = AccountManager.get(context);
 	}
 
+	public static void requestSync(Context context, Uri uri)
+	{
+		if (uri != null)
+		{
+			final Account account = AccountUtils.getAccount(context);
+
+			final Bundle bundle = new Bundle();
+			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+			bundle.putString(CONTENT_KEY, uri.toString());
+
+			ContentResolver.requestSync(account, DiaryContentProvider.AUTHORITY, bundle);
+		}
+	}
+
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
 	{
@@ -81,10 +105,61 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			final String password = mAccountManager.getPassword(account);
 			final WebClient webClient = WebClientInternal.getInstance(getContext(), username, password);
 
-			syncDiary(webClient, syncResult);
-			syncFood(webClient, syncResult);
-			syncDish(webClient, syncResult);
-			syncPreferences(webClient, syncResult);
+			final String contentKey = extras.getString(CONTENT_KEY);
+			if (contentKey != null)
+			{
+				final Uri contentUri = Uri.parse(contentKey);
+				final Table table = DiaryContentProvider.getTable(contentUri);
+
+				if (table != null)
+				{
+					final String id = contentUri.getLastPathSegment();
+
+					switch (table.getName())
+					{
+						case TableDiary.TABLE_NAME:
+						{
+							syncDiarySingle(webClient, syncResult, id);
+							break;
+						}
+
+						case TableFoodbase.TABLE_NAME:
+						{
+							syncFoodSingle(webClient, syncResult, id);
+							break;
+						}
+
+						case TableDishbase.TABLE_NAME:
+						{
+							syncDishSingle(webClient, syncResult, id);
+							break;
+						}
+
+						case TablePreferences.TABLE_NAME:
+						{
+							syncPreferences(webClient, syncResult);
+							break;
+						}
+
+						default:
+						{
+							Log.w(TAG, "Unrecognized table name: " + table.getName());
+							break;
+						}
+					}
+				}
+				else
+				{
+					Log.w(TAG, "Unrecognized URI: " + contentUri);
+				}
+			}
+			else
+			{
+				syncDiary(webClient, syncResult);
+				syncFood(webClient, syncResult);
+				syncDish(webClient, syncResult);
+				syncPreferences(webClient, syncResult);
+			}
 		}
 		catch (Exception e)
 		{
@@ -102,6 +177,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 					new DiaryWebService(webClient),
 					MAX_DIARY_READ,
 					MAX_DIARY_WRITE
+			);
+			Log.v(TAG, "Synchronized diary entries: " + counter);
+		}
+		catch (Exception e)
+		{
+			Log.e(TAG, "Sync failed: diary", e);
+			syncResult.stats.numIoExceptions++;
+		}
+	}
+
+	private void syncDiarySingle(WebClient webClient, SyncResult syncResult, String id)
+	{
+		try
+		{
+			final int counter = SyncUtils.transferSingle(
+					new DiaryLocalService(getContext()),
+					new DiaryWebService(webClient),
+					id
 			);
 			Log.v(TAG, "Synchronized diary entries: " + counter);
 		}
@@ -131,6 +224,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 		}
 	}
 
+	private void syncFoodSingle(WebClient webClient, SyncResult syncResult, String id)
+	{
+		try
+		{
+			final int counter = SyncUtils.transferSingle(
+					FoodBaseLocalService.getInstance(getContext()),
+					new FoodBaseWebService(webClient),
+					id
+			);
+			Log.v(TAG, "Synchronized food entries: " + counter);
+		}
+		catch (Exception e)
+		{
+			Log.e(TAG, "Sync failed: food", e);
+			syncResult.stats.numIoExceptions++;
+		}
+	}
+
 	private void syncDish(WebClient webClient, SyncResult syncResult)
 	{
 		try
@@ -140,6 +251,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 					new DishBaseWebService(webClient),
 					MAX_DISH_READ,
 					MAX_DISH_WRITE
+			);
+			Log.v(TAG, "Synchronized dish entries: " + counter);
+		}
+		catch (Exception e)
+		{
+			Log.e(TAG, "Sync failed: dish", e);
+			syncResult.stats.numIoExceptions++;
+		}
+	}
+
+	private void syncDishSingle(WebClient webClient, SyncResult syncResult, String id)
+	{
+		try
+		{
+			final int counter = SyncUtils.transferSingle(
+					DishBaseLocalService.getInstance(getContext()),
+					new DishBaseWebService(webClient),
+					id
 			);
 			Log.v(TAG, "Synchronized dish entries: " + counter);
 		}
