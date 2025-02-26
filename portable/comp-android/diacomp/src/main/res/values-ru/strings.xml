@@ -133,6 +133,7 @@
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_login">Вход</string>
     <string name="main_option_preferences">Настройки</string>
+    <string name="main_option_refresh">Обновить</string>
     <string name="main_title">Компенсация</string>
     <string name="notification_download_channel_description">Уведомление о статусе загрузки</string>
     <string name="notification_download_channel_name">Загрузки</string>

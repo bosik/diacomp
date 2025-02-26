@@ -23,6 +23,9 @@
         android:showAsAction="always"
         android:title="@string/main_option_login" />
     <item
+        android:id="@+id/item_diary_refresh"
+        android:title="@string/main_option_refresh" />
+    <item
         android:id="@+id/item_diary_preferences"
         android:icon="@drawable/menu_settings"
         android:title="@string/main_option_preferences" />

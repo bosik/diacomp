@@ -286,6 +286,12 @@ public class ActivityMain extends FragmentActivity
 				startActivityForResult(intent, CODE_LOGIN);
 				return true;
 			}
+			case R.id.item_diary_refresh:
+			{
+				final Account account = AccountUtils.getAccount(this);
+				ContentResolver.requestSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY);
+				return true;
+			}
 			case R.id.item_diary_preferences:
 			{
 				startActivity(new Intent(getBaseContext(), ActivityPreferences.class));
