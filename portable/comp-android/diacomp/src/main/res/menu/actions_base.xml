@@ -4,27 +4,27 @@
     <item
         android:id="@+id/item_base_add"
         android:icon="@drawable/ic_action_new"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="+">
         <menu>
             <item
                 android:id="@+id/item_base_addFood"
                 android:icon="@drawable/ic_menu_new_food"
-                android:title="@string/base_action_new_food"/>
+                android:title="@string/base_action_new_food" />
             <item
                 android:id="@+id/item_base_addDish"
                 android:icon="@drawable/ic_menu_new_dish"
-                android:title="@string/base_action_new_dish"/>
+                android:title="@string/base_action_new_dish" />
         </menu>
     </item>
     <item
         android:id="@+id/item_common_login"
         android:icon="@drawable/ic_action_new_account"
         android:showAsAction="always"
-        android:title="@string/main_option_login"/>
+        android:title="@string/main_option_login" />
     <item
         android:id="@+id/item_diary_preferences"
         android:icon="@drawable/menu_settings"
-        android:title="@string/main_option_preferences"/>
+        android:title="@string/main_option_preferences" />
 
 </menu>
