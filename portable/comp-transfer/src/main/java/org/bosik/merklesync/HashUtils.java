@@ -325,7 +325,7 @@ public class HashUtils
 		return result;
 	}
 
-	private static SortedMap<String, String> buildHashTree(SortedMap<String, String> map, int maxPrefixSize)
+	public static SortedMap<String, String> buildHashTree(SortedMap<String, String> map, int maxPrefixSize)
 	{
 		SortedMap<String, String> result = new TreeMap<>();
 

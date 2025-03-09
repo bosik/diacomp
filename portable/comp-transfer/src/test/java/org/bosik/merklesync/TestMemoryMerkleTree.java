@@ -29,53 +29,65 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @SuppressWarnings("static-method")
 public class TestMemoryMerkleTree
 {
-	private static final Map<String, String> MAX_MAP           = buildCompleteHashes();
-	private static final Set<String>         SHORT_KEYS        = buildShortKeys(MAX_MAP.keySet());
-	private static final MerkleTree          MAX_MERKLE_TREE   = new MemoryMerkleTree(MAX_MAP);
-	private static final MerkleTree          MAX_MERKLE_TREE_2 = new MemoryMerkleTree2(MAX_MAP);
-	private static final MerkleTree          MAX_MERKLE_TREE_3 = new MemoryMerkleTree3(MAX_MAP);
+	private static final Map<String, String>       MAX_EXAMPLE       = buildCompleteExample();
+	private static final SortedMap<String, String> HASH_TREE         = HashUtils.buildHashTree(new TreeMap<>(MAX_EXAMPLE), DataSource.ID_PREFIX_SIZE);
+	private static final Set<String>               ALL_KEYS          = buildKeys(DataSource.ID_PREFIX_SIZE);
+	private static final Set<String>               SHORT_KEYS        = buildKeys(DataSource.ID_PREFIX_SIZE - 1);
+	private static final MerkleTree                MAX_MERKLE_TREE   = new MemoryMerkleTree(HASH_TREE);
+	private static final MerkleTree                MAX_MERKLE_TREE_2 = new MemoryMerkleTree2(HASH_TREE);
+	private static final MerkleTree                MAX_MERKLE_TREE_3 = new MemoryMerkleTree3(HASH_TREE);
 
-	private static Map<String, String> buildCompleteHashes()
+	private static Map<String, String> buildCompleteExample()
 	{
 		Map<String, String> map = new HashMap<>();
 
-		map.put("", HashUtils.generateGuid());
-
-		for (int i = 1; i <= DataSource.ID_PREFIX_SIZE; i++)
+		int max = 1 << 4 * DataSource.ID_PREFIX_SIZE;
+		for (int j = 0; j < max; j++)
 		{
-			int max = 1 << 4 * i;
-			for (int j = 0; j < max; j++)
-			{
-				String key = Integer.toHexString(j).toLowerCase();
-				while (key.length() < i)
-				{
-					key = '0' + key;
-				}
-
-				map.put(key, HashUtils.generateGuid());
-			}
+			final String key = formatHex(j, DataSource.ID_PREFIX_SIZE) + HashUtils.generateGuid().substring(DataSource.ID_PREFIX_SIZE);
+			map.put(key, HashUtils.generateGuid());
 		}
 
 		return map;
 	}
 
-	private static Set<String> buildShortKeys(Set<String> allKeys)
+	private static Set<String> buildKeys(int maxSize)
 	{
 		Set<String> keys = new HashSet<>();
 
-		for (String key : allKeys)
+		for (int i = 0; i <= maxSize; i++)
 		{
-			if (key.length() < DataSource.ID_PREFIX_SIZE)
+			int max = 1 << 4 * i;
+			for (int j = 0; j < max; j++)
 			{
-				keys.add(key);
+				keys.add(formatHex(j, i));
 			}
 		}
 
 		return keys;
+	}
+
+	private static String formatHex(int value, int width)
+	{
+		if (width == 0)
+		{
+			return "";
+		}
+
+		StringBuilder key = new StringBuilder(Integer.toHexString(value).toLowerCase());
+
+		while (key.length() < width)
+		{
+			key.insert(0, '0');
+		}
+
+		return key.toString();
 	}
 
 	@Test
@@ -85,18 +97,18 @@ public class TestMemoryMerkleTree
 		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<>());
 		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<>());
 
-		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
+		for (String key : ALL_KEYS)
 		{
-			Assert.assertEquals(null, m1.getHash(entry.getKey()));
-			Assert.assertEquals(null, m2.getHash(entry.getKey()));
-			Assert.assertEquals(null, m3.getHash(entry.getKey()));
+			Assert.assertNull(m1.getHash(key));
+			Assert.assertNull(m2.getHash(key));
+			Assert.assertNull(m3.getHash(key));
 		}
 	}
 
 	@Test
 	public void test_getHash()
 	{
-		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
+		for (Map.Entry<String, String> entry : HASH_TREE.entrySet())
 		{
 			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE.getHash(entry.getKey()));
 			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE_2.getHash(entry.getKey()));
@@ -122,30 +134,20 @@ public class TestMemoryMerkleTree
 	@Test
 	public void test_getHashChildren()
 	{
-		for (int i = 0; i < DataSource.ID_PREFIX_SIZE; i++)
+		for (String key : SHORT_KEYS)
 		{
-			int max = 1 << 4 * i;
-			for (int j = 0; j < max; j++)
+			Map<String, String> children1 = MAX_MERKLE_TREE.getHashChildren(key);
+			Map<String, String> children2 = MAX_MERKLE_TREE_2.getHashChildren(key);
+			Map<String, String> children3 = MAX_MERKLE_TREE_3.getHashChildren(key);
+
+			for (int k = 0; k < 16; k++)
 			{
-				String key = (i > 0) ? Integer.toHexString(j).toLowerCase() : "";
-				while (key.length() < i)
-				{
-					key = '0' + key;
-				}
+				final String subKey = key + Integer.toHexString(k).toLowerCase();
+				final String subValue = HASH_TREE.get(subKey);
 
-				Map<String, String> children1 = MAX_MERKLE_TREE.getHashChildren(key);
-				Map<String, String> children2 = MAX_MERKLE_TREE_2.getHashChildren(key);
-				Map<String, String> children3 = MAX_MERKLE_TREE_3.getHashChildren(key);
-
-				for (int k = 0; k < 16; k++)
-				{
-					String subKey = key + Integer.toHexString(k).toLowerCase();
-					String subValue = MAX_MAP.get(subKey);
-
-					Assert.assertEquals(subValue, children1.get(subKey));
-					Assert.assertEquals(subValue, children2.get(subKey));
-					Assert.assertEquals(subValue, children3.get(subKey));
-				}
+				Assert.assertEquals(subValue, children1.get(subKey));
+				Assert.assertEquals(subValue, children2.get(subKey));
+				Assert.assertEquals(subValue, children3.get(subKey));
 			}
 		}
 	}
@@ -158,28 +160,35 @@ public class TestMemoryMerkleTree
 		//		MemoryMerkleTree2        	   7 549 880 (bytes)
 		//		MemoryMerkleTree3        	   2 516 720 (bytes)
 
-		String[] arrayString = new String[MAX_MAP.size()];
+		String[] arrayString = new String[HASH_TREE.size()];
 		for (int i = 0; i < arrayString.length; i++)
 		{
 			arrayString[i] = HashUtils.generateGuid();
 		}
 
-		byte[][] arrayByte = new byte[MAX_MAP.size()][16];
+		byte[][] arrayByte = new byte[HASH_TREE.size()][16];
+		final Random random = new Random();
+
 		for (byte[] anArrayByte : arrayByte)
 		{
 			for (int j = 0; j < 16; j++)
 			{
-				new Random().nextBytes(anArrayByte);
+				random.nextBytes(anArrayByte);
 			}
 		}
 
-		System.out.println("SIZE (byes)");
-		System.out.printf("%-25s\t%10d%n", "HashMap", ObjectSizeCalculator.getObjectSize(MAX_MAP));
-		System.out.printf("%-25s\t%10d%n", MemoryMerkleTree.class.getSimpleName(), ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE));
-		System.out.printf("%-25s\t%10d%n", MemoryMerkleTree2.class.getSimpleName(), ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE_2));
-		System.out.printf("%-25s\t%10d%n", MemoryMerkleTree3.class.getSimpleName(), ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE_3));
-		System.out.printf("%-25s\t%10d%n", "String array", ObjectSizeCalculator.getObjectSize(arrayString));
-		System.out.printf("%-25s\t%10d%n", "Byte array", ObjectSizeCalculator.getObjectSize(arrayByte));
+		System.out.printf("%-25s\t%10s%n", "OBJECT", "SIZE (bytes)");
+		System.out.printf("%-25s\t%,10d%n", "HashMap", getObjectSize(HASH_TREE));
+		System.out.printf("%-25s\t%,10d%n", MemoryMerkleTree.class.getSimpleName(), getObjectSize(MAX_MERKLE_TREE));
+		System.out.printf("%-25s\t%,10d%n", MemoryMerkleTree2.class.getSimpleName(), getObjectSize(MAX_MERKLE_TREE_2));
+		System.out.printf("%-25s\t%,10d%n", MemoryMerkleTree3.class.getSimpleName(), getObjectSize(MAX_MERKLE_TREE_3));
+		System.out.printf("%-25s\t%,10d%n", "String array", getObjectSize(arrayString));
+		System.out.printf("%-25s\t%,10d%n", "Byte array", getObjectSize(arrayByte));
+	}
+
+	private long getObjectSize(Object object)
+	{
+		return ObjectSizeCalculator.getObjectSize(object);
 	}
 
 	@Test
@@ -194,21 +203,21 @@ public class TestMemoryMerkleTree
 		//		MemoryMerkleTree3: 7.124 ms
 
 		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
-			for (String key : MAX_MAP.keySet())
+			for (String key : HASH_TREE.keySet())
 			{
 				MAX_MERKLE_TREE.getHash(key);
 			}
 		}, COUNT));
 
 		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
-			for (String key : MAX_MAP.keySet())
+			for (String key : HASH_TREE.keySet())
 			{
 				MAX_MERKLE_TREE_2.getHash(key);
 			}
 		}, COUNT));
 
 		System.out.printf(Locale.US, MemoryMerkleTree3.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(() -> {
-			for (String key : MAX_MAP.keySet())
+			for (String key : HASH_TREE.keySet())
 			{
 				MAX_MERKLE_TREE_3.getHash(key);
 			}
