@@ -37,4 +37,16 @@ public interface MerkleTree
 	 * @return Map (prefix + one_char, hash)
 	 */
 	Map<String, String> getHashChildren(String prefix);
+
+	/**
+	 * Updates the tree, applying the provided hash values modification
+	 *
+	 * @param id      Entry ID
+	 * @param oldHash Old hash (may be null)
+	 * @param newHash New hash (may be null)
+	 */
+	default void update(String id, String oldHash, String newHash)
+	{
+		throw new UnsupportedOperationException("This Merkle tree doesn't support update operation");
+	}
 }

@@ -18,9 +18,10 @@ package org.bosik.merklesync;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * Byte-array-based Merkle tree. Immutable.
+ * Byte-array-based Merkle tree.
  */
 public class MemoryMerkleTree3 implements MerkleTree
 {
@@ -96,6 +97,25 @@ public class MemoryMerkleTree3 implements MerkleTree
 		else
 		{
 			throw new IllegalArgumentException("Too long key '" + prefix + "': max " + (DataSource.ID_PREFIX_SIZE - 1) + " chars allowed");
+		}
+	}
+
+	@Override
+	public void update(String id, String oldHash, String newHash)
+	{
+		if (Objects.equals(oldHash, newHash))
+		{
+			return;
+		}
+
+		final byte[] bytesOld = HashUtils.strToByte(oldHash);
+		final byte[] bytesNew = HashUtils.strToByte(newHash);
+		final byte[] delta = HashUtils.sub(bytesNew, bytesOld);
+
+		for (int prefix = 0; prefix <= DataSource.ID_PREFIX_SIZE; prefix++)
+		{
+			final int key = HashUtils.toInt(id, prefix);
+			table[prefix][key] = HashUtils.add(table[prefix][key], delta);
 		}
 	}
 }
