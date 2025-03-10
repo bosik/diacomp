@@ -96,9 +96,9 @@ public class DiaryLocalServiceTest
 	static class Config
 	{
 		@Bean
-		public DiaryLocalService employeeService(DiaryEntityRepository repository, CachedDiaryHashTree cachedHashTree)
+		public DiaryLocalService diaryLocalService(DiaryEntityRepository repository, CachedDiaryHashTree cachedHashTree)
 		{
-			return new DiaryLocalService(repository, cachedHashTree);
+			return new DiaryLocalService(repository, null, cachedHashTree);
 		}
 	}
 }
