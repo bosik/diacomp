@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.backend.common.stream;
 
 import android.util.JsonReader;
-
+import android.util.Log;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 
@@ -28,6 +28,8 @@ import java.util.List;
 
 public class DishItemReader extends StreamReader<DishItem>
 {
+	private static final String TAG = DishItemReader.class.getSimpleName();
+
 	private final FoodMassedReader foodMassedReader = new FoodMassedReader();
 
 	@Override
@@ -68,7 +70,8 @@ public class DishItemReader extends StreamReader<DishItem>
 				}
 				default:
 				{
-					throw new IllegalArgumentException("Unexpected property: " + name);
+					json.skipValue();
+					Log.w(TAG, "Unknown property ignored: " + name);
 				}
 			}
 		}

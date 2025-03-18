@@ -19,13 +19,15 @@
 package org.bosik.diacomp.android.backend.common.stream;
 
 import android.util.JsonReader;
-
+import android.util.Log;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 
 import java.io.IOException;
 
 public class FoodItemReader extends StreamReader<FoodItem>
 {
+	private static final String TAG = FoodItemReader.class.getSimpleName();
+
 	@Override
 	public FoodItem read(JsonReader json) throws IOException
 	{
@@ -75,7 +77,8 @@ public class FoodItemReader extends StreamReader<FoodItem>
 				}
 				default:
 				{
-					throw new IllegalArgumentException("Unexpected property: " + name);
+					json.skipValue();
+					Log.w(TAG, "Unknown property ignored: " + name);
 				}
 			}
 		}
