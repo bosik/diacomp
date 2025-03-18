@@ -38,10 +38,10 @@ public class DishItem implements NamedRelative, Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final String FIELD_NAME    = "name";
-	public static final String FIELD_TAG     = "tag";
-	public static final String FIELD_MASS    = "mass";
-	public static final String FIELD_CONTENT = "content";
+	public static final String FIELD_NAME                  = "name";
+	public static final String FIELD_TAG                   = "tag";
+	public static final String FIELD_MASS                  = "mass";
+	public static final String FIELD_CONTENT               = "content";
 
 	@JsonProperty(FIELD_NAME)
 	private String name;
@@ -54,11 +54,11 @@ public class DishItem implements NamedRelative, Serializable
 	private Double mass;
 
 	@JsonProperty(FIELD_CONTENT)
-	private List<FoodMassed> content = new ArrayList<>();
+	private final List<FoodMassed> content = new ArrayList<>();
 
 	// ================================ GET / SET ================================
 
-	private double getRealMass()
+	public double getRealMass()
 	{
 		if (mass != null)
 		{
@@ -82,17 +82,9 @@ public class DishItem implements NamedRelative, Serializable
 	{
 		if (mass == null)
 		{
-			this.mass = mass;
+			this.mass = null;
 		}
-		else
-		{
-			setMass((double) mass);
-		}
-	}
-
-	public void setMass(double mass)
-	{
-		if (mass > Utils.EPS)
+		else if (mass > Utils.EPS)
 		{
 			this.mass = mass;
 		}

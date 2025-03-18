@@ -140,14 +140,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 					@Override
 					public void onSubmit(Double mass)
 					{
-						if (mass == null)
-						{
-							entity.getData().setMass(null);
-						}
-						else
-						{
-							entity.getData().setMass(mass);
-						}
+						entity.getData().setMass(mass);
 						showMass();
 						modified = true;
 					}
