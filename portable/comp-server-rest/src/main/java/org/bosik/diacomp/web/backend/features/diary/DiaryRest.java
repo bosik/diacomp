@@ -64,6 +64,18 @@ public class DiaryRest extends UserRest
 		return diaryService.count(userId);
 	}
 
+	@GetMapping("/foodstat")
+	public Map<String, Double> getFoodStatistics(
+			@RequestParam("from") String parTimeFrom,
+			@RequestParam("to") String parTimeTo)
+	{
+		final int userId = getUserId();
+		final Date timeFrom = Utils.parseTimeUTC(parTimeFrom);
+		final Date timeTo = Utils.parseTimeUTC(parTimeTo);
+
+		return diaryService.getFoodStatistics(userId, timeFrom, timeTo);
+	}
+
 	@GetMapping("/count/{prefix}")
 	public Integer count(@PathVariable(name = "prefix") String prefix)
 	{
