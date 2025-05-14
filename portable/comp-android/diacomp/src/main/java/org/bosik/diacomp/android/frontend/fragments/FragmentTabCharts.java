@@ -40,6 +40,7 @@ import org.bosik.diacomp.android.frontend.fragments.chart.Chart.ChartType;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.views.expandable.ExpandableView;
 import org.bosik.diacomp.android.frontend.views.expandable.OnSwitchedListener;
+import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -118,8 +119,9 @@ public class FragmentTabCharts extends Fragment
 		}
 	}
 
-	private static final int HALF_WINDOW_SIZE = 2;    // days
-	private static final int PERIOD           = 30;    // days
+	private static final int            HALF_WINDOW_SIZE = 2;    // days
+	private static final int            PERIOD           = 30;    // days
+	private static final BloodSugarUnit BLOOD_SUGAR_UNIT = BloodSugarUnit.MMOL_L;
 
 	private void addChartBS(int viewId)
 	{
@@ -136,7 +138,7 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR_DISPERSION = getResources().getColor(R.color.charts_bs_dispersion);
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getString(R.string.common_unit_bs_mmoll)));
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getBloodSugarUnitName()));
 		chart.setDescription(getString(R.string.charts_average_bs_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
@@ -158,7 +160,7 @@ public class FragmentTabCharts extends Fragment
 					if (rec.getData() instanceof BloodRecord)
 					{
 						BloodRecord blood = (BloodRecord) rec.getData();
-						bs.put(blood.getTime(), blood.getValue());
+						bs.put(blood.getTime(), BloodSugarUnit.convert(blood.getValue(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT));
 					}
 				}
 
@@ -194,6 +196,8 @@ public class FragmentTabCharts extends Fragment
 							}
 						}
 
+//						keys.forEach(key -> points.add(new WeightedValue(items.get(key), 1.0)));
+
 						double mean = Utils.getWeightedMean(points);
 						double deviation = Utils.getWeightedDeviation(points, mean);
 						dataAvg.add(new DataPoint(windowMiddle, mean));
@@ -214,6 +218,19 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>>asList(seriesMin, seriesAvg, seriesMax);
 			}
 		});
+	}
+
+	private String getBloodSugarUnitName()
+	{
+		switch (BLOOD_SUGAR_UNIT)
+		{
+			case MMOL_L:
+				return getString(R.string.common_unit_bs_mmoll);
+			case MG_DL:
+				return getString(R.string.common_unit_bs_mgdl);
+			default:
+				throw new UnsupportedOperationException("Unsupported blood sugar unit: " + BLOOD_SUGAR_UNIT);
+		}
 	}
 
 	private void addChartInsulinConsumption(int viewId)
@@ -421,7 +438,7 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR = getResources().getColor(R.color.charts_k);
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), getBloodSugarUnitName(),
 				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.common_rate_k_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -438,7 +455,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = rate.getK();
+						double y = BloodSugarUnit.convert(rate.getK(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT);
 						dataList.add(new DataPoint(x, y));
 					}
 				}
@@ -465,7 +482,7 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR = getResources().getColor(R.color.charts_q);
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), getString(R.string.common_unit_bs_mmoll),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), getBloodSugarUnitName(),
 				getString(R.string.common_unit_insulin)));
 		chart.setDescription(getString(R.string.common_rate_q_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -482,7 +499,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = rate.getQ();
+						double y = BloodSugarUnit.convert(rate.getQ(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT);
 						dataList.add(new DataPoint(x, y));
 					}
 				}

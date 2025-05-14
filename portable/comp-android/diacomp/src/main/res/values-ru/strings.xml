@@ -51,6 +51,7 @@
     <string name="common_tip_error_invalid_decimal">Введите корректное число</string>
     <string name="common_tip_error_invalid_preference" formatted="false">Настройка \'%s\' имеет неверное значение, будет использовано значение по умолчанию \'%s\'</string>
     <string name="common_tip_unsupported_chars_removed">Неподдерживаемые символы были удалены</string>
+    <string name="common_unit_bs_mgdl">мг/дл</string>
     <string name="common_unit_bs_mmoll">ммоль/л</string>
     <string name="common_unit_insulin">ед</string>
     <string name="common_unit_mass_bu">ХЕ</string>
