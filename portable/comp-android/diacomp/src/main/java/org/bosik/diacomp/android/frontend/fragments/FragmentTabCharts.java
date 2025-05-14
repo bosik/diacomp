@@ -46,6 +46,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.WeightedValue;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
@@ -176,10 +177,25 @@ public class FragmentTabCharts extends Fragment
 
 					if (!items.isEmpty())
 					{
-						Collection<Double> values = items.values();
+						final List<Date> keys = new ArrayList<>(items.keySet());
+						final List<WeightedValue> points = new ArrayList<>();
 
-						double mean = Utils.getMean(values);
-						double deviation = Utils.getDeviation(values, mean);
+						if (keys.size() == 1)
+						{
+							points.add(new WeightedValue(items.get(keys.get(0)), 1.0));
+						}
+						else
+						{
+							for (int j = 0; j < keys.size() - 1; j++)
+							{
+								final double value = (items.get(keys.get(j)) + items.get(keys.get(j + 1))) / 2;
+								final double weight = keys.get(j + 1).getTime() - keys.get(j).getTime();
+								points.add(new WeightedValue(value, weight));
+							}
+						}
+
+						double mean = Utils.getWeightedMean(points);
+						double deviation = Utils.getWeightedDeviation(points, mean);
 						dataAvg.add(new DataPoint(windowMiddle, mean));
 						dataMin.add(new DataPoint(windowMiddle, mean - deviation));
 						dataMax.add(new DataPoint(windowMiddle, mean + deviation));

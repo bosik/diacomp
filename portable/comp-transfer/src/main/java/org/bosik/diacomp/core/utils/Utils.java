@@ -19,6 +19,7 @@ package org.bosik.diacomp.core.utils;
 
 import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.WeightedValue;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.json.JSONArray;
 
@@ -764,6 +765,27 @@ public class Utils
 		}
 	}
 
+	public static double getWeightedMean(Collection<WeightedValue> values)
+	{
+		double totalValue = 0.0;
+		double totalWeight = 0.0;
+
+		for (WeightedValue x : values)
+		{
+			totalValue += x.getValue() * x.getWeight();
+			totalWeight += x.getWeight();
+		}
+
+		if (totalWeight > 0)
+		{
+			return totalValue / totalWeight;
+		}
+		else
+		{
+			return 0.0;
+		}
+	}
+
 	/**
 	 * Calculates standard deviation using pre-calculated mean
 	 *
@@ -785,6 +807,28 @@ public class Utils
 		}
 
 		return Math.sqrt(s);
+	}
+
+	public static double getWeightedDeviation(Collection<WeightedValue> values, double mean)
+	{
+		double totalValue = 0.0;
+		double totalWeight = 0.0;
+
+		for (WeightedValue x : values)
+		{
+			final double centered = x.getValue() - mean;
+			totalValue += centered * centered * x.getWeight();
+			totalWeight += x.getWeight();
+		}
+
+		if (totalWeight > 0)
+		{
+			return Math.sqrt(totalValue / totalWeight);
+		}
+		else
+		{
+			return 0.0;
+		}
 	}
 
 	/* =========================================================================================
