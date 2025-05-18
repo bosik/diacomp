@@ -1,52 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/fdPicker"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_gravity="bottom"
-              android:gravity="bottom"
-              android:orientation="horizontal"
-              android:paddingTop="@dimen/padding_tiny">
+    android:id="@+id/fdPicker"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishTextView
-            android:id="@+id/fdPickerAutocomplete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:completionThreshold="1"
-            android:dropDownVerticalOffset="4dp"
-            android:dropDownWidth="fill_parent"
-            android:hint="@string/common_hint_search"
-            android:imeOptions="actionNext"
-            android:inputType="text">
-    </org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishTextView>
+        android:id="@+id/fdPickerAutocomplete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:completionThreshold="1"
+        android:dropDownWidth="fill_parent"
+        android:dropDownVerticalOffset="4dp"
+        android:hint="@string/common_hint_search"
+        android:imeOptions="actionNext"
+        android:inputType="text" />
 
     <EditText
-            android:id="@+id/fdPickerMass"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:digits="0123456789.,+-"
-            android:hint="@string/common_hint_mass"
-            android:imeOptions="actionDone"
-            android:inputType="numberDecimal"
-            android:maxLines="1"/>
+        android:id="@+id/fdPickerMass"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:digits="0123456789.,+-"
+        android:hint="@string/common_hint_mass"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:maxLines="1" />
 
     <LinearLayout
-            android:id="@+id/fdPickerSubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:gravity="center"
-            android:orientation="horizontal">
+        android:id="@+id/fdPickerSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:contentDescription="Add"
-                android:padding="@dimen/padding_small"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_action_new"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="Add"
+            android:padding="@dimen/padding_small"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_action_new" />
     </LinearLayout>
 
 </LinearLayout>

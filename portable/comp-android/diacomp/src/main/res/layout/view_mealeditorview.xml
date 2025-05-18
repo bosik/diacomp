@@ -4,19 +4,18 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="bottom|fill"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ListView
         android:id="@+id/mealEditorList"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.42"
+        android:layout_weight="1"
         android:background="@color/diary_meal"
         android:drawSelectorOnTop="false"
         android:fadingEdgeLength="5dp"
         android:requiresFadingEdge="vertical"
-        android:scrollbars="vertical" >
-    </ListView>
+        android:scrollbars="vertical" />
 
     <View
         android:layout_width="fill_parent"
@@ -27,6 +26,9 @@
     <org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker
         android:id="@+id/mealEditorPicker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:paddingTop="@dimen/padding_tiny" />
 
 </LinearLayout>
