@@ -31,47 +31,33 @@ public class FoodItem extends Food implements NamedRelative
 {
 	private static final long serialVersionUID = 1789285539891342521L;
 
-	public static final String FIELD_TAG   = "tag";
-	public static final String FIELD_TABLE = "table";
+	public static final String FIELD_TABLE                 = "table";
+	public static final String FIELD_LAST_USED_IN_DIARY    = "luDiary";
+	public static final String FIELD_LAST_USED_IN_DISHBASE = "luDishbase";
 
-	@JsonProperty(FIELD_TAG)
-	private int tag;
+	@JsonProperty(FIELD_LAST_USED_IN_DIARY)
+	private Long lastUsedInDiary;
+
+	@JsonProperty(FIELD_LAST_USED_IN_DISHBASE)
+	private Long lastUsedInDishBase;
 
 	@JsonProperty(FIELD_TABLE)
 	private boolean fromTable;
 
 	public FoodItem()
 	{
-
-	}
-
-	public FoodItem(String name, double relProts, double relFats, double relCarbs, double relValue, int tag, boolean fromTable)
-	{
-		super(name, relProts, relFats, relCarbs, relValue);
-		setTag(tag);
-		setFromTable(fromTable);
 	}
 
 	public FoodItem(FoodItem food)
 	{
 		super(food.getName(), food.getRelProts(), food.getRelFats(), food.getRelCarbs(), food.getRelValue());
-		setTag(food.getTag());
-		setFromTable(food.getFromTable());
+
+		this.setFromTable(food.getFromTable());
+		this.setLastUsedInDiary(food.getLastUsedInDiary());
+		this.setLastUsedInDishBase(food.getLastUsedInDishBase());
 	}
 
 	// ================================ GET / SET ================================
-
-	@Deprecated
-	public int getTag()
-	{
-		return tag;
-	}
-
-	@Deprecated
-	public void setTag(int tag)
-	{
-		this.tag = tag;
-	}
 
 	public boolean getFromTable()
 	{
@@ -81,6 +67,26 @@ public class FoodItem extends Food implements NamedRelative
 	public void setFromTable(boolean fromTable)
 	{
 		this.fromTable = fromTable;
+	}
+
+	public Long getLastUsedInDiary()
+	{
+		return lastUsedInDiary;
+	}
+
+	public void setLastUsedInDiary(Long lastUsedInDiary)
+	{
+		this.lastUsedInDiary = lastUsedInDiary;
+	}
+
+	public Long getLastUsedInDishBase()
+	{
+		return lastUsedInDishBase;
+	}
+
+	public void setLastUsedInDishBase(Long lastUsedInDishBase)
+	{
+		this.lastUsedInDishBase = lastUsedInDishBase;
 	}
 
 	// ================================ MISC ================================

@@ -30,6 +30,7 @@ import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
+import org.bosik.diacomp.android.frontend.views.fdpicker.SuggestionsProvider;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.utils.Utils;
@@ -123,6 +124,8 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 				}
 			}
 		});
+		editor.setSuggestionsData(SuggestionsProvider.getSuggestions(this, SuggestionsProvider.Mode.DISH_EDITOR));
+
 		buttonMass = findViewById(R.id.buttonDishMass);
 		buttonMass.setOnClickListener(new OnClickListener()
 		{

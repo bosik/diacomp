@@ -1191,6 +1191,21 @@ public class Utils
 		return (a == b) || (a != null && a.equals(b));
 	}
 
+	public static <T extends Comparable<T>> T max(T x, T y)
+	{
+		if (x == null)
+		{
+			return y;
+		}
+
+		if (y == null)
+		{
+			return x;
+		}
+
+		return x.compareTo(y) > 0 ? x : y;
+	}
+
 	/**
 	 * Determines proper name for numeral
 	 *
@@ -1337,6 +1352,11 @@ public class Utils
 	public static int nullToZero(Integer n)
 	{
 		return n != null ? n : 0;
+	}
+
+	public static long nullToZero(Long n)
+	{
+		return n != null ? n : 0L;
 	}
 
 	public static String buildString(int size)

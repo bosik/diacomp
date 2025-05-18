@@ -33,8 +33,10 @@ public class ParserFoodItem extends Parser<FoodItem>
 		item.setRelFats(json.getDouble(FoodItem.FIELD_FATS));
 		item.setRelCarbs(json.getDouble(FoodItem.FIELD_CARBS));
 		item.setRelValue(json.getDouble(FoodItem.FIELD_VALUE));
-		item.setTag(json.has(FoodItem.FIELD_TAG) ? json.getInt(FoodItem.FIELD_TAG) : 0);
 		item.setFromTable(json.getBoolean(FoodItem.FIELD_TABLE));
+
+		item.setLastUsedInDiary(getOptionalLong(json, FoodItem.FIELD_LAST_USED_IN_DIARY));
+		item.setLastUsedInDishBase(getOptionalLong(json, FoodItem.FIELD_LAST_USED_IN_DISHBASE));
 
 		return item;
 	}
@@ -49,8 +51,10 @@ public class ParserFoodItem extends Parser<FoodItem>
 		json.put(FoodItem.FIELD_FATS, object.getRelFats());
 		json.put(FoodItem.FIELD_CARBS, object.getRelCarbs());
 		json.put(FoodItem.FIELD_VALUE, object.getRelValue());
-		json.put(FoodItem.FIELD_TAG, object.getTag());
 		json.put(FoodItem.FIELD_TABLE, object.getFromTable());
+
+		json.put(FoodItem.FIELD_LAST_USED_IN_DIARY, object.getLastUsedInDiary());
+		json.put(FoodItem.FIELD_LAST_USED_IN_DISHBASE, object.getLastUsedInDishBase());
 
 		return json;
 	}

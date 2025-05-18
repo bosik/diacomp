@@ -49,11 +49,6 @@ public class DishItemReader extends StreamReader<DishItem>
 					item.setName(json.nextString());
 					break;
 				}
-				case DishItem.FIELD_TAG:
-				{
-					item.setTag(json.nextInt());
-					break;
-				}
 				case DishItem.FIELD_MASS:
 				{
 					item.setMass(json.nextDouble());
@@ -66,6 +61,16 @@ public class DishItemReader extends StreamReader<DishItem>
 					{
 						item.add(f);
 					}
+					break;
+				}
+				case DishItem.FIELD_LAST_USED_IN_DIARY:
+				{
+					item.setLastUsedInDiary(json.nextLong());
+					break;
+				}
+				case DishItem.FIELD_LAST_USED_IN_DISHBASE:
+				{
+					item.setLastUsedInDishBase(json.nextLong());
 					break;
 				}
 				default:

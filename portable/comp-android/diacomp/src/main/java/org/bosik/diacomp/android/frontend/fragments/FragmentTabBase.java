@@ -66,7 +66,7 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.core.services.search.RelevantIndexator;
+import org.bosik.diacomp.android.backend.features.search.UsageIndexDiary;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -649,8 +649,7 @@ public class FragmentTabBase extends Fragment
 				List<Versioned<? extends NamedRelative>> result = new ArrayList<>();
 				result.addAll(foodItems);
 				result.addAll(dishItems);
-
-				RelevantIndexator.sort(result, diaryService);
+				UsageIndexDiary.sort(result);
 
 				// clipping
 				if (result.size() > LIMIT)

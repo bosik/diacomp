@@ -40,6 +40,7 @@ import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmit
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -184,6 +185,11 @@ public class MealEditorView extends LinearLayout
 				}
 			});
 		}
+	}
+
+	public void setSuggestionsData(List<Versioned<? extends Named>> data)
+	{
+		fdPicker.setSuggestionsData(data);
 	}
 
 	private void showData()

@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class DiaryLocalService implements DiaryService, Importable
 {
@@ -286,6 +287,33 @@ public class DiaryLocalService implements DiaryService, Importable
 		// Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
 
 		return records;
+	}
+
+	public void find(Consumer<Versioned<DiaryRecord>> handler, Criteria... criteria)
+	{
+		// construct parameters
+		final List<String> clause = new ArrayList<>();
+		final List<String> clauseArgs = new ArrayList<>();
+
+		for (Criteria c : criteria)
+		{
+			clause.addAll(c.getClause());
+			clauseArgs.addAll(c.getClauseArgs());
+		}
+
+		final String _clause = String.join(" AND ", clause);
+		final String[] _clauseArgs = clauseArgs.toArray(new String[] {});
+
+		final String sortOrder = TableDiary.COLUMN_TIMECACHE + " ASC";
+
+		// execute
+		try (Cursor cursor = resolver.query(TableDiary.CONTENT_URI, null, _clause, _clauseArgs, sortOrder))
+		{
+			while (cursor.moveToNext())
+			{
+				handler.accept(parseEntry(cursor));
+			}
+		}
 	}
 
 	private boolean recordExists(String id)

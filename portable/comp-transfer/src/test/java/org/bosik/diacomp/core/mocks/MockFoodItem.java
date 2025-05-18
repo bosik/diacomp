@@ -57,7 +57,8 @@ public class MockFoodItem implements Mock<FoodItem>
 		item.setRelValue(f.getRelValue());
 
 		item.setFromTable(r.nextBoolean());
-		item.setTag(r.nextInt(100000));
+		item.setLastUsedInDiary(r.nextLong());
+		item.setLastUsedInDishBase(r.nextLong());
 
 		return item;
 	}
@@ -68,6 +69,7 @@ public class MockFoodItem implements Mock<FoodItem>
 		mockFood.compare(exp, act);
 
 		assertEquals(exp.getFromTable(), act.getFromTable());
-		assertEquals(exp.getTag(), act.getTag());
+		assertEquals(exp.getLastUsedInDiary(), act.getLastUsedInDiary());
+		assertEquals(exp.getLastUsedInDishBase(), act.getLastUsedInDishBase());
 	}
 }

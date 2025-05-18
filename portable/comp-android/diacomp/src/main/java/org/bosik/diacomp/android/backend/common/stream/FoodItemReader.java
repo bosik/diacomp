@@ -65,14 +65,19 @@ public class FoodItemReader extends StreamReader<FoodItem>
 					item.setRelValue(json.nextDouble());
 					break;
 				}
-				case FoodItem.FIELD_TAG:
-				{
-					item.setTag(json.nextInt());
-					break;
-				}
 				case FoodItem.FIELD_TABLE:
 				{
 					item.setFromTable(json.nextBoolean());
+					break;
+				}
+				case FoodItem.FIELD_LAST_USED_IN_DIARY:
+				{
+					item.setLastUsedInDiary(json.nextLong());
+					break;
+				}
+				case FoodItem.FIELD_LAST_USED_IN_DISHBASE:
+				{
+					item.setLastUsedInDishBase(json.nextLong());
 					break;
 				}
 				default:

@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -38,12 +39,14 @@ public class MockDishItem implements Mock<DishItem>
 
 		DishItem dishEmpty = new DishItem();
 		dishEmpty.setName("[Test] Empty dish");
-		dishEmpty.setTag(100);
+		dishEmpty.setLastUsedInDiary(r.nextLong());
+		dishEmpty.setLastUsedInDishBase(r.nextLong());
 		samples.add(dishEmpty);
 
 		DishItem dishChocolateBiscuit = new DishItem();
 		dishChocolateBiscuit.setName("[Test] Бисквит шоколадный");
-		dishChocolateBiscuit.setTag(1);
+		dishChocolateBiscuit.setLastUsedInDiary(r.nextLong());
+		dishChocolateBiscuit.setLastUsedInDishBase(r.nextLong());
 		dishChocolateBiscuit.setMass(413);
 		dishChocolateBiscuit.add(new FoodMassed("Яйцо", 12.7, 11.5, 0.7, 157, 200));
 		dishChocolateBiscuit.add(new FoodMassed("Сахар", 0, 0, 99.8, 379, 50));
@@ -54,7 +57,8 @@ public class MockDishItem implements Mock<DishItem>
 
 		DishItem dishTiramisuDessert = new DishItem();
 		dishTiramisuDessert.setName("[Test] Десерт \"Тирамису\" (порция)");
-		dishTiramisuDessert.setTag(1);
+		dishTiramisuDessert.setLastUsedInDiary(r.nextLong());
+		dishTiramisuDessert.setLastUsedInDishBase(r.nextLong());
 		dishTiramisuDessert.setMass(null);
 		dishTiramisuDessert.add(new FoodMassed("Крем для торта \"Тирамису\"", 2.8, 25.7, 27.1, 353.6, 124));
 		dishTiramisuDessert.add(new FoodMassed("Бисквит шоколадный", 9.6, 39.8, 27.3, 504.2, 46));
@@ -63,14 +67,16 @@ public class MockDishItem implements Mock<DishItem>
 
 		DishItem dishToastBatter = new DishItem();
 		dishToastBatter.setName("[Test] Кляр для гренок");
-		dishToastBatter.setTag(42);
+		dishToastBatter.setLastUsedInDiary(r.nextLong());
+		dishToastBatter.setLastUsedInDishBase(r.nextLong());
 		dishToastBatter.add(new FoodMassed("Яйцо", 12.7, 11.5, 0.7, 157, 54));
 		dishToastBatter.add(new FoodMassed("Молоко \"Вкуснотеево\", 3,2%", 2.8, 3.2, 4.7, 58, 172));
 		samples.add(dishToastBatter);
 
 		DishItem dishMegaSalad = new DishItem();
 		dishMegaSalad.setName("[Test] Megasalad");
-		dishMegaSalad.setTag(100500);
+		dishMegaSalad.setLastUsedInDiary(r.nextLong());
+		dishMegaSalad.setLastUsedInDishBase(r.nextLong());
 		for (FoodMassed food : mockFood.getSamples())
 		{
 			dishMegaSalad.add(food);
@@ -84,7 +90,8 @@ public class MockDishItem implements Mock<DishItem>
 	public void compare(DishItem exp, DishItem act)
 	{
 		assertEquals(exp.getName(), act.getName());
-		assertEquals(exp.getTag(), act.getTag());
+		assertEquals(exp.getLastUsedInDiary(), act.getLastUsedInDiary());
+		assertEquals(exp.getLastUsedInDishBase(), act.getLastUsedInDishBase());
 		assertEquals(exp.getMass(), act.getMass());
 
 		assertEquals(exp.count(), act.count());

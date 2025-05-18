@@ -35,20 +35,12 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
-import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -285,8 +277,6 @@ public class FoodDishPicker extends LinearLayout
 					submit();
 				}
 			});
-
-			loadItemsList();
 		}
 	}
 
@@ -295,23 +285,8 @@ public class FoodDishPicker extends LinearLayout
 		onSubmit = l;
 	}
 
-	private void loadItemsList()
+	public void setSuggestionsData(List<Versioned<? extends Named>> data)
 	{
-		// prepare sources
-
-		DiaryService diaryService = LocalDiary.getInstance(getContext());
-		FoodBaseService foodBase = FoodBaseLocalService.getInstance(getContext());
-		DishBaseService dishBase = DishBaseLocalService.getInstance(getContext());
-
-		// build lists
-
-		List<Versioned<? extends Named>> data = new ArrayList<>();
-		data.addAll(foodBase.findAll(false));
-		data.addAll(dishBase.findAll(false));
-
-		// sort
-
-		RelevantIndexator.sort(data, diaryService);
 		editName.setAdapter(new ItemAdapter(getContext(), R.layout.view_iconed_line, data));
 	}
 

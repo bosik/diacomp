@@ -89,4 +89,11 @@ public abstract class Parser<T>
 
 		return array;
 	}
+
+	protected static Long getOptionalLong(JSONObject json, String key)
+	{
+		return !json.isNull(key)
+				? json.getLong(key)
+				: null;
+	}
 }

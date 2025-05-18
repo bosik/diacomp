@@ -25,14 +25,21 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.AsyncTask;
-
+import android.util.Log;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.search.RelevantIndexator;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.android.backend.features.search.UsageIndexDiary;
+import org.bosik.diacomp.android.backend.features.search.UsageIndexDishbase;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class BackgroundService extends JobService
 {
+	private static final String TAG = BackgroundService.class.getSimpleName();
+
 	private static final long TIMER_INTERVAL = 60 * Utils.MsecPerMin;
 	private static final long TIMER_FLEX     = 5 * Utils.MsecPerMin;
 	private static final int  JOB_ID         = 1000;
@@ -78,10 +85,16 @@ public class BackgroundService extends JobService
 			final Context context = args[0];
 
 			// Relevant indexation
-			DiaryService diary = LocalDiary.getInstance(context);
-			RelevantIndexator.index(diary);
+			DiaryLocalService diaryService = (DiaryLocalService) LocalDiary.getInstance(context);
+			final FoodBaseService foodBaseService = FoodBaseLocalService.getInstance(context);
+			final DishBaseService dishBaseService = DishBaseLocalService.getInstance(context);
+
+			Log.d(TAG, "Updating search indexes...");
+			UsageIndexDiary.update(diaryService, foodBaseService, dishBaseService, 7);
+			UsageIndexDishbase.update(foodBaseService, dishBaseService);
 
 			// Rates
+			Log.d(TAG, "Updating insulin rates...");
 			RateServiceInternal.getInstanceAuto(context).update();
 			RateServiceInternal.getInstanceManual(context).update();
 			return null;

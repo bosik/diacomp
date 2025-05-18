@@ -39,15 +39,13 @@ public class DishItem implements NamedRelative, Serializable
 	private static final long serialVersionUID = 1L;
 
 	public static final String FIELD_NAME                  = "name";
-	public static final String FIELD_TAG                   = "tag";
 	public static final String FIELD_MASS                  = "mass";
 	public static final String FIELD_CONTENT               = "content";
+	public static final String FIELD_LAST_USED_IN_DIARY    = "luDiary";
+	public static final String FIELD_LAST_USED_IN_DISHBASE = "luDishbase";
 
 	@JsonProperty(FIELD_NAME)
 	private String name;
-
-	@JsonProperty(FIELD_TAG)
-	private int tag;
 
 	@JsonProperty(FIELD_MASS)
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -55,6 +53,12 @@ public class DishItem implements NamedRelative, Serializable
 
 	@JsonProperty(FIELD_CONTENT)
 	private final List<FoodMassed> content = new ArrayList<>();
+
+	@JsonProperty(FIELD_LAST_USED_IN_DIARY)
+	private Long lastUsedInDiary;
+
+	@JsonProperty(FIELD_LAST_USED_IN_DISHBASE)
+	private Long lastUsedInDishBase;
 
 	// ================================ GET / SET ================================
 
@@ -113,16 +117,24 @@ public class DishItem implements NamedRelative, Serializable
 		this.name = name;
 	}
 
-	@Deprecated
-	public int getTag()
+	public Long getLastUsedInDiary()
 	{
-		return tag;
+		return lastUsedInDiary;
 	}
 
-	@Deprecated
-	public void setTag(int tag)
+	public void setLastUsedInDiary(Long lastUsedInDiary)
 	{
-		this.tag = tag;
+		this.lastUsedInDiary = lastUsedInDiary;
+	}
+
+	public Long getLastUsedInDishBase()
+	{
+		return lastUsedInDishBase;
+	}
+
+	public void setLastUsedInDishBase(Long lastUsedInDishBase)
+	{
+		this.lastUsedInDishBase = lastUsedInDishBase;
 	}
 
 	private double getRel(double total)
@@ -241,7 +253,8 @@ public class DishItem implements NamedRelative, Serializable
 		food.setRelCarbs(getRelCarbs());
 		food.setRelValue(getRelValue());
 		food.setFromTable(false);
-		food.setTag(getTag());
+		food.setLastUsedInDiary(getLastUsedInDiary());
+		food.setLastUsedInDishBase(getLastUsedInDishBase());
 
 		return food;
 	}
@@ -256,8 +269,6 @@ public class DishItem implements NamedRelative, Serializable
 
 		DishItem dishItem = (DishItem) o;
 
-		if (tag != dishItem.tag)
-			return false;
 		if (name != null ? !name.equals(dishItem.name) : dishItem.name != null)
 			return false;
 		if (mass != null ? !mass.equals(dishItem.mass) : dishItem.mass != null)
@@ -269,7 +280,6 @@ public class DishItem implements NamedRelative, Serializable
 	public int hashCode()
 	{
 		int result = name != null ? name.hashCode() : 0;
-		result = 31 * result + tag;
 		result = 31 * result + (mass != null ? mass.hashCode() : 0);
 		result = 31 * result + (content != null ? content.hashCode() : 0);
 		return result;

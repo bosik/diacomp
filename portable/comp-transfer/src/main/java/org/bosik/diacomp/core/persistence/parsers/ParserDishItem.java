@@ -32,7 +32,6 @@ public class ParserDishItem extends Parser<DishItem>
 	{
 		DishItem dish = new DishItem();
 		dish.setName(json.getString(DishItem.FIELD_NAME));
-		dish.setTag(json.has(DishItem.FIELD_TAG) ? json.getInt(DishItem.FIELD_TAG) : 0);
 		dish.setMass(json.has(DishItem.FIELD_MASS) ? json.getDouble(DishItem.FIELD_MASS) : null);
 
 		if (json.has(DishItem.FIELD_CONTENT))
@@ -46,6 +45,9 @@ public class ParserDishItem extends Parser<DishItem>
 			}
 		}
 
+		dish.setLastUsedInDiary(getOptionalLong(json, DishItem.FIELD_LAST_USED_IN_DIARY));
+		dish.setLastUsedInDishBase(getOptionalLong(json, DishItem.FIELD_LAST_USED_IN_DISHBASE));
+
 		return dish;
 	}
 
@@ -55,7 +57,6 @@ public class ParserDishItem extends Parser<DishItem>
 		JSONObject json = new JSONObject();
 
 		json.put(DishItem.FIELD_NAME, item.getName());
-		json.put(DishItem.FIELD_TAG, item.getTag());
 
 		if (item.getMass() != null)
 		{
@@ -69,6 +70,9 @@ public class ParserDishItem extends Parser<DishItem>
 		}
 
 		json.put(DishItem.FIELD_CONTENT, content);
+
+		json.put(DishItem.FIELD_LAST_USED_IN_DIARY, item.getLastUsedInDiary());
+		json.put(DishItem.FIELD_LAST_USED_IN_DISHBASE, item.getLastUsedInDishBase());
 
 		return json;
 	}
