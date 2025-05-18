@@ -196,8 +196,6 @@ public class FragmentTabCharts extends Fragment
 							}
 						}
 
-//						keys.forEach(key -> points.add(new WeightedValue(items.get(key), 1.0)));
-
 						double mean = Utils.getWeightedMean(points);
 						double deviation = Utils.getWeightedDeviation(points, mean);
 						dataAvg.add(new DataPoint(windowMiddle, mean));
