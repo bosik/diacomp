@@ -84,7 +84,15 @@ public class DishItem implements NamedRelative, Serializable
 		{
 			this.mass = null;
 		}
-		else if (mass > Utils.EPS)
+		else
+		{
+			setMass((double) mass);
+		}
+	}
+
+	public void setMass(double mass)
+	{
+		if (mass > Utils.EPS)
 		{
 			this.mass = mass;
 		}
