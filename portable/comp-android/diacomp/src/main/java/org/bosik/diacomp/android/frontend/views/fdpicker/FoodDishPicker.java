@@ -47,11 +47,11 @@ import org.bosik.merklesync.Versioned;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 {
 	private final List<Versioned<? extends Named>> itemsAll;
-	private final List<Versioned<? extends Named>> suggestions;
 	private final int                              viewResourceId;
 	private       List<String>                     tokens;
 
@@ -60,7 +60,6 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 		super(context, viewResourceId, items);
 
 		this.itemsAll = new ArrayList<>(items);
-		this.suggestions = new ArrayList<>();
 		this.viewResourceId = viewResourceId;
 	}
 
@@ -68,36 +67,34 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		View v = convertView;
+
 		if (v == null)
 		{
 			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(viewResourceId, null);
 		}
 
-		if (position < suggestions.size())
+		final Versioned<? extends Named> item = getItem(position);
+
+		TextView itemCaption = v.findViewById(R.id.itemDescription);
+		itemCaption.setText(highlightOccurrences(
+				item.getData().getName(),
+				tokens,
+				getContext().getResources().getColor(R.color.search_highlight, null)
+		));
+
+		// FIXME: use separated resources (not button's)
+		if (item.getData() instanceof FoodItem)
 		{
-			Versioned<? extends Named> item = suggestions.get(position);
-
-			TextView itemCaption = v.findViewById(R.id.itemDescription);
-			itemCaption.setText(highlightOccurrences(
-					item.getData().getName(),
-					tokens,
-					getContext().getResources().getColor(R.color.search_highlight, null)
-			));
-
-			// FIXME: use separated resources (not button's)
-			if (item.getData() instanceof FoodItem)
-			{
-				itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
-			}
-			else if (item.getData() instanceof DishItem)
-			{
-				itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
-			}
-			else
-			{
-				throw new IllegalArgumentException("Invalid item type: " + item.getClass().getName());
-			}
+			itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
+		}
+		else if (item.getData() instanceof DishItem)
+		{
+			itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Invalid item type: " + item.getClass().getName());
 		}
 
 		return v;
@@ -146,17 +143,12 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 			if (constraint != null)
 			{
 				tokens = Utils.parseTokens(constraint.toString());
-				suggestions.clear();
 
-				for (Versioned<? extends Named> item : itemsAll)
-				{
-					if (Utils.matchesTokens(item.getData().getName(), tokens))
-					{
-						suggestions.add(item);
-					}
-				}
+				final List<Versioned<? extends Named>> suggestions = itemsAll.stream()
+						.filter(e -> Utils.matchesTokens(e.getData().getName(), tokens))
+						.collect(Collectors.toList());
 
-				FilterResults filterResults = new FilterResults();
+				final FilterResults filterResults = new FilterResults();
 				filterResults.values = suggestions;
 				filterResults.count = suggestions.size();
 
