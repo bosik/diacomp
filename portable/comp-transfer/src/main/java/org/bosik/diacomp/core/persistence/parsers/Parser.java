@@ -90,7 +90,7 @@ public abstract class Parser<T>
 		return array;
 	}
 
-	protected static Long getOptionalLong(JSONObject json, String key)
+	protected static Long getOptionalLong(JSONObject json, String key) throws JSONException
 	{
 		return !json.isNull(key)
 				? json.getLong(key)
