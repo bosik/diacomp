@@ -21,11 +21,11 @@ package org.bosik.diacomp.android.frontend.views.fdpicker;
 import android.content.Context;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
-import org.bosik.diacomp.core.entities.business.interfaces.Named;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.android.backend.features.search.UsageIndexDiary;
 import org.bosik.diacomp.android.backend.features.search.UsageIndexDishbase;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
@@ -39,14 +39,14 @@ public class SuggestionsProvider
 		DISH_EDITOR
 	}
 
-	public static List<Versioned<? extends Named>> getSuggestions(Context context, Mode mode)
+	public static List<Versioned<? extends NamedRelative>> getSuggestions(Context context, Mode mode)
 	{
 		// prepare sources
 		FoodBaseService foodBase = FoodBaseLocalService.getInstance(context);
 		DishBaseService dishBase = DishBaseLocalService.getInstance(context);
 
 		// build lists
-		List<Versioned<? extends Named>> data = new ArrayList<>();
+		List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
 		data.addAll(foodBase.findAll(false));
 		data.addAll(dishBase.findAll(false));
 

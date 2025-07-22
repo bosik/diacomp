@@ -413,6 +413,11 @@ public class Utils
 		return String.format(Locale.US, "%+.1f", x);
 	}
 
+	public static String formatInteger(double x)
+	{
+		return String.format(Locale.US, "%.0f", x);
+	}
+
 	public static String formatDateUTC(Date date)
 	{
 		if (date == null)

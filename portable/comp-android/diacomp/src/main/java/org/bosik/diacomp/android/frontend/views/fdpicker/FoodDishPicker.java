@@ -41,6 +41,7 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -49,18 +50,44 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
+class ItemAdapter extends ArrayAdapter<Versioned<? extends NamedRelative>>
 {
-	private final List<Versioned<? extends Named>> itemsAll;
-	private final int                              viewResourceId;
-	private       List<String>                     tokens;
+	private static final int ITEM_TYPE_FOOD = 0;
+	private static final int ITEM_TYPE_DISH = 1;
 
-	public ItemAdapter(Context context, int viewResourceId, List<Versioned<? extends Named>> items)
+	private final List<Versioned<? extends NamedRelative>> itemsAll;
+	private       List<String>                             tokens;
+
+	public ItemAdapter(Context context, int viewResourceId, List<Versioned<? extends NamedRelative>> items)
 	{
 		super(context, viewResourceId, items);
 
 		this.itemsAll = new ArrayList<>(items);
-		this.viewResourceId = viewResourceId;
+	}
+
+	@Override
+	public int getViewTypeCount()
+	{
+		return 2;
+	}
+
+	@Override
+	public int getItemViewType(int position)
+	{
+		final NamedRelative data = getItem(position).getData();
+
+		if (data instanceof FoodItem)
+		{
+			return ITEM_TYPE_FOOD;
+		}
+		else if (data instanceof DishItem)
+		{
+			return ITEM_TYPE_DISH;
+		}
+		else
+		{
+			throw new IllegalArgumentException("Invalid item type: " + getItem(position).getClass().getName());
+		}
 	}
 
 	@Override
@@ -68,34 +95,36 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 	{
 		View v = convertView;
 
+		final Versioned<? extends NamedRelative> item = getItem(position);
+		final int type = getItemViewType(position);
+
 		if (v == null)
 		{
 			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(viewResourceId, null);
+			switch (type)
+			{
+				case ITEM_TYPE_FOOD:
+					v = vi.inflate(R.layout.view_base_food_small, null);
+					break;
+				case ITEM_TYPE_DISH:
+					v = vi.inflate(R.layout.view_base_dish_small, null);
+					break;
+				default:
+					throw new UnsupportedOperationException("Unknown type: " + type);
+			}
 		}
 
-		final Versioned<? extends Named> item = getItem(position);
-
-		TextView itemCaption = v.findViewById(R.id.itemDescription);
+		final TextView itemCaption = v.findViewById(R.id.baseItemName);
 		itemCaption.setText(highlightOccurrences(
 				item.getData().getName(),
 				tokens,
 				getContext().getResources().getColor(R.color.search_highlight, null)
 		));
 
-		// FIXME: use separated resources (not button's)
-		if (item.getData() instanceof FoodItem)
-		{
-			itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
-		}
-		else if (item.getData() instanceof DishItem)
-		{
-			itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Invalid item type: " + item.getClass().getName());
-		}
+		v.<TextView>findViewById(R.id.baseItemInfoP).setText(Utils.formatDoubleShort(item.getData().getRelProts()));
+		v.<TextView>findViewById(R.id.baseItemInfoF).setText(Utils.formatDoubleShort(item.getData().getRelFats()));
+		v.<TextView>findViewById(R.id.baseItemInfoC).setText(Utils.formatDoubleShort(item.getData().getRelCarbs()));
+		v.<TextView>findViewById(R.id.baseItemInfoV).setText(Utils.formatInteger(item.getData().getRelValue()));
 
 		return v;
 	}
@@ -144,7 +173,7 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 			{
 				tokens = Utils.parseTokens(constraint.toString());
 
-				final List<Versioned<? extends Named>> suggestions = itemsAll.stream()
+				final List<Versioned<? extends NamedRelative>> suggestions = itemsAll.stream()
 						.filter(e -> Utils.matchesTokens(e.getData().getName(), tokens))
 						.collect(Collectors.toList());
 
@@ -167,7 +196,7 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 
 			if (results != null && results.values != null)
 			{
-				@SuppressWarnings("unchecked") List<Versioned<? extends Named>> filteredList = (List<Versioned<? extends Named>>) results.values;
+				@SuppressWarnings("unchecked") List<Versioned<? extends NamedRelative>> filteredList = (List<Versioned<? extends NamedRelative>>) results.values;
 				addAll(filteredList);
 			}
 
@@ -277,7 +306,7 @@ public class FoodDishPicker extends LinearLayout
 		onSubmit = l;
 	}
 
-	public void setSuggestionsData(List<Versioned<? extends Named>> data)
+	public void setSuggestionsData(List<Versioned<? extends NamedRelative>> data)
 	{
 		editName.setAdapter(new ItemAdapter(getContext(), R.layout.view_iconed_line, data));
 	}
