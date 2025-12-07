@@ -28,7 +28,6 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.diary.MealFormat;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
-import org.bosik.diacomp.core.utils.CodedUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -36,8 +35,6 @@ import java.util.TimeZone;
 
 public class DiaryRecMealView extends LinearLayout
 {
-	private static final MealFormat DEFAULT_FORMAT = CodedUtils.parse(MealFormat.class, PreferenceID.ANDROID_MEAL_FORMAT.getDefaultValue());
-
 	private TextView textTime;
 	private TextView textValue;
 
@@ -57,8 +54,7 @@ public class DiaryRecMealView extends LinearLayout
 
 	public void setData(Versioned<MealRecord> record)
 	{
-		String s = preferences.getStringValue(PreferenceID.ANDROID_MEAL_FORMAT);
-		final MealFormat mealFormat = CodedUtils.parse(MealFormat.class, s, DEFAULT_FORMAT);
+		final MealFormat mealFormat = preferences.getEnum(PreferenceID.ANDROID_MEAL_FORMAT, MealFormat.class);
 
 		MealRecord data = record.getData();
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));

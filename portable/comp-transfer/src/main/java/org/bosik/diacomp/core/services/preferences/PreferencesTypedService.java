@@ -17,8 +17,10 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import org.bosik.diacomp.core.entities.tech.Coded;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
+import org.bosik.diacomp.core.utils.CodedUtils;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.text.ParseException;
@@ -30,7 +32,7 @@ import java.util.Set;
  */
 public class PreferencesTypedService implements PreferencesService
 {
-	private PreferencesService service;
+	private final PreferencesService service;
 
 	public PreferencesTypedService(PreferencesService service)
 	{
@@ -217,5 +219,29 @@ public class PreferencesTypedService implements PreferencesService
 		Serializer<Set<String>> serializer = new SerializerSet();
 		String value = serializer.write(set);
 		service.setString(buildEntry(preferenceID, value));
+	}
+
+	/**
+	 * Returns preference as enum
+	 *
+	 * @param preferenceID
+	 * @param cls Enum class
+	 * @return Value if found, default otherwise
+	 */
+	public <T extends Enum<T> & Coded> T getEnum(PreferenceID preferenceID, Class<T> cls)
+	{
+		String value = getStringValue(preferenceID);
+		return CodedUtils.parse(cls, value, CodedUtils.parse(cls, preferenceID.getDefaultValue()));
+	}
+
+	/**
+	 * Updates enum preference. Version is incremented automatically.
+	 *
+	 * @param preferenceID
+	 * @param value
+	 */
+	public <T extends Enum<T> & Coded> void setEnum(PreferenceID preferenceID, T value)
+	{
+		service.setString(buildEntry(preferenceID, value.getCode()));
 	}
 }
