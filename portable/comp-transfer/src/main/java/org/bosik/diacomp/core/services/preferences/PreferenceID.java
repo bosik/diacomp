@@ -31,7 +31,7 @@ public enum PreferenceID implements Coded
 	 */
 	BLOOD_SUGAR_UNITS("f8b8f180da6d4d9198ee42944b23dfdf", Type.STRING, Units.BloodSugar.MMOL_L.getCode(), true),
 	/**
-	 * Target blood sugar, in mmol/l
+	 * Target blood sugar, in preferred units
 	 */
 	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", Type.FLOAT, "5.5", true),
 	/**
@@ -50,6 +50,10 @@ public enum PreferenceID implements Coded
 	 * Units of mass to use in manual rates, options are {@link Units.Mass}'s codes
 	 */
 	RATES_MASS_UNITS("589985b443c243d6844209964b2b1e8e", Type.STRING, Units.Mass.G.getCode(), true),
+	/**
+	 * Units of measurement used for the last blood sugar recorded
+	 */
+	ANDROID_LAST_USED_BLOOD_SUGAR_UNITS("622096bc5ed14fac93339de8a6d1df96", Type.STRING, Units.BloodSugar.MMOL_L.getCode(), false),
 	/**
 	 * If it's first start on Android device. TODO: move it?
 	 */

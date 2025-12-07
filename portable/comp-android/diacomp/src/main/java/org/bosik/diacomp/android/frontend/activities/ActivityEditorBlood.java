@@ -27,9 +27,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Date;
@@ -43,6 +46,8 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	private Spinner  spinnerFinger;
 	private Button   buttonTime;
 	private Button   buttonDate;
+
+	private PreferencesTypedService preferences;
 
 	// TODO: i18n
 	private static final String ERROR_INCORRECT_FINGER_VALUE = "Укажите палец, из которого бралась кровь";
@@ -103,6 +108,8 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 				ActivityEditorBlood.this.submit();
 			}
 		});
+
+		preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 	}
 
 	@Override
@@ -112,7 +119,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		buttonTime.setText(formatTime(entity.getData().getTime()));
 
 		final Units.BloodSugar unit = createMode
-				? Units.BloodSugar.MG_DL // FIXME: use preferences (last used unit)
+				? preferences.getEnum(PreferenceID.ANDROID_LAST_USED_BLOOD_SUGAR_UNITS, Units.BloodSugar.class)
 				: entity.getData().getUnit();
 
 		spinnerUnit.setSelection(writeUnit(unit));
@@ -188,6 +195,8 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 			spinnerFinger.requestFocus();
 			return false;
 		}
+
+		preferences.setEnum(PreferenceID.ANDROID_LAST_USED_BLOOD_SUGAR_UNITS, entity.getData().getUnit());
 
 		return true;
 	}
