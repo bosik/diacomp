@@ -33,7 +33,6 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Date;
-import java.util.Locale;
 
 public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 {
@@ -124,10 +123,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		}
 		else
 		{
-			editValue.setText(unit == BloodSugarUnit.MMOL_L
-					? String.format(Locale.US, "%.1f", entity.getData().getValue())
-					: String.format(Locale.US, "%.0f", entity.getData().getValue())
-			);
+			editValue.setText(UIUtils.formatBloodSugarValue(entity.getData().getValue(), unit));
 		}
 
 		if (askFinger)

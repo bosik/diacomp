@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
@@ -65,31 +66,17 @@ public class DiaryRecBloodView extends LinearLayout
 
 		if (isInEditMode())
 		{
-			textValue.setText(String.format(Locale.US, "%.1f %s", 5.2, getUnitName(BloodSugarUnit.MMOL_L)));
+			textValue.setText(UIUtils.formatBloodSugar(getContext(), 5.2, BloodSugarUnit.MMOL_L));
 		}
 		else
 		{
 			final BloodSugarUnit unit = BloodSugarUnit.MMOL_L; // FIXME: use preferences
-			final String unitName = getUnitName(unit);
+			final String bloodSugar = UIUtils.formatBloodSugar(getContext(), data.getValue(unit), unit);
+			final String finger = data.getFinger() != -1
+					? String.format("(%s)", getResources().getStringArray(R.array.fingers_short)[data.getFinger()])
+					: "";
 
-			final String[] fingers = getResources().getStringArray(R.array.fingers_short);
-			String finger = data.getFinger() == -1 ? "" : String.format("(%s)", fingers[data.getFinger()]);
-			String text = String.format(Locale.US, "%.1f %s %s", data.getValue(unit), unitName, finger);
-
-			textValue.setText(text);
-		}
-	}
-
-	private String getUnitName(BloodSugarUnit unit)
-	{
-		switch (unit)
-		{
-			case MMOL_L:
-				return getContext().getString(R.string.common_unit_bs_mmoll);
-			case MG_DL:
-				return getContext().getString(R.string.common_unit_bs_mgdl);
-			default:
-				throw new IllegalArgumentException("Unsupported units: " + unit);
+			textValue.setText(bloodSugar + " " + finger);
 		}
 	}
 }
