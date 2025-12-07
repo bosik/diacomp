@@ -35,10 +35,10 @@ import java.util.TimeZone;
 
 public class DiaryRecMealView extends LinearLayout
 {
-	private TextView textTime;
-	private TextView textValue;
+	private final TextView textTime;
+	private final TextView textValue;
 
-	private PreferencesTypedService preferences;
+	private final PreferencesTypedService preferences;
 
 	public DiaryRecMealView(Context context)
 	{

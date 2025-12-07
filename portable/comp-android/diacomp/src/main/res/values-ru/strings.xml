@@ -153,7 +153,8 @@
     <string name="preferences_diary_meal_format">Формат приёма пищи</string>
     <string name="preferences_diary_use_separator">Разделять записи в дневнике</string>
     <string name="preferences_personal">Личные</string>
-    <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
+    <string name="preferences_personal_bs_units">Единицы измерения сахара крови</string>
+    <string name="preferences_personal_target_bs">Целевой сахар крови</string>
     <string name="preferences_rates">Коэффициенты</string>
     <string name="preferences_rates_auto">Вычислять автоматически</string>
     <string name="preferences_rates_edit">Изменить коэффициенты…</string>

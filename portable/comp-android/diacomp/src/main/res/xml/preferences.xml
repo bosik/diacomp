@@ -2,6 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/preferences_personal">
+        <ListPreference
+            android:key="f8b8f180da6d4d9198ee42944b23dfdf"
+            android:title="@string/preferences_personal_bs_units"
+            android:summary=""
+            android:entries="@array/unit_blood_sugar_options"
+            android:entryValues="@array/unit_blood_sugar_keys"/>
+
         <org.bosik.diacomp.android.frontend.views.MandatoryDecimalPreference
                 android:key="e6681282aa724d3fa4cd6ac5735a163f"
                 android:inputType="numberDecimal"

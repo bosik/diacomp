@@ -23,9 +23,13 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.services.diary.MealFormat;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -33,9 +37,10 @@ import java.util.TimeZone;
 
 public class DiaryRecBloodView extends LinearLayout
 {
-	// Components
 	private final TextView textTime;
 	private final TextView textValue;
+
+	private final PreferencesTypedService preferences;
 
 	public DiaryRecBloodView(Context context, Versioned<BloodRecord> record)
 	{
@@ -53,6 +58,7 @@ public class DiaryRecBloodView extends LinearLayout
 
 		textTime = findViewById(R.id.textBloodTime);
 		textValue = findViewById(R.id.textBloodValue);
+		preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 
 		setData(record);
 	}
@@ -69,7 +75,7 @@ public class DiaryRecBloodView extends LinearLayout
 		}
 		else
 		{
-			final Units.BloodSugar unit = Units.BloodSugar.MMOL_L; // FIXME: use preferences
+			final Units.BloodSugar unit = preferences.getEnum(PreferenceID.BLOOD_SUGAR_UNITS, Units.BloodSugar.class);
 			final String bloodSugar = UIUtils.formatBloodSugar(getContext(), data.getValue(unit), unit);
 			final String finger = data.getFinger() != -1
 					? String.format("(%s)", getResources().getStringArray(R.array.fingers_short)[data.getFinger()])

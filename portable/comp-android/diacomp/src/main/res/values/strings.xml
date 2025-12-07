@@ -155,7 +155,8 @@
     <string name="preferences_diary_meal_format">Meal format</string>
     <string name="preferences_diary_use_separator">Use diary records separator</string>
     <string name="preferences_personal">Personal</string>
-    <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
+    <string name="preferences_personal_bs_units">Blood sugar units</string>
+    <string name="preferences_personal_target_bs">Target blood sugar</string>
     <string name="preferences_rates">Correction factors</string>
     <string name="preferences_rates_auto">Calculate automatically</string>
     <string name="preferences_rates_edit">Edit correction factors…</string>
@@ -215,6 +216,11 @@
     <string-array name="unit_blood_sugar_options">
         <item>@string/common_unit_bs_mmoll</item>
         <item>@string/common_unit_bs_mgdl</item>
+    </string-array>
+
+    <string-array name="unit_blood_sugar_keys" tools:ignore="MissingTranslation">
+        <item>ff9e76dd8e144d0d9ab90d15160e9f3b</item>
+        <item>88101cf56630428aada7fe82388b4b99</item>
     </string-array>
 
     <string-array name="meal_format_keys" tools:ignore="MissingTranslation">
