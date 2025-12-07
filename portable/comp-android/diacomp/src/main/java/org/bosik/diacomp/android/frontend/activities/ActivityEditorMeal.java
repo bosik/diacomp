@@ -31,16 +31,21 @@ import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.RateServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
 import org.bosik.diacomp.android.frontend.views.fdpicker.SuggestionsProvider;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.services.analyze.AnalyzeExtracter;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -58,10 +63,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	public static final String FIELD_INS_INJECTED = "bosik.pack.insInjected";
 
 	// FIXME: hardcoded BS value
-	private static final double BS_HYPOGLYCEMIA  = 3.7;
-	private static final double CARB_COLOR_LIMIT = 1.5;
+	private static final double BS_HYPOGLYCEMIA_MMOLL = 3.7;
+	private static final double CARB_COLOR_LIMIT      = 1.5;
 
 	private DiaryService diary;
+	private Units.BloodSugar bloodSugarUnit;
 
 	// components
 	private Button         buttonTime;
@@ -76,7 +82,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	// localization
 	private String captionDose;
 	private String captionGramm;
-	private String captionMmol;
 
 	// ======================================================================================================
 
@@ -85,9 +90,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		setContentView(R.layout.activity_editor_meal);
 
+		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+		bloodSugarUnit = preferences.getEnum(PreferenceID.BLOOD_SUGAR_UNITS, Units.BloodSugar.class);
+
 		captionDose = getString(R.string.common_unit_insulin);
 		captionGramm = getString(R.string.common_unit_mass_gramm);
-		captionMmol = getString(R.string.common_unit_bs_mmoll);
 
 		// components
 
@@ -224,6 +231,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		int minutesTime = Utils.getDayMinutesLocal(entity.getData().getTime());
 		RateService rateService = RateServiceInternal.getInstance(this);
 		Rate rate = rateService.getRate(minutesTime);
+
+		rate.setK(Units.BloodSugar.convert(rate.getK(), AnalyzeExtracter.BLOOD_SUGAR_UNIT, bloodSugarUnit));
+		rate.setQ(Units.BloodSugar.convert(rate.getQ(), AnalyzeExtracter.BLOOD_SUGAR_UNIT, bloodSugarUnit));
+		rate.setP(Units.BloodSugar.convert(rate.getP(), AnalyzeExtracter.BLOOD_SUGAR_UNIT, bloodSugarUnit));
+
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 
@@ -369,9 +381,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			if (inputBS != null)
 			{
 				double expectedBS = inputBS + carbs * rate.getK() + prots * rate.getP() - insulinDosage * rate.getQ();
-				if (expectedBS > BS_HYPOGLYCEMIA)
+				double hypoglycemiaBS = Units.BloodSugar.convert(BS_HYPOGLYCEMIA_MMOLL, Units.BloodSugar.MMOL_L, bloodSugarUnit);
+
+				if (expectedBS > hypoglycemiaBS)
 				{
-					textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));
+					textMealExpectedBs.setText(UIUtils.formatBloodSugar(this, expectedBS, bloodSugarUnit));
 				}
 				else
 				{
@@ -381,7 +395,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			else
 			{
 				double deltaBS = carbs * rate.getK() + prots * rate.getP() - insulinDosage * rate.getQ();
-				textMealExpectedBs.setText(String.format(Locale.US, "...%+.1f %s", deltaBS, captionMmol));
+				textMealExpectedBs.setText("..." + (deltaBS > 0 ? "+" : "") + UIUtils.formatBloodSugar(this, deltaBS, bloodSugarUnit));
 			}
 		}
 		else

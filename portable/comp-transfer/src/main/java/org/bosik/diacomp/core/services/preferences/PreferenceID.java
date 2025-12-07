@@ -27,6 +27,10 @@ import org.bosik.diacomp.core.services.diary.MealFormat;
 public enum PreferenceID implements Coded
 {
 	/**
+	 * Blood sugar units of measurement
+	 */
+	BLOOD_SUGAR_UNITS("f8b8f180da6d4d9198ee42944b23dfdf", Type.STRING, Units.BloodSugar.MMOL_L.getCode(), true),
+	/**
 	 * Target blood sugar, in mmol/l
 	 */
 	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", Type.FLOAT, "5.5", true),

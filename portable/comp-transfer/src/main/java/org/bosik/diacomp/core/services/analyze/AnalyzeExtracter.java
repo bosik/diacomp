@@ -37,6 +37,8 @@ import java.util.List;
 
 public class AnalyzeExtracter
 {
+	public static final Units.BloodSugar BLOOD_SUGAR_UNIT = Units.BloodSugar.MMOL_L;
+
 	public enum ValueFunction {
 		LINEAR_ABS, LINEAR_AVG, DISTANCE, QUADRIC
 	}
@@ -59,7 +61,6 @@ public class AnalyzeExtracter
 		Date timeI = null;
 
 		final long MAX_BLOCK_TIME = 12 * Utils.MsecPerHour;
-		final Units.BloodSugar bloodSugarUnit = Units.BloodSugar.MMOL_L;
 
 		Date prevBloodTime = null;
 		double prevBloodValue = -1;
@@ -114,7 +115,7 @@ public class AnalyzeExtracter
 						item.setFats(fats);
 						item.setCarbs(carbs);
 						item.setBloodOutTime(Utils.getDayMinutesLocal(blood.getTime()));
-						item.setBloodOutValue(blood.getValue(bloodSugarUnit));
+						item.setBloodOutValue(blood.getValue(BLOOD_SUGAR_UNIT));
 						item.setDate(timeF);
 						result.add(item);
 						// System.out.println(String.format("OK - new item added\t%.1f\t%.1f\t%.1f\t%.1f",
@@ -122,7 +123,7 @@ public class AnalyzeExtracter
 					}
 
 					prevBloodTime = blood.getTime();
-					prevBloodValue = blood.getValue(bloodSugarUnit);
+					prevBloodValue = blood.getValue(BLOOD_SUGAR_UNIT);
 
 					ins = 0.0;
 					maxIns = -1.0;

@@ -366,7 +366,7 @@ public class FragmentTabDiary extends Fragment
 		endTime = Math.max(endTime, entity.getData().getTime().getTime() + (SCAN_FOR_INS_AROUND_MEAL * Utils.MsecPerSec));
 
 		List<Versioned<DiaryRecord>> records = PostprandUtils.fetchDiaryData(diary, new Date(startTime), new Date(endTime));
-		final Units.BloodSugar bloodSugarUnit = Units.BloodSugar.MMOL_L; // FIXME: use preferences
+		final Units.BloodSugar bloodSugarUnit = preferences.getEnum(PreferenceID.BLOOD_SUGAR_UNITS, Units.BloodSugar.class);
 
 		BloodRecord bloodBase = PostprandUtils.findLastBlood(records, entity.getData().getTime(), true);
 		BloodRecord bloodLast = PostprandUtils.findLastBlood(records, entity.getData().getTime(), false);

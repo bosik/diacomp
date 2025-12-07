@@ -28,10 +28,14 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
+
+import java.text.ParseException;
 
 public class FragmentPreferences extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -152,6 +156,12 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 
 			switch (id)
 			{
+				case BLOOD_SUGAR_UNITS:
+				{
+					updateDescription(preferences, PreferenceID.TARGET_BS.getCode());
+					break;
+				}
+
 				case ANDROID_SHOW_TIME_AFTER:
 				{
 					if (preferences.getBoolean(key, true))
@@ -197,7 +207,23 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 					PreferenceID id = PreferenceID.parseSafely(key);
 					if (id != null)
 					{
-						p.setSummary(syncablePreferences.getStringValue(id));
+						if (id == PreferenceID.TARGET_BS)
+						{
+							try
+							{
+								final Units.BloodSugar bloodSugarUnit = syncablePreferences.getEnum(PreferenceID.BLOOD_SUGAR_UNITS,
+										Units.BloodSugar.class);
+								p.setSummary(UIUtils.formatBloodSugar(getContext(), syncablePreferences.getDoubleValue(id), bloodSugarUnit));
+							}
+							catch (ParseException e)
+							{
+								p.setSummary("");
+							}
+						}
+						else
+						{
+							p.setSummary(syncablePreferences.getStringValue(id));
+						}
 					}
 					else
 					{

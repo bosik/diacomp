@@ -35,6 +35,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.features.analyze.RateServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart.ChartType;
@@ -50,6 +51,8 @@ import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.analyze.entities.WeightedValue;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -64,12 +67,17 @@ import java.util.TreeMap;
 
 public class FragmentTabCharts extends Fragment
 {
+	private Units.BloodSugar bloodSugarUnit;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		setHasOptionsMenu(true);
 
 		View rootView = inflater.inflate(R.layout.fragment_tab_charts, container, false);
+
+		PreferencesTypedService syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getActivity()));
+		bloodSugarUnit = syncablePreferences.getEnum(PreferenceID.BLOOD_SUGAR_UNITS, Units.BloodSugar.class);
 
 		ExpandableView groupHistory = rootView.findViewById(R.id.chartGroupHistoryTitle);
 		LinearLayout groupHistoryContent = rootView.findViewById(R.id.chartGroupHistoryContent);
@@ -122,7 +130,6 @@ public class FragmentTabCharts extends Fragment
 
 	private static final int              HALF_WINDOW_SIZE = 2;    // days
 	private static final int              PERIOD           = 30;    // days
-	private static final Units.BloodSugar BLOOD_SUGAR_UNIT = Units.BloodSugar.MMOL_L; // FIXME: use preferences
 
 	private void addChartBS(int viewId)
 	{
@@ -139,7 +146,8 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR_DISPERSION = getResources().getColor(R.color.charts_bs_dispersion);
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), UIUtils.getBloodSugarUnitName(requireContext(), BLOOD_SUGAR_UNIT)));
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), UIUtils.getBloodSugarUnitName(requireContext(),
+				bloodSugarUnit)));
 		chart.setDescription(getString(R.string.charts_average_bs_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
@@ -161,7 +169,7 @@ public class FragmentTabCharts extends Fragment
 					if (rec.getData() instanceof BloodRecord)
 					{
 						BloodRecord blood = (BloodRecord) rec.getData();
-						bs.put(blood.getTime(), Units.BloodSugar.convert(blood.getValue(BLOOD_SUGAR_UNIT), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT));
+						bs.put(blood.getTime(), blood.getValue(bloodSugarUnit));
 					}
 				}
 
@@ -424,7 +432,8 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR = getResources().getColor(R.color.charts_k);
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), UIUtils.getBloodSugarUnitName(requireContext(), BLOOD_SUGAR_UNIT),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), UIUtils.getBloodSugarUnitName(requireContext(),
+						bloodSugarUnit),
 				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.common_rate_k_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -441,7 +450,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = Units.BloodSugar.convert(rate.getK(), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT);
+						double y = Units.BloodSugar.convert(rate.getK(), Units.BloodSugar.MMOL_L, bloodSugarUnit);
 						dataList.add(new DataPoint(x, y));
 					}
 				}
@@ -468,7 +477,8 @@ public class FragmentTabCharts extends Fragment
 		final int COLOR = getResources().getColor(R.color.charts_q);
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), UIUtils.getBloodSugarUnitName(requireContext(), BLOOD_SUGAR_UNIT),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), UIUtils.getBloodSugarUnitName(requireContext(),
+						bloodSugarUnit),
 				getString(R.string.common_unit_insulin)));
 		chart.setDescription(getString(R.string.common_rate_q_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -485,7 +495,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = Units.BloodSugar.convert(rate.getQ(), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT);
+						double y = Units.BloodSugar.convert(rate.getQ(), Units.BloodSugar.MMOL_L, bloodSugarUnit);
 						dataList.add(new DataPoint(x, y));
 					}
 				}
