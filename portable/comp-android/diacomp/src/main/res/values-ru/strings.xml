@@ -59,7 +59,7 @@
     <string name="common_unit_value_kcal">ккал</string>
     <string name="editor_blood_error_invalid_bs">Введите корректное значение СК</string>
     <string name="editor_blood_field_finger">Палец</string>
-    <string name="editor_blood_field_value">Значение, ммоль/л</string>
+    <string name="editor_blood_field_value">Значение</string>
     <string name="editor_blood_title">Замер СК</string>
     <string name="editor_common_field_time">Дата и время</string>
     <string name="editor_common_save">Сохранить</string>

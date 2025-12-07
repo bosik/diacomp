@@ -136,6 +136,7 @@ public class FragmentTabCharts extends Fragment
 		// don't call getResources() on background thread
 		final int COLOR_AVERAGE = getResources().getColor(R.color.charts_bs_average);
 		final int COLOR_DISPERSION = getResources().getColor(R.color.charts_bs_dispersion);
+		final BloodSugarUnit bloodSugarUnit = BloodSugarUnit.MMOL_L; // FIXME: use preferences
 
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getBloodSugarUnitName()));
@@ -160,7 +161,7 @@ public class FragmentTabCharts extends Fragment
 					if (rec.getData() instanceof BloodRecord)
 					{
 						BloodRecord blood = (BloodRecord) rec.getData();
-						bs.put(blood.getTime(), BloodSugarUnit.convert(blood.getValue(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT));
+						bs.put(blood.getTime(), BloodSugarUnit.convert(blood.getValue(bloodSugarUnit), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT));
 					}
 				}
 

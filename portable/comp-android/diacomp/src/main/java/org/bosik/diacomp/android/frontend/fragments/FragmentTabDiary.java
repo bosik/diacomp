@@ -51,6 +51,7 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView;
+import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -365,11 +366,12 @@ public class FragmentTabDiary extends Fragment
 		endTime = Math.max(endTime, entity.getData().getTime().getTime() + (SCAN_FOR_INS_AROUND_MEAL * Utils.MsecPerSec));
 
 		List<Versioned<DiaryRecord>> records = PostprandUtils.fetchDiaryData(diary, new Date(startTime), new Date(endTime));
+		final BloodSugarUnit bloodSugarUnit = BloodSugarUnit.MMOL_L; // FIXME: use preferences
 
 		BloodRecord bloodBase = PostprandUtils.findLastBlood(records, entity.getData().getTime(), true);
 		BloodRecord bloodLast = PostprandUtils.findLastBlood(records, entity.getData().getTime(), false);
-		Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
-		Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
+		Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue(bloodSugarUnit);
+		Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue(bloodSugarUnit);
 		Double bloodTarget;
 		try
 		{

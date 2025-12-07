@@ -26,49 +26,73 @@
                 android:orientation="horizontal">
 
             <Button
-                    android:id="@+id/buttonBloodDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/editor_common_stub_date"
-                    android:textSize="@dimen/font_datetime"/>
+                android:id="@+id/buttonBloodDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="@string/editor_common_stub_date"
+                android:textSize="@dimen/font_datetime" />
 
             <Button
-                    android:id="@+id/buttonBloodTime"
-                    android:layout_width="0dp"
+                android:id="@+id/buttonBloodTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/editor_common_stub_time"
+                android:textSize="@dimen/font_datetime" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding_large"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/labelBloodValue"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:text="@string/editor_common_stub_time"
-                    android:textSize="@dimen/font_datetime"/>
+                    android:labelFor="@+id/editBloodValue"
+
+                    android:text="@string/editor_blood_field_value" />
+
+                <EditText
+                    android:id="@+id/editBloodValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789.,"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1">
+
+                    <requestFocus />
+                </EditText>
+
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/spinnerUnit"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="@dimen/padding_small"
+                android:layout_weight="1"
+                android:entries="@array/unit_blood_sugar_options" />
         </LinearLayout>
 
         <TextView
-                android:id="@+id/labelBloodValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/editBloodValue"
-                android:paddingTop="@dimen/padding_small"
-                android:text="@string/editor_blood_field_value"/>
-
-        <EditText
-                android:id="@+id/editBloodValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:digits="0123456789.,"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:imeOptions="actionDone">
-
-            <requestFocus/>
-        </EditText>
-
-        <TextView
-                android:id="@+id/labelBloodFinger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/spinnerBloodFinger"
-                android:paddingTop="@dimen/padding_small"
-                android:text="@string/editor_blood_field_finger"/>
+            android:id="@+id/labelBloodFinger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/spinnerBloodFinger"
+            android:paddingTop="@dimen/padding_large"
+            android:text="@string/editor_blood_field_finger" />
 
         <Spinner
                 android:id="@+id/spinnerBloodFinger"
@@ -80,7 +104,7 @@
                 android:id="@+id/buttonBloodOK"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_medium"
+                android:layout_marginTop="@dimen/padding_large"
                 android:text="@string/editor_common_save"/>
     </LinearLayout>
 
