@@ -41,7 +41,7 @@ import org.bosik.diacomp.android.frontend.fragments.chart.Chart.ChartType;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.views.expandable.ExpandableView;
 import org.bosik.diacomp.android.frontend.views.expandable.OnSwitchedListener;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -120,9 +120,9 @@ public class FragmentTabCharts extends Fragment
 		}
 	}
 
-	private static final int            HALF_WINDOW_SIZE = 2;    // days
-	private static final int            PERIOD           = 30;    // days
-	private static final BloodSugarUnit BLOOD_SUGAR_UNIT = BloodSugarUnit.MMOL_L; // FIXME: use preferences
+	private static final int              HALF_WINDOW_SIZE = 2;    // days
+	private static final int              PERIOD           = 30;    // days
+	private static final Units.BloodSugar BLOOD_SUGAR_UNIT = Units.BloodSugar.MMOL_L; // FIXME: use preferences
 
 	private void addChartBS(int viewId)
 	{
@@ -161,7 +161,7 @@ public class FragmentTabCharts extends Fragment
 					if (rec.getData() instanceof BloodRecord)
 					{
 						BloodRecord blood = (BloodRecord) rec.getData();
-						bs.put(blood.getTime(), BloodSugarUnit.convert(blood.getValue(BLOOD_SUGAR_UNIT), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT));
+						bs.put(blood.getTime(), Units.BloodSugar.convert(blood.getValue(BLOOD_SUGAR_UNIT), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT));
 					}
 				}
 
@@ -441,7 +441,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = BloodSugarUnit.convert(rate.getK(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT);
+						double y = Units.BloodSugar.convert(rate.getK(), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT);
 						dataList.add(new DataPoint(x, y));
 					}
 				}
@@ -485,7 +485,7 @@ public class FragmentTabCharts extends Fragment
 					if (rate != null)
 					{
 						double x = (double) time / 60;
-						double y = BloodSugarUnit.convert(rate.getQ(), BloodSugarUnit.MMOL_L, BLOOD_SUGAR_UNIT);
+						double y = Units.BloodSugar.convert(rate.getQ(), Units.BloodSugar.MMOL_L, BLOOD_SUGAR_UNIT);
 						dataList.add(new DataPoint(x, y));
 					}
 				}

@@ -24,12 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class DiaryRecBloodView extends LinearLayout
@@ -66,11 +65,11 @@ public class DiaryRecBloodView extends LinearLayout
 
 		if (isInEditMode())
 		{
-			textValue.setText(UIUtils.formatBloodSugar(getContext(), 5.2, BloodSugarUnit.MMOL_L));
+			textValue.setText(UIUtils.formatBloodSugar(getContext(), 5.2, Units.BloodSugar.MMOL_L));
 		}
 		else
 		{
-			final BloodSugarUnit unit = BloodSugarUnit.MMOL_L; // FIXME: use preferences
+			final Units.BloodSugar unit = Units.BloodSugar.MMOL_L; // FIXME: use preferences
 			final String bloodSugar = UIUtils.formatBloodSugar(getContext(), data.getValue(unit), unit);
 			final String finger = data.getFinger() != -1
 					? String.format("(%s)", getResources().getStringArray(R.array.fingers_short)[data.getFinger()])

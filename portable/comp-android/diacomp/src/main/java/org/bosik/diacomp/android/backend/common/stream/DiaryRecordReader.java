@@ -19,8 +19,8 @@
 package org.bosik.diacomp.android.backend.common.stream;
 
 import android.util.JsonReader;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -81,7 +81,7 @@ public class DiaryRecordReader extends StreamReader<DiaryRecord>
 				}
 				case "unit":
 				{
-					bloodRecord.setUnit(BloodSugarUnit.valueOf(json.nextString()));
+					bloodRecord.setUnit(Units.BloodSugar.valueOf(json.nextString()));
 					break;
 				}
 				case "finger":
