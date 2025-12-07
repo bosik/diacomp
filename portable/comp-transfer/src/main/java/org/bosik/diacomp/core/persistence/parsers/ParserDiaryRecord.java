@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.persistence.parsers;
 
+import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -36,6 +37,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 	private static final String FIELD_TIME = "time";
 
 	private static final String FIELD_BLOOD_VALUE  = "value";
+	private static final String FIELD_BLOOD_UNIT   = "unit";
 	private static final String FIELD_BLOOD_FINGER = "finger";
 	private static final String FIELD_INS_VALUE    = "value";
 	private static final String FIELD_MEAL_SHORT   = "short";
@@ -56,6 +58,9 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				BloodRecord item = new BloodRecord();
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
 				item.setValue(json.getDouble(FIELD_BLOOD_VALUE));
+				item.setUnit(json.has(FIELD_BLOOD_UNIT)
+						? BloodSugarUnit.valueOf(json.getString(FIELD_BLOOD_UNIT))
+						: BloodSugarUnit.MMOL_L);
 				item.setFinger(json.getInt(FIELD_BLOOD_FINGER));
 				return item;
 			}
@@ -117,6 +122,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				BloodRecord item = (BloodRecord) object;
 				json.put(FIELD_TYPE, item.getType());
 				json.put(FIELD_BLOOD_VALUE, item.getValue());
+				json.put(FIELD_BLOOD_UNIT, item.getUnit());
 				json.put(FIELD_BLOOD_FINGER, item.getFinger());
 				break;
 			}
