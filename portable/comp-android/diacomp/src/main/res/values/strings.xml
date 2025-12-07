@@ -58,6 +58,8 @@
     <string name="common_unit_mass_gramm">g</string>
     <string name="common_unit_value_kcal">kcal</string>
     <string name="editor_blood_error_invalid_bs">Please enter correct BS value</string>
+    <string name="editor_blood_error_invalid_bs_unit">Please enter correct BS unit</string>
+    <string name="editor_blood_error_invalid_finger">Please specify a finger used for BS measurement</string>
     <string name="editor_blood_field_finger">Finger</string>
     <string name="editor_blood_field_value">Value</string>
     <string name="editor_blood_title">Blood sugar</string>
