@@ -30,9 +30,11 @@ import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 import android.widget.Toast;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Date;
+import java.util.Locale;
 
 public class UIUtils
 {
@@ -162,5 +164,30 @@ public class UIUtils
 		}
 
 		return DateFormat.getTimeFormat(context).format(time);
+	}
+
+	public static String formatBloodSugarValue(double value, BloodSugarUnit unit)
+	{
+		return unit == BloodSugarUnit.MMOL_L
+				? String.format(Locale.US, "%.1f", value)
+				: String.format(Locale.US, "%.0f", value);
+	}
+
+	public static String getBloodSugarUnitName(Context context, BloodSugarUnit unit)
+	{
+		switch (unit)
+		{
+			case MMOL_L:
+				return context.getString(R.string.common_unit_bs_mmoll);
+			case MG_DL:
+				return context.getString(R.string.common_unit_bs_mgdl);
+			default:
+				throw new UnsupportedOperationException("Unsupported blood sugar unit: " + unit);
+		}
+	}
+
+	public static String formatBloodSugar(Context context, double value, BloodSugarUnit unit)
+	{
+		return formatBloodSugarValue(value, unit) + " " + getBloodSugarUnitName(context, unit);
 	}
 }
