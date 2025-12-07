@@ -27,17 +27,19 @@ public final class Units
 		/**
 		 * Gram
 		 */
-		G("38be712c8ef74b70b4dba793cc7b349f"),
+		G("38be712c8ef74b70b4dba793cc7b349f", 1.0),
 		/**
 		 * Bread unit
 		 */
-		BU("56ce855fac9846698a78edf2cacf4cfe");
+		BU("56ce855fac9846698a78edf2cacf4cfe", 1.0 / Utils.CARB_PER_BU);
 
 		private final String code;
+		private final double factor;
 
-		Mass(String code)
+		Mass(String code, double factor)
 		{
 			this.code = code;
+			this.factor = factor;
 		}
 
 		@Override
@@ -48,56 +50,9 @@ public final class Units
 
 		public static double convert(double value, Mass unitFrom, Mass unitTo)
 		{
-			if (unitFrom == unitTo)
-			{
-				return value;
-			}
-			else
-			{
-				return convertFromStandard(convertToStandard(value, unitFrom), unitTo);
-			}
-		}
-
-		private static double convertToStandard(double value, Mass unitFrom)
-		{
-			switch (unitFrom)
-			{
-				case G:
-				{
-					return value;
-				}
-
-				case BU:
-				{
-					return value / Utils.CARB_PER_BU;
-				}
-
-				default:
-				{
-					throw new IllegalArgumentException("Unsupported unit of mass: " + unitFrom);
-				}
-			}
-		}
-
-		private static double convertFromStandard(double value, Mass unitTo)
-		{
-			switch (unitTo)
-			{
-				case G:
-				{
-					return value;
-				}
-
-				case BU:
-				{
-					return value * Utils.CARB_PER_BU;
-				}
-
-				default:
-				{
-					throw new IllegalArgumentException("Unsupported unit of mass: " + unitTo);
-				}
-			}
+			return unitFrom == unitTo
+					? value
+					: value / unitFrom.factor * unitTo.factor;
 		}
 	}
 
@@ -106,23 +61,31 @@ public final class Units
 		/**
 		 * mmol/l
 		 */
-		MMOL_L("ff9e76dd8e144d0d9ab90d15160e9f3b"),
+		MMOL_L("ff9e76dd8e144d0d9ab90d15160e9f3b", 1.0),
 		/**
 		 * mg/dl
 		 */
-		MG_DL("88101cf56630428aada7fe82388b4b99");
+		MG_DL("88101cf56630428aada7fe82388b4b99", 18.018);
 
 		private final String code;
+		private final double factor;
 
-		BloodSugar(String code)
+		BloodSugar(String code, double factor)
 		{
 			this.code = code;
+			this.factor = factor;
 		}
 
 		@Override
 		public String getCode()
 		{
 			return code;
+		}
+
+		public static double convert(double value, BloodSugar unitFrom, BloodSugar unitTo) {
+			return unitFrom == unitTo
+					? value
+					: value / unitFrom.factor * unitTo.factor;
 		}
 	}
 
