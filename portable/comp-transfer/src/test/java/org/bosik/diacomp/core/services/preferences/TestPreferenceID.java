@@ -38,11 +38,13 @@ public class TestPreferenceID extends AbstractTestCoded<PreferenceID>
 		return new HashMap<PreferenceID, String>()
 		{
 			{
+				add("f8b8f180da6d4d9198ee42944b23dfdf", PreferenceID.BLOOD_SUGAR_UNITS);
 				add("e6681282aa724d3fa4cd6ac5735a163f", PreferenceID.TARGET_BS);
 				add("1a25c92eaa3148219da83b1e66275052", PreferenceID.FOOD_SETS);
 				add("e92b955f48fa434d960fdc4a541490de", PreferenceID.RATES_AUTO);
 				add("7648a35d3fbe4b4ca8fab12876abb1b6", PreferenceID.RATES_DATA);
 				add("589985b443c243d6844209964b2b1e8e", PreferenceID.RATES_MASS_UNITS);
+				add("622096bc5ed14fac93339de8a6d1df96", PreferenceID.ANDROID_LAST_USED_BLOOD_SUGAR_UNITS);
 				add("8b6575e476d64becae68468500f1bc1c", PreferenceID.ANDROID_FIRST_START);
 				add("d5c1a902e83b4d05a51085e344bee953", PreferenceID.ANDROID_SHOW_TIME_AFTER);
 				add("f3f54f8f02a3411faf48f90aadf0ca2d", PreferenceID.ANDROID_MEAL_FORMAT);
@@ -62,11 +64,13 @@ public class TestPreferenceID extends AbstractTestCoded<PreferenceID>
 		Map<PreferenceID, Type> types = new HashMap<PreferenceID, Type>()
 		{
 			{
+				put(PreferenceID.BLOOD_SUGAR_UNITS, Type.STRING);
 				put(PreferenceID.TARGET_BS, Type.FLOAT);
 				put(PreferenceID.FOOD_SETS, Type.STRING);
 				put(PreferenceID.RATES_AUTO, Type.BOOLEAN);
 				put(PreferenceID.RATES_DATA, Type.STRING);
 				put(PreferenceID.RATES_MASS_UNITS, Type.STRING);
+				put(PreferenceID.ANDROID_LAST_USED_BLOOD_SUGAR_UNITS, Type.STRING);
 				put(PreferenceID.ANDROID_FIRST_START, Type.BOOLEAN);
 				put(PreferenceID.ANDROID_SHOW_TIME_AFTER, Type.BOOLEAN);
 				put(PreferenceID.ANDROID_MEAL_FORMAT, Type.STRING);
