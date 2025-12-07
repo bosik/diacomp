@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -57,6 +59,7 @@ public class AnalyzeExtracter
 		Date timeI = null;
 
 		final long MAX_BLOCK_TIME = 12 * Utils.MsecPerHour;
+		final BloodSugarUnit bloodSugarUnit = BloodSugarUnit.MMOL_L;
 
 		Date prevBloodTime = null;
 		double prevBloodValue = -1;
@@ -111,7 +114,7 @@ public class AnalyzeExtracter
 						item.setFats(fats);
 						item.setCarbs(carbs);
 						item.setBloodOutTime(Utils.getDayMinutesLocal(blood.getTime()));
-						item.setBloodOutValue(blood.getValue());
+						item.setBloodOutValue(blood.getValue(bloodSugarUnit));
 						item.setDate(timeF);
 						result.add(item);
 						// System.out.println(String.format("OK - new item added\t%.1f\t%.1f\t%.1f\t%.1f",
@@ -119,7 +122,7 @@ public class AnalyzeExtracter
 					}
 
 					prevBloodTime = blood.getTime();
-					prevBloodValue = blood.getValue();
+					prevBloodValue = blood.getValue(bloodSugarUnit);
 
 					ins = 0.0;
 					maxIns = -1.0;

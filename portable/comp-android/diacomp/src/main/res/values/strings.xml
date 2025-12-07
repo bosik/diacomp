@@ -59,7 +59,7 @@
     <string name="common_unit_value_kcal">kcal</string>
     <string name="editor_blood_error_invalid_bs">Please enter correct BS value</string>
     <string name="editor_blood_field_finger">Finger</string>
-    <string name="editor_blood_field_value">Value, mmol/l</string>
+    <string name="editor_blood_field_value">Value</string>
     <string name="editor_blood_title">Blood sugar</string>
     <string name="editor_common_field_time">Date and time</string>
     <string name="editor_common_save">Save</string>
@@ -209,6 +209,12 @@
     <string-array name="unit_mass_options">
         <item>@string/common_unit_mass_gramm</item>
         <item>@string/common_unit_mass_bu</item>
+    </string-array>
+
+    <!-- NB: do not change the order -->
+    <string-array name="unit_blood_sugar_options">
+        <item>@string/common_unit_bs_mmoll</item>
+        <item>@string/common_unit_bs_mgdl</item>
     </string-array>
 
     <string-array name="meal_format_keys" tools:ignore="MissingTranslation">
