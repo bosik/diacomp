@@ -35,11 +35,6 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 	private static final String FIELD_TYPE = "type";
 	private static final String FIELD_TIME = "time";
 
-	private static final String TYPE_BLOOD = "blood";
-	private static final String TYPE_INS   = "ins";
-	private static final String TYPE_MEAL  = "meal";
-	private static final String TYPE_NOTE  = "note";
-
 	private static final String FIELD_BLOOD_VALUE  = "value";
 	private static final String FIELD_BLOOD_FINGER = "finger";
 	private static final String FIELD_INS_VALUE    = "value";
@@ -56,7 +51,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 
 		switch (type)
 		{
-			case TYPE_BLOOD:
+			case BloodRecord.TYPE:
 			{
 				BloodRecord item = new BloodRecord();
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
@@ -65,7 +60,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				return item;
 			}
 
-			case TYPE_INS:
+			case InsRecord.TYPE:
 			{
 				InsRecord item = new InsRecord();
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
@@ -73,7 +68,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				return item;
 			}
 
-			case TYPE_MEAL:
+			case MealRecord.TYPE:
 			{
 				MealRecord item = new MealRecord();
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
@@ -88,7 +83,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				return item;
 			}
 
-			case TYPE_NOTE:
+			case NoteRecord.TYPE:
 			{
 				NoteRecord item = new NoteRecord();
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
@@ -120,7 +115,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 			case BloodRecord.TYPE:
 			{
 				BloodRecord item = (BloodRecord) object;
-				json.put(FIELD_TYPE, TYPE_BLOOD);
+				json.put(FIELD_TYPE, item.getType());
 				json.put(FIELD_BLOOD_VALUE, item.getValue());
 				json.put(FIELD_BLOOD_FINGER, item.getFinger());
 				break;
@@ -129,7 +124,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 			case InsRecord.TYPE:
 			{
 				InsRecord item = (InsRecord) object;
-				json.put(FIELD_TYPE, TYPE_INS);
+				json.put(FIELD_TYPE, item.getType());
 				json.put(FIELD_INS_VALUE, item.getValue());
 				break;
 			}
@@ -137,7 +132,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 			case MealRecord.TYPE:
 			{
 				MealRecord item = (MealRecord) object;
-				json.put(FIELD_TYPE, TYPE_MEAL);
+				json.put(FIELD_TYPE, item.getType());
 				json.put(FIELD_MEAL_SHORT, item.getShortMeal());
 
 				JSONArray foods = new JSONArray();
@@ -152,7 +147,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 			case NoteRecord.TYPE:
 			{
 				NoteRecord item = (NoteRecord) object;
-				json.put(FIELD_TYPE, TYPE_NOTE);
+				json.put(FIELD_TYPE, item.getType());
 				json.put(FIELD_NOTE_TEXT, item.getText());
 				break;
 			}

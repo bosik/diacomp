@@ -115,13 +115,13 @@ public class DiaryRecordReader extends StreamReader<DiaryRecord>
 		{
 			switch (type)
 			{
-				case "blood":
+				case BloodRecord.TYPE:
 					return bloodRecord;
-				case "ins":
+				case InsRecord.TYPE:
 					return insRecord;
-				case "meal":
+				case MealRecord.TYPE:
 					return mealRecord;
-				case "note":
+				case NoteRecord.TYPE:
 					return noteRecord;
 				default:
 					throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
