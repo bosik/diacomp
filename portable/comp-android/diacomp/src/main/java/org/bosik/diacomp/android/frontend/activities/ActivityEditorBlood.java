@@ -28,7 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
 
@@ -111,8 +111,8 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		buttonDate.setText(formatDate(entity.getData().getTime()));
 		buttonTime.setText(formatTime(entity.getData().getTime()));
 
-		final BloodSugarUnit unit = createMode
-				? BloodSugarUnit.MG_DL // FIXME: use preferences (last used unit)
+		final Units.BloodSugar unit = createMode
+				? Units.BloodSugar.MG_DL // FIXME: use preferences (last used unit)
 				: entity.getData().getUnit();
 
 		spinnerUnit.setSelection(writeUnit(unit));
@@ -199,21 +199,21 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		buttonDate.setText(formatDate(time));
 	}
 
-	private static int writeUnit(BloodSugarUnit unit)
+	private static int writeUnit(Units.BloodSugar unit)
 	{
-		return unit == BloodSugarUnit.MMOL_L
+		return unit == Units.BloodSugar.MMOL_L
 				? 0
 				: 1;
 	}
 
-	private static BloodSugarUnit readUnit(int index)
+	private static Units.BloodSugar readUnit(int index)
 	{
 		switch (index)
 		{
 			case 0:
-				return BloodSugarUnit.MMOL_L;
+				return Units.BloodSugar.MMOL_L;
 			case 1:
-				return BloodSugarUnit.MG_DL;
+				return Units.BloodSugar.MG_DL;
 			default:
 				throw new IllegalArgumentException();
 		}

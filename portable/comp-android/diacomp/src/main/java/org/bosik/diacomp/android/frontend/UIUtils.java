@@ -30,7 +30,7 @@ import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 import android.widget.Toast;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Date;
@@ -166,14 +166,14 @@ public class UIUtils
 		return DateFormat.getTimeFormat(context).format(time);
 	}
 
-	public static String formatBloodSugarValue(double value, BloodSugarUnit unit)
+	public static String formatBloodSugarValue(double value, Units.BloodSugar unit)
 	{
-		return unit == BloodSugarUnit.MMOL_L
+		return unit == Units.BloodSugar.MMOL_L
 				? String.format(Locale.US, "%.1f", value)
 				: String.format(Locale.US, "%.0f", value);
 	}
 
-	public static String getBloodSugarUnitName(Context context, BloodSugarUnit unit)
+	public static String getBloodSugarUnitName(Context context, Units.BloodSugar unit)
 	{
 		switch (unit)
 		{
@@ -186,7 +186,7 @@ public class UIUtils
 		}
 	}
 
-	public static String formatBloodSugar(Context context, double value, BloodSugarUnit unit)
+	public static String formatBloodSugar(Context context, double value, Units.BloodSugar unit)
 	{
 		return formatBloodSugarValue(value, unit) + " " + getBloodSugarUnitName(context, unit);
 	}

@@ -17,23 +17,23 @@
  */
 package org.bosik.diacomp.core.services.analyze;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
+import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.analyze.entities.RateList;
-import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AnalyzeExtracter
 {
@@ -59,7 +59,7 @@ public class AnalyzeExtracter
 		Date timeI = null;
 
 		final long MAX_BLOCK_TIME = 12 * Utils.MsecPerHour;
-		final BloodSugarUnit bloodSugarUnit = BloodSugarUnit.MMOL_L;
+		final Units.BloodSugar bloodSugarUnit = Units.BloodSugar.MMOL_L;
 
 		Date prevBloodTime = null;
 		double prevBloodValue = -1;

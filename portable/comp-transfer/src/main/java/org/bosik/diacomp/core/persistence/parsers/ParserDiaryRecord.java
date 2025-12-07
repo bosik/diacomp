@@ -17,8 +17,8 @@
  */
 package org.bosik.diacomp.core.persistence.parsers;
 
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -59,8 +59,8 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
 				item.setValue(json.getDouble(FIELD_BLOOD_VALUE));
 				item.setUnit(json.has(FIELD_BLOOD_UNIT)
-						? BloodSugarUnit.valueOf(json.getString(FIELD_BLOOD_UNIT))
-						: BloodSugarUnit.MMOL_L);
+						? Units.BloodSugar.valueOf(json.getString(FIELD_BLOOD_UNIT))
+						: Units.BloodSugar.MMOL_L);
 				item.setFinger(json.getInt(FIELD_BLOOD_FINGER));
 				return item;
 			}

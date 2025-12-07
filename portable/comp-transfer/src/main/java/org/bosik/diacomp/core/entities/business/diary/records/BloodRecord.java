@@ -18,7 +18,7 @@
 package org.bosik.diacomp.core.entities.business.diary.records;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.bosik.diacomp.core.entities.business.BloodSugarUnit;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
 import java.util.Date;
@@ -34,7 +34,7 @@ public class BloodRecord extends DiaryRecord
 	private double value;
 
 	@JsonProperty("unit")
-	private BloodSugarUnit unit = BloodSugarUnit.MMOL_L;
+	private Units.BloodSugar unit = Units.BloodSugar.MMOL_L;
 
 	@JsonProperty("finger")
 	private int finger;
@@ -53,7 +53,7 @@ public class BloodRecord extends DiaryRecord
 	 * @param unit   Unit of measurement
 	 * @param finger Number of finger. Valid values are [0...9]
 	 */
-	public BloodRecord(Date time, double value, BloodSugarUnit unit, int finger)
+	public BloodRecord(Date time, double value, Units.BloodSugar unit, int finger)
 	{
 		setTime(time);
 		setValue(value);
@@ -86,9 +86,9 @@ public class BloodRecord extends DiaryRecord
 		return value;
 	}
 
-	public double getValue(BloodSugarUnit unit)
+	public double getValue(Units.BloodSugar unit)
 	{
-		return BloodSugarUnit.convert(value, this.unit, unit);
+		return Units.BloodSugar.convert(value, this.unit, unit);
 	}
 
 	public void setValue(double value)
@@ -101,12 +101,12 @@ public class BloodRecord extends DiaryRecord
 		this.value = value;
 	}
 
-	public BloodSugarUnit getUnit()
+	public Units.BloodSugar getUnit()
 	{
 		return unit;
 	}
 
-	public void setUnit(BloodSugarUnit unit)
+	public void setUnit(Units.BloodSugar unit)
 	{
 		this.unit = unit;
 	}
