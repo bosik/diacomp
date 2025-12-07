@@ -49,10 +49,6 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 
 	private PreferencesTypedService preferences;
 
-	// TODO: i18n
-	private static final String ERROR_INCORRECT_FINGER_VALUE = "Укажите палец, из которого бралась кровь";
-	private static final String ERROR_INCORRECT_UNIT         = "Incorrect unit of measurement";
-
 	// parameters
 	private final boolean askFinger = true;
 
@@ -172,7 +168,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORRECT_UNIT);
+			UIUtils.showTip(this, getString(R.string.editor_blood_error_invalid_bs_unit));
 			spinnerUnit.requestFocus();
 			return false;
 		}
@@ -191,7 +187,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORRECT_FINGER_VALUE);
+			UIUtils.showTip(this, getString(R.string.editor_blood_error_invalid_finger));
 			spinnerFinger.requestFocus();
 			return false;
 		}

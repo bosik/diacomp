@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <string name="app_name">Компенсация</string>
     <string name="base_action_new_dish">Новое блюдо</string>
     <string name="base_action_new_food">Новый продукт</string>
@@ -58,6 +57,8 @@
     <string name="common_unit_mass_gramm">г</string>
     <string name="common_unit_value_kcal">ккал</string>
     <string name="editor_blood_error_invalid_bs">Введите корректное значение СК</string>
+    <string name="editor_blood_error_invalid_bs_unit">Укажите единицы измерения СК</string>
+    <string name="editor_blood_error_invalid_finger">Укажите палец, из которого бралась кровь</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_field_value">Значение</string>
     <string name="editor_blood_title">Замер СК</string>
