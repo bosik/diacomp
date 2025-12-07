@@ -18,6 +18,8 @@
 package org.bosik.diacomp.core.mocks;
 
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.entities.business.Units.BloodSugar;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -30,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static org.bosik.diacomp.core.entities.business.Units.BloodSugar.MMOL_L;
 import static org.junit.Assert.assertEquals;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
@@ -42,9 +45,9 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 	{
 		List<DiaryRecord> samples = new ArrayList<>();
 
-		samples.add(new BloodRecord(Utils.time(2012, 04, 18, 16, 42, 05), 7.1, 0));
-		samples.add(new BloodRecord(Utils.time(2013, 04, 18, 16, 50, 28), 7.0, 1));
-		samples.add(new BloodRecord(Utils.time(2010, 04, 18, 17, 00, 00), 5.2, 2));
+		samples.add(new BloodRecord(Utils.time(2012, 4, 18, 16, 42, 05), 7.1, MMOL_L, 0));
+		samples.add(new BloodRecord(Utils.time(2013, 4, 18, 16, 50, 28), 7.0, MMOL_L, 1));
+		samples.add(new BloodRecord(Utils.time(2010, 4, 18, 17, 00, 00), 5.2, MMOL_L, 2));
 
 		samples.add(new InsRecord(Utils.time(2012, 04, 18, 17, 20, 00), 16.0));
 
@@ -84,7 +87,7 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 				Date time = Utils.randomTime();
 				double value = 2 + (20 * r.nextDouble());
 				int finger = r.nextInt(10);
-				return new BloodRecord(time, value, finger);
+				return new BloodRecord(time, value, MMOL_L, finger);
 			}
 
 			case 1:
