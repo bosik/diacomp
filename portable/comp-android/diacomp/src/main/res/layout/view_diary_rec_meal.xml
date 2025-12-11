@@ -1,56 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content"
-              android:layout_margin="@dimen/padding_tiny"
-              android:background="@drawable/background_diary_meal"
-              android:baselineAligned="false"
-              android:gravity="top"
-              android:orientation="horizontal"
-              android:visibility="visible">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/padding_tiny"
+    android:background="@drawable/background_diary_meal"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/padding_small">
 
-    <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/padding_tiny"
-            android:layout_marginLeft="@dimen/padding_small"
-            android:layout_marginRight="@dimen/padding_small"
-            android:layout_marginTop="@dimen/padding_tiny"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/textMealTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/padding_tiny"
+        android:text="08:45"
+        android:textColor="@color/diary_font"
+        android:textSize="@dimen/diaryTextSizeBase"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
 
-        <TextView
-                android:id="@+id/textMealTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08:45"
-                android:textColor="@color/diary_font"
-                android:textSize="@dimen/diaryTextSizeBase"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText"/>
-    </LinearLayout>
-
-    <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/padding_tiny"
-            android:layout_marginLeft="@dimen/padding_small"
-            android:layout_marginRight="@dimen/padding_small"
-            android:layout_marginTop="@dimen/padding_tiny"
-            android:layout_weight="1.0"
-            android:orientation="vertical">
-
-        <TextView
-                android:id="@+id/textMealValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="Demomealcontainingveryextralongwordtoshowcaseellipsis"
-                android:scrollHorizontally="true"
-                android:ellipsize="end"
-                android:textColor="@color/diary_font"
-                android:textSize="@dimen/diaryTextSizeBase"
-                tools:ignore="HardcodedText"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/textMealValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/padding_small"
+        android:layout_weight="1.0"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Demomealcontainingveryextral ongwordtoshowcaseellipsis"
+        android:textColor="@color/diary_font"
+        android:textSize="@dimen/diaryTextSizeBase"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>

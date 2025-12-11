@@ -6,48 +6,32 @@
     android:layout_margin="@dimen/padding_tiny"
     android:background="@drawable/background_diary_blood_std"
     android:baselineAligned="false"
-    android:gravity="top"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:visibility="visible" >
+    android:padding="@dimen/padding_small">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/textBloodTime"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/padding_tiny"
-        android:layout_marginLeft="@dimen/padding_small"
-        android:layout_marginRight="@dimen/padding_small"
-        android:layout_marginTop="@dimen/padding_tiny"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/padding_tiny"
+        android:text="08:45"
+        android:textColor="@color/diary_font"
+        android:textSize="@dimen/diaryTextSizeBase"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/textBloodTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="08:45"
-            android:textColor="@color/diary_font"
-            android:textSize="@dimen/diaryTextSizeBase"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/textBloodValue"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/padding_tiny"
-        android:layout_marginLeft="@dimen/padding_small"
-        android:layout_marginRight="@dimen/padding_small"
-        android:layout_marginTop="@dimen/padding_tiny"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/padding_small"
         android:layout_weight="1.0"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/textBloodValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5.0 mmol/l (R1)"
-            android:textColor="@color/diary_font"
-            android:textSize="@dimen/diaryTextSizeBase"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="5.0 mmol/l (R1)"
+        android:textColor="@color/diary_font"
+        android:textSize="@dimen/diaryTextSizeBase"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>
