@@ -12,4 +12,11 @@
 		<module>comp-server</module>
 		<module>comp-server-rest</module>
 	</modules>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.source.version>1.8</maven.source.version>
+		<maven.compile.version>1.8</maven.compile.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 </project>
