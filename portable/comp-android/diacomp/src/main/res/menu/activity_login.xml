@@ -1,6 +1,5 @@
-<menu
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="${packageName}.${activityClass}">
+<menu xmlns:tools="http://schemas.android.com/tools"
+    tools:context="${packageName}.${activityClass}">
 
     <!--  <item
          android:id="@+id/action_forgot_password"
