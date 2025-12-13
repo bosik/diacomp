@@ -6,12 +6,12 @@
     android:layout_height="wrap_content"
     android:drawablePadding="10dp"
     android:gravity="center_vertical"
-    android:paddingBottom="10dp"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp"
     android:paddingTop="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp"
     android:text="Demo text goes here"
     android:textSize="15sp"
-    tools:ignore="HardcodedText" >
+    tools:ignore="HardcodedText">
 
 </TextView>

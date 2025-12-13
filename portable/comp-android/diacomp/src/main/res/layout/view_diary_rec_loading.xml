@@ -5,7 +5,7 @@
     android:baselineAligned="false"
     android:gravity="top"
     android:orientation="horizontal"
-    android:visibility="visible" >
+    android:visibility="visible">
 
     <ProgressBar
         android:id="@+id/diaryProgressBar"

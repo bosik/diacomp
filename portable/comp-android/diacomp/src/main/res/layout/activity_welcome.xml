@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/padding_large"
-    tools:context=".frontend.activities.ActivityWelcome" >
+    tools:context=".frontend.activities.ActivityWelcome">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/imageWelcome"
@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textWelcomeTitle"
@@ -51,8 +51,8 @@
         android:id="@+id/buttonWelcomeSignIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/padding_large"
         android:layout_marginTop="@dimen/padding_medium"
+        android:layout_marginBottom="@dimen/padding_large"
         android:drawableLeft="@drawable/ic_login"
         android:text="@string/welcome_login_button" />
 

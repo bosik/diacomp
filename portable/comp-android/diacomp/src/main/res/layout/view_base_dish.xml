@@ -3,29 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/padding_tiny"
     android:layout_marginLeft="@dimen/padding_tiny"
-    android:layout_marginRight="@dimen/padding_tiny"
     android:layout_marginTop="@dimen/padding_tiny"
+    android:layout_marginRight="@dimen/padding_tiny"
+    android:layout_marginBottom="@dimen/padding_tiny"
     android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/itemBaseIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/editor_dish_title"
-        android:paddingEnd="@dimen/padding_tiny"
-        android:paddingLeft="@dimen/padding_large"
-        android:paddingRight="@dimen/padding_tiny"
         android:paddingStart="@dimen/padding_large"
+        android:paddingEnd="@dimen/padding_tiny"
         android:src="@drawable/button_dishbase" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/baseItemDishName"
