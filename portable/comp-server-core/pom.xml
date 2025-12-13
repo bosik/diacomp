@@ -4,6 +4,8 @@
     <groupId>diacomp</groupId>
     <artifactId>comp-server-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <description>This module is used by both comp-server-rest and legacy comp-server (Wicket).
+        To be merged into comp-server-rest after migration</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
