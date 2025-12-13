@@ -3,51 +3,54 @@
 
     <PreferenceCategory android:title="@string/preferences_personal">
         <ListPreference
-            android:key="f8b8f180da6d4d9198ee42944b23dfdf"
-            android:title="@string/preferences_personal_bs_units"
-            android:summary=""
             android:entries="@array/unit_blood_sugar_options"
-            android:entryValues="@array/unit_blood_sugar_keys"/>
+            android:entryValues="@array/unit_blood_sugar_keys"
+            android:key="f8b8f180da6d4d9198ee42944b23dfdf"
+            android:summary=""
+            android:title="@string/preferences_personal_bs_units" />
 
-        <org.bosik.diacomp.android.frontend.views.MandatoryDecimalPreference
-                android:key="e6681282aa724d3fa4cd6ac5735a163f"
-                android:inputType="numberDecimal"
-                android:numeric="decimal"
-                android:summary=""
-                android:title="@string/preferences_personal_target_bs"/>
+        <EditTextPreference
+            android:dialogLayout="@layout/dialog_preference_decimal"
+            android:key="e6681282aa724d3fa4cd6ac5735a163f"
+            android:summary=""
+            android:title="@string/preferences_personal_target_bs" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preferences_ui">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="d5c1a902e83b4d05a51085e344bee953"
+            android:summary=""
+            android:title="@string/preferences_appearance_show_time_after" />
 
         <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="d5c1a902e83b4d05a51085e344bee953"
-                android:summary=""
-                android:title="@string/preferences_appearance_show_time_after"/>
-
-        <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="ba9c6c26873e4bc19b96b8838901ed7a"
-                android:summary=""
-                android:title="@string/preferences_diary_use_separator"/>
+            android:defaultValue="true"
+            android:key="ba9c6c26873e4bc19b96b8838901ed7a"
+            android:summary=""
+            android:title="@string/preferences_diary_use_separator" />
 
         <ListPreference
-                android:key="f3f54f8f02a3411faf48f90aadf0ca2d"
-                android:title="@string/preferences_diary_meal_format"
-                android:summary=""
-                android:entries="@array/meal_format_titles"
-                android:entryValues="@array/meal_format_keys"/>
+            android:entries="@array/meal_format_titles"
+            android:entryValues="@array/meal_format_keys"
+            android:key="f3f54f8f02a3411faf48f90aadf0ca2d"
+            android:summary=""
+            android:title="@string/preferences_diary_meal_format" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preferences_rates">
         <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="e92b955f48fa434d960fdc4a541490de"
-                android:summary=""
-                android:title="@string/preferences_rates_auto"/>
-    </PreferenceCategory>
+            android:defaultValue="true"
+            android:key="e92b955f48fa434d960fdc4a541490de"
+            android:summary=""
+            android:title="@string/preferences_rates_auto" />
 
-    <Preference android:title="@string/preferences_rates_edit"
-                android:id="@+id/preferenceEditRates"
-                android:key="pref-edit-rates">
-        <intent android:action=".frontend.activities.ActivityRates"/>
-    </Preference>
+        <Preference
+            android:id="@+id/preferenceEditRates"
+            android:enabled="false"
+            android:key="pref-edit-rates"
+            android:title="@string/preferences_rates_edit">
+            <intent android:action=".frontend.activities.ActivityRates" />
+        </Preference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -1,19 +1,19 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodCommonDownloadService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
-public class ActivityWelcome extends Activity
+public class ActivityWelcome extends AppCompatActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

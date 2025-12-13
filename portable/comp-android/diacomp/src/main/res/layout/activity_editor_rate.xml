@@ -28,8 +28,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/editor_common_stub_time"
-                android:textSize="@dimen/font_datetime" />
+                android:padding="@dimen/padding_button"
+                android:text="@string/editor_common_stub_time" />
         </LinearLayout>
 
         <LinearLayout
@@ -157,6 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_medium"
+            android:padding="@dimen/padding_button"
             android:text="@string/editor_common_save" />
     </LinearLayout>
 

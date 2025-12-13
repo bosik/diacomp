@@ -19,9 +19,9 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
 
@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 // Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
 @SuppressLint("Registered")
-public class ActivityEditor<T extends Serializable> extends Activity
+public class ActivityEditor<T extends Serializable> extends AppCompatActivity
 {
 	public static final String FIELD_CREATE_MODE = "org.bosik.diacomp.createMode";
 	public static final String FIELD_ENTITY      = "org.bosik.diacomp.entity";

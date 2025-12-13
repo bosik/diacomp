@@ -18,8 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -36,9 +34,9 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -231,9 +229,8 @@ public class DiaryWebService implements DiaryService
 		{
 			String items = serializerV.writeAll(records);
 
-			List<NameValuePair> params = new ArrayList<>();
-			params.add(new BasicNameValuePair("items", items));
-
+			final Map<String, String> params = new HashMap<>();
+			params.put("items", items);
 			webClient.put(API_DIARY_SAVE, params);
 		}
 		catch (CommonServiceException e)

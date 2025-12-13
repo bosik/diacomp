@@ -18,8 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
@@ -33,9 +31,9 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -246,8 +244,8 @@ public class FoodBaseWebService implements FoodBaseService
 
 		try
 		{
-			List<NameValuePair> params = new ArrayList<>();
-			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
+			final Map<String, String> params = new HashMap<>();
+			params.put("items", serializer.writeAll(items));
 			webClient.put(API_FOOD_SAVE, params);
 		}
 		catch (Exception e)

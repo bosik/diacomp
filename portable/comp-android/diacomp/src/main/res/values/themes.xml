@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.Diacomp" parent="Theme.AppCompat.Light">
+        <!-- Progress bars, inputs' underlines, radiobuttons, checkboxes, date/time picker headers, settings sections
+        Should NOT be too light, otherwise could be interpreted as "disabled" color
+        -->
+        <item name="colorAccent">@color/font_gray_dark</item>
+
+        <item name="android:textColor">@color/text_color_selector</item>
+
+        <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
+        <item name="android:timePickerDialogTheme">@style/MyTimePickerDialogTheme</item>
+    </style>
+
+    <!-- Date picker -->
+    <style name="MyDatePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/MyDatePickerStyle</item>
+        <item name="android:textColorPrimaryInverse">@color/font_black
+        </item> <!-- header date, month color && calendar text highlight color -->
+        <item name="android:textColorSecondaryInverse">@color/font_black</item> <!-- header year color -->
+        <item name="android:colorAccent">@color/font_gray</item> <!-- button color -->
+    </style>
+
+    <style name="MyDatePickerStyle" parent="@android:style/Widget.Material.Light.DatePicker">
+        <item name="android:headerBackground">@color/app_bar</item> <!-- header background color -->
+    </style>
+
+    <!-- Time picker -->
+    <style name="MyTimePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:timePickerStyle">@style/MyTimePickerStyle</item>
+        <item name="android:textColorPrimaryInverse">@color/font_black</item> <!-- font color (selected time, value) -->
+        <item name="android:textColorSecondaryInverse">@color/font_gray_medium</item> <!-- font color (unselected time) -->
+        <item name="android:colorAccent">@color/font_gray</item> <!-- button color -->
+    </style>
+
+    <style name="MyTimePickerStyle" parent="@android:style/Widget.Material.Light.TimePicker">
+        <item name="android:headerBackground">@color/app_bar</item> <!-- header background color -->
+    </style>
+
+    <style name="MenuItemTextAppearance">
+        <item name="android:textColor">@color/font_black</item>  <!-- Color of the menu item text -->
+    </style>
+
+    <!-- Seems necessary to change title text color, and menu item background color, but no effect on title background color, or menu item text color -->
+    <style name="ActionBarTheme" parent="ThemeOverlay.MaterialComponents.ActionBar.Surface">
+        <item name="android:textColorPrimary">@color/font_white</item>  <!-- Color of title text -->
+        <item name="colorControlNormal">@color/app_bar_dots</item>    <!-- Color of three dots top right -->
+        <item name="android:itemBackground">@color/app_background</item>    <!-- Background color of menu items -->
+    </style>
+
+    <!-- Seems necessary to change background color, but no effect on text color -->
+    <style name="ActionBarStyle" parent="@style/Widget.MaterialComponents.ActionBar.Surface">
+        <item name="background">@color/accent1</item>  <!-- Background color of the title bar -->
+    </style>
+</resources>

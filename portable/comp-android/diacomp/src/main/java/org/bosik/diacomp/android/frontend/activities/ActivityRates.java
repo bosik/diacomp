@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -37,6 +36,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
@@ -68,7 +68,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class ActivityRates extends FragmentActivity implements DialogInterface.OnClickListener
+public class ActivityRates extends AppCompatActivity implements DialogInterface.OnClickListener
 {
 	// Constants
 	private static final int    DIALOG_RATE_CREATE = 11;

@@ -163,6 +163,7 @@
     <string name="preferences_rates_auto">Calculate automatically</string>
     <string name="preferences_rates_edit">Edit correction factors…</string>
     <string name="preferences_title">Preferences</string>
+    <string name="preferences_ui">Screen settings</string>
     <string name="rates_actions_remove_all">Remove all</string>
     <string name="rates_actions_replace_with_auto">Replace with auto-values</string>
     <string name="rates_title">Correction factors</string>

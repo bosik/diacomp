@@ -25,8 +25,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,14 +33,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.sync.ServerTimeService;
+import org.bosik.diacomp.android.backend.features.sync.SyncAdapter;
 import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
@@ -446,7 +447,7 @@ public class FragmentTabDiary extends Fragment
 
 			case DIALOG_BLOOD_MODIFY:
 			case DIALOG_INS_MODIFY:
-				// case DIALOG_MEAL_MODIFY:
+//			case DIALOG_MEAL_MODIFY:
 			case DIALOG_NOTE_MODIFY:
 			{
 				if (resultCode == Activity.RESULT_OK)
@@ -454,6 +455,7 @@ public class FragmentTabDiary extends Fragment
 					Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 
 					diary.save(Collections.singletonList(rec));
+					SyncAdapter.requestSync(getActivity(), DiaryContentProvider.buildUri(TableDiary.TABLE_NAME, rec.getId()));
 
 					// do it manually in case observer is broken
 					list.refresh();

@@ -24,14 +24,13 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
@@ -161,15 +160,6 @@ public class FoodCommonDownloadService extends Service
 			}
 		}
 
-		@Override
-		protected void onPreExecute()
-		{
-			if (skipExecution)
-			{
-				return;
-			}
-		}
-
 		/**
 		 * @return true - succeed; false - failed, need to re-schedule; null - skipped
 		 */
@@ -295,7 +285,7 @@ public class FoodCommonDownloadService extends Service
 
 		private void showNotification(Message message)
 		{
-			Builder builder = new Builder(context, NOTIFICATION_CHANNEL_ID)
+			NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
 					.setSmallIcon(R.drawable.icon)
 					.setContentTitle(notificationTitle)
 					.setContentText(message.text)
@@ -311,7 +301,14 @@ public class FoodCommonDownloadService extends Service
 			final Notification notification = builder.build();
 
 			NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification);
-			startForeground(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+			{
+				startForeground(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+			}
+			else
+			{
+				startForeground(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification);
+			}
 		}
 	}
 }

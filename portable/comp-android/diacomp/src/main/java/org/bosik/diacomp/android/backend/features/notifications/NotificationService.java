@@ -23,16 +23,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.TaskStackBuilder;
-
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -55,6 +54,8 @@ import java.util.function.Consumer;
 
 public class NotificationService extends Service
 {
+	private static final String TAG = NotificationService.class.getSimpleName();
+
 	private static final String NOTIFICATION_CHANNEL_ID         = "org.bosik.diacomp.notifications.elapsedTime";
 	private static final int    NOTIFICATION_ID_ELAPSED_TIME    = 1671918884;
 	private static final String ACTION_FORCE_RUN                = "runRightNow";
@@ -98,6 +99,8 @@ public class NotificationService extends Service
 	{
 		super.onCreate();
 		createNotificationChannel();
+
+		setNotificationMessage("Time notification"); // we must show something so that startForeground() is called
 
 		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 
@@ -225,9 +228,10 @@ public class NotificationService extends Service
 			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 			stackBuilder.addParentStack(ActivityMain.class);
 			stackBuilder.addNextIntent(resultIntent);
-			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+					PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-			Notification notification = new Builder(this, NOTIFICATION_CHANNEL_ID)
+			Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
 					.setSmallIcon(R.drawable.icon)
 					.setOngoing(true)
 					.setStyle(new NotificationCompat.BigTextStyle().bigText(message))
@@ -238,7 +242,14 @@ public class NotificationService extends Service
 					.build();
 
 			NotificationManagerCompat.from(this).notify(NOTIFICATION_ID_ELAPSED_TIME, notification);
-			startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+			{
+				startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
+			}
+			else
+			{
+				startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification);
+			}
 		}
 		else
 		{

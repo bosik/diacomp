@@ -20,10 +20,12 @@ package org.bosik.diacomp.android.frontend.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
@@ -37,17 +39,15 @@ import org.bosik.diacomp.core.utils.Utils;
 
 import java.text.ParseException;
 
-public class FragmentPreferences extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
+public class FragmentPreferences extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 	// Services
 	private SharedPreferences       devicePreferences;
 	private PreferencesTypedService syncablePreferences;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey)
 	{
-		super.onCreate(savedInstanceState);
-
 		// Initializing services
 		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getActivity()));
 		devicePreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -83,7 +83,7 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 		editor.apply();
 
 		// display (only after preferences are filled!)
-		addPreferencesFromResource(R.xml.preferences);
+		setPreferencesFromResource(R.xml.preferences, rootKey);
 
 		for (String key : devicePreferences.getAll().keySet())
 		{
@@ -191,7 +191,7 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 
 	private void updateDescription(SharedPreferences sharedPreferences, String key)
 	{
-		android.preference.Preference p = findPreference(key);
+		Preference p = findPreference(key);
 		Object value = sharedPreferences.getAll().get(key);
 
 		if (value == null)

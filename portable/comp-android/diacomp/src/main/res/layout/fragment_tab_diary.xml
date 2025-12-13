@@ -36,37 +36,41 @@
             android:id="@+id/buttonAddBlood"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_weight="1"
+            android:backgroundTint="@color/app_background"
             android:drawableTop="@drawable/diary_addblood"
-            android:paddingTop="@dimen/padding_medium" />
+            android:paddingTop="@dimen/padding_large" />
 
         <Button
             android:id="@+id/buttonAddIns"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_weight="1"
+            android:backgroundTint="@color/app_background"
             android:drawableTop="@drawable/diary_addins"
-            android:paddingTop="@dimen/padding_medium" />
+            android:paddingTop="@dimen/padding_large" />
 
         <Button
             android:id="@+id/buttonAddMeal"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_weight="1"
+            android:backgroundTint="@color/app_background"
             android:drawableTop="@drawable/diary_addmeal"
-            android:paddingTop="@dimen/padding_medium" />
+            android:paddingTop="@dimen/padding_large" />
 
         <Button
             android:id="@+id/buttonAddNote"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_weight="1"
+            android:backgroundTint="@color/app_background"
             android:drawableTop="@drawable/diary_addnote"
-            android:paddingTop="@dimen/padding_medium" />
+            android:paddingTop="@dimen/padding_large" />
     </LinearLayout>
 
 </LinearLayout>

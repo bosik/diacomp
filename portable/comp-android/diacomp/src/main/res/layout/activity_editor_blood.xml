@@ -10,7 +10,6 @@
         android:gravity="top"
         android:orientation="vertical"
         android:padding="@dimen/padding_small"
-        android:paddingBottom="@dimen/padding_small"
         tools:context=".ActivityEditorBlood">
 
         <TextView
@@ -30,60 +29,54 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:text="@string/editor_common_stub_date"
-                android:textSize="@dimen/font_datetime" />
+                android:padding="@dimen/padding_button"
+                android:text="@string/editor_common_stub_date" />
 
             <Button
                 android:id="@+id/buttonBloodTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/padding_large"
                 android:layout_weight="2"
-                android:text="@string/editor_common_stub_time"
-                android:textSize="@dimen/font_datetime" />
+                android:padding="@dimen/padding_button"
+                android:text="@string/editor_common_stub_time" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelBloodValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editBloodValue"
+            android:paddingTop="@dimen/padding_large"
+            android:text="@string/editor_blood_field_value" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/padding_large">
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0px"
+            <EditText
+                android:id="@+id/editBloodValue"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_weight="3"
+                android:digits="0123456789.,"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:maxLines="1">
 
-                <TextView
-                    android:id="@+id/labelBloodValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:labelFor="@+id/editBloodValue"
-
-                    android:text="@string/editor_blood_field_value" />
-
-                <EditText
-                    android:id="@+id/editBloodValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:digits="0123456789.,"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1">
-
-                    <requestFocus />
-                </EditText>
-
-            </LinearLayout>
+                <requestFocus />
+            </EditText>
 
             <Spinner
                 android:id="@+id/spinnerUnit"
                 android:layout_width="0px"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="@dimen/padding_small"
-                android:layout_weight="1"
-                android:entries="@array/unit_blood_sugar_options" />
+                android:layout_marginLeft="@dimen/padding_large"
+                android:layout_weight="2"
+                android:entries="@array/unit_blood_sugar_options"
+                android:spinnerMode="dialog" />
         </LinearLayout>
 
         <TextView
@@ -98,13 +91,16 @@
             android:id="@+id/spinnerBloodFinger"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/fingers_middle" />
+            android:entries="@array/fingers_middle"
+            android:paddingTop="@dimen/padding_button"
+            android:paddingBottom="@dimen/padding_button"
+            android:spinnerMode="dialog" />
 
         <Button
             android:id="@+id/buttonBloodOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_large"
+            android:padding="@dimen/padding_button"
             android:text="@string/editor_common_save" />
     </LinearLayout>
 

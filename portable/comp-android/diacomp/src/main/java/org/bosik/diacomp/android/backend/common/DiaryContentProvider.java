@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -73,6 +72,7 @@ public class DiaryContentProvider extends ContentProvider
 		for (int i = 0; i < tables.size(); i++)
 		{
 			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName(), i);
+			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName() + "/*", i);
 		}
 	}
 
@@ -203,6 +203,16 @@ public class DiaryContentProvider extends ContentProvider
 	public static Uri buildUri(Table table)
 	{
 		return Uri.parse(SCHEME + AUTHORITY + "/" + table.getName() + "/");
+	}
+
+	public static Uri buildUri(String tableName)
+	{
+		return Uri.parse(SCHEME + AUTHORITY + "/" + tableName + "/");
+	}
+
+	public static Uri buildUri(String tableName, String id)
+	{
+		return Uri.parse(SCHEME + AUTHORITY + "/" + tableName + "/" + id);
 	}
 
 	// =================================== CRUD ===================================

@@ -1,6 +1,6 @@
 /*
  *  Diacomp - Diabetes analysis & management system
- *  Copyright (C) 2013 Nikita Bosik
+ *  Copyright (C) 2023 Nikita Bosik
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,23 +14,34 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
-package org.bosik.diacomp.android.frontend.activities;
+package org.bosik.diacomp.android.backend.common.webclient.retrofit;
 
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import org.bosik.diacomp.android.frontend.fragments.FragmentPreferences;
+import java.util.Map;
 
-public class ActivityPreferences extends AppCompatActivity
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Url;
+
+public interface DiacompApi
 {
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		getSupportFragmentManager()
-				.beginTransaction()
-				.replace(android.R.id.content, new FragmentPreferences())
-				.commit();
-	}
+	@GET
+	Call<ResponseBody> get(@Url String url);
+
+	@POST
+	@FormUrlEncoded
+	Call<ResponseBody> post(@Url String url, @FieldMap Map<String, String> params);
+
+	@PUT
+	@FormUrlEncoded
+	Call<ResponseBody> put(@Url String url, @FieldMap Map<String, String> params);
+
+	@GET("api/system/time")
+	Call<ResponseBody> getCurrentTimeUTC();
 }

@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,12 +14,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
@@ -31,8 +29,9 @@ import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PreferencesWebService implements PreferencesService
 {
@@ -41,7 +40,7 @@ public class PreferencesWebService implements PreferencesService
 	private static final String API_PREFERENCES_HASH = "api/preferences/hash";
 	private static final String API_PREFERENCES_KEY  = "api/preferences/%s";
 
-	private final WebClient webClient;
+	private final WebClient                           webClient;
 	private final Parser<PreferenceEntry<String>>     parser     = new ParserPreferenceEntry();
 	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(parser);
 
@@ -96,8 +95,8 @@ public class PreferencesWebService implements PreferencesService
 
 		try
 		{
-			List<NameValuePair> params = new ArrayList<>();
-			params.add(new BasicNameValuePair("data", serializer.writeAll(entries)));
+			final Map<String, String> params = new HashMap<>();
+			params.put("data", serializer.writeAll(entries));
 			webClient.put(API_PREFERENCES, params);
 		}
 		catch (Exception e)

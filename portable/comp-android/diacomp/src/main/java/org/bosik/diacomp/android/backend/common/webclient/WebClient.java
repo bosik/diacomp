@@ -19,34 +19,26 @@
 package org.bosik.diacomp.android.backend.common.webclient;
 
 import android.util.Log;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
+import okhttp3.Interceptor.Chain;
+import okhttp3.JavaNetCookieJar;
+import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
+import org.bosik.diacomp.android.backend.common.webclient.retrofit.DiacompApi;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.CookieManager;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class WebClient
 {
@@ -55,13 +47,12 @@ public class WebClient
 	/* ================ CONSTS ================ */
 
 	private static final int    API_VERSION       = 20;
-	private static final String ENCODING_UTF8     = "UTF-8";
-	private static final String CODE_SPACE        = "%20";
-	private static final long   MIN_REQUEST_DELAY = 100 * Utils.NsecPerMsec;            // nsec
+	private static final long   MIN_REQUEST_DELAY = 100 * Utils.NsecPerMsec; // nsec
+	private static final String API_LOGIN         = "api/auth/login/";
 
 	/* ================ FIELDS ================ */
 
-	private final HttpClient mHttpClient;
+	private final DiacompApi api;
 	private final String     server;
 	private       String     username;
 	private       String     password;
@@ -72,199 +63,94 @@ public class WebClient
 	public WebClient(String serverURL, int connectionTimeout)
 	{
 		this.server = ensureEndsWithSlash(serverURL);
-		mHttpClient = new DefaultHttpClient();
-		final HttpParams params = mHttpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
-		HttpConnectionParams.setSoTimeout(params, connectionTimeout);
-		ConnManagerParams.setTimeout(params, connectionTimeout);
+		final Retrofit client = new Retrofit.Builder()
+				.baseUrl(this.server)
+				.client(new OkHttpClient.Builder()
+						.cookieJar(new JavaNetCookieJar(new CookieManager()))
+						.connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+						.readTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+						.writeTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+						.addInterceptor(this::loggingInterceptor)
+						.addInterceptor(this::throttlingInterceptor)
+						.addInterceptor(this::responseCodeInterceptor)
+						.build())
+				.build();
+
+		this.api = client.create(DiacompApi.class);
 	}
 
-	/* ================================ ROUTINES ================================ */
+	/* ================================ INTERCEPTORS ================================ */
 
-	/**
-	 * Converts server's response into String
-	 *
-	 * @param response Server's response
-	 * @return String
-	 */
-	private static String formatResponse(HttpResponse response)
+	private okhttp3.Response loggingInterceptor(Chain chain) throws IOException
 	{
-		if (null == response.getEntity())
-		{
-			throw new ResponseFormatException("Bad response, getEntity() is null");
-		}
-
-		try
-		{
-			String s = EntityUtils.toString(response.getEntity(), ENCODING_UTF8);
-			if (s == null)
-			{
-				throw new ResponseFormatException("Bad response, response is null");
-			}
-
-			checkResponseCode(response.getStatusLine().getStatusCode(), s);
-			return s;
-		}
-		catch (IOException e)
-		{
-			throw new ResponseFormatException(e);
-		}
+		Log.d(TAG, chain.request().method() + " " + chain.request().url());
+		return chain.proceed(chain.request());
 	}
 
-	private static void checkResponseCode(final int code, String msg)
+	private synchronized okhttp3.Response throttlingInterceptor(Chain chain) throws IOException
 	{
-		switch (code)
-		{
-			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-			{
-				throw new TaskExecutionException(code, msg);
-			}
-			case HttpStatus.SC_NOT_FOUND:
-			{
-				throw new NotFoundException(msg);
-			}
-			case HttpStatus.SC_UNAUTHORIZED:
-			{
-				throw new NotAuthorizedException(msg);
-			}
-			case HttpStatus.SC_OK:
-			default:
-			{
-				break;
-			}
-		}
-	}
-
-	private synchronized void checkTimeout()
-	{
-		long now = System.nanoTime();
-
+		final long now = System.nanoTime();
 		if (now - lastRequestTime < MIN_REQUEST_DELAY)
 		{
-			long sleep = (MIN_REQUEST_DELAY - now + lastRequestTime) / Utils.NsecPerMsec;
+			final long sleep = (MIN_REQUEST_DELAY - now + lastRequestTime) / Utils.NsecPerMsec;
 			Log.i(TAG, String.format("Too many requests per second, sleeping for %d ms", sleep));
 			Utils.sleep(sleep);
 		}
 
 		lastRequestTime = now;
+		return chain.proceed(chain.request());
 	}
 
-	/**
-	 * Performs GET request
-	 *
-	 * @param url
-	 * @return
-	 */
-	private String doGet(String url)
+	private okhttp3.Response responseCodeInterceptor(Chain chain) throws IOException
 	{
-		checkTimeout();
+		okhttp3.Response response = chain.proceed(chain.request());
 
-		url = server + url;
-		Log.d(TAG, "GET " + url);
-
-		try
+		switch (response.code())
 		{
-			// TODO: check if %20 replacement is necessary
-			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-
-			return formatResponse(resp);
-		}
-		catch (IOException e)
-		{
-			throw new ConnectionException("Failed to GET " + url, e);
-		}
-	}
-
-	/**
-	 * Performs POST request
-	 *
-	 * @param url
-	 * @param params
-	 * @return
-	 */
-	private String doPost(String url, List<NameValuePair> params)
-	{
-		checkTimeout();
-
-		url = server + url;
-		Log.d(TAG, "POST " + url);
-
-		try
-		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, ENCODING_UTF8);
-			HttpPost post = new HttpPost(url.replace(" ", CODE_SPACE));
-			post.addHeader(entity.getContentType());
-			post.setEntity(entity);
-			HttpResponse resp = mHttpClient.execute(post);
-
-			return formatResponse(resp);
-		}
-		catch (IOException e)
-		{
-			throw new ConnectionException("Failed to POST " + url, e);
-		}
-	}
-
-	/**
-	 * Performs PUT request
-	 *
-	 * @param url
-	 * @param params
-	 * @return
-	 */
-	private String doPut(String url, List<NameValuePair> params)
-	{
-		checkTimeout();
-
-		url = server + url;
-		Log.d(TAG, "PUT " + url);
-
-		try
-		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, ENCODING_UTF8);
-			HttpPut put = new HttpPut(url.replace(" ", CODE_SPACE));
-			put.addHeader(entity.getContentType());
-			put.setEntity(entity);
-			HttpResponse resp = mHttpClient.execute(put);
-
-			return formatResponse(resp);
-		}
-		catch (IOException e)
-		{
-			throw new ConnectionException("Failed to PUT " + url, e);
-		}
-	}
-
-	private InputStream doLoadStream(String url)
-	{
-		checkTimeout();
-
-		url = server + url;
-		Log.d(TAG, "GET " + url);
-
-		try
-		{
-			// TODO: check if %20 replacement is necessary
-			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-
-			if (null == resp.getEntity())
+			case 500:
 			{
-				throw new ResponseFormatException("Bad response, getEntity() is null");
+				throw new TaskExecutionException(500, getBody(response.body()));
 			}
-
-			InputStream stream = resp.getEntity().getContent();
-			if (stream == null)
+			case 404:
 			{
-				throw new ResponseFormatException("Bad response, stream is null");
+				throw new NotFoundException(getBody(response.body()));
 			}
+			case 401:
+			{
+				if (!chain.request().url().toString().contains(API_LOGIN))
+				{
+					response.close();
+					login();
+					response = chain.proceed(chain.request());
+				}
 
-			checkResponseCode(resp.getStatusLine().getStatusCode(), null);
-			return stream;
+				if (response.code() == 401)
+				{
+					throw new NotAuthorizedException(getBody(response.body()));
+				}
+			}
+			case 200:
+			default:
+			{
+				break;
+			}
 		}
-		catch (IOException e)
-		{
-			throw new ConnectionException("Failed to GET " + url, e);
-		}
+
+		return response;
+	}
+
+	/* ================================ ROUTINES ================================ */
+
+	private static String getBody(Response<ResponseBody> response) throws IOException
+	{
+		return getBody(response.body());
+	}
+
+	private static String getBody(ResponseBody body) throws IOException
+	{
+		return body != null
+				? body.string()
+				: null;
 	}
 
 	private static String ensureEndsWithSlash(String url)
@@ -298,12 +184,11 @@ public class WebClient
 	{
 		try
 		{
-			return doGet(url);
+			return getBody(api.get(url).execute());
 		}
-		catch (NotAuthorizedException e)
+		catch (IOException e)
 		{
-			login();
-			return doGet(url);
+			throw new ConnectionException("Failed to GET " + server + url, e);
 		}
 	}
 
@@ -314,16 +199,15 @@ public class WebClient
 	 * @param params
 	 * @return
 	 */
-	public String post(String URL, List<NameValuePair> params)
+	public String post(String URL, Map<String, String> params)
 	{
 		try
 		{
-			return doPost(URL, params);
+			return getBody(api.post(URL, params).execute());
 		}
-		catch (NotAuthorizedException e)
+		catch (IOException e)
 		{
-			login();
-			return doPost(URL, params);
+			throw new ConnectionException("Failed to POST " + server + URL, e);
 		}
 	}
 
@@ -334,16 +218,15 @@ public class WebClient
 	 * @param params
 	 * @return
 	 */
-	public String put(String URL, List<NameValuePair> params)
+	public String put(String URL, Map<String, String> params)
 	{
 		try
 		{
-			return doPut(URL, params);
+			return getBody(api.put(URL, params).execute());
 		}
-		catch (NotAuthorizedException e)
+		catch (IOException e)
 		{
-			login();
-			return doPut(URL, params);
+			throw new ConnectionException("Failed to PUT " + server + URL, e);
 		}
 	}
 
@@ -351,12 +234,12 @@ public class WebClient
 	{
 		try
 		{
-			return doLoadStream(url);
+			final Response<ResponseBody> execute = api.get(url).execute();
+			return execute.body().byteStream();
 		}
-		catch (NotAuthorizedException e)
+		catch (IOException e)
 		{
-			login();
-			return doLoadStream(url);
+			throw new ConnectionException("Failed to GET " + server + url, e);
 		}
 	}
 
@@ -375,13 +258,20 @@ public class WebClient
 
 		// building request
 
-		List<NameValuePair> p = new ArrayList<>();
-		p.add(new BasicNameValuePair("login", username));
-		p.add(new BasicNameValuePair("pass", password));
-		p.add(new BasicNameValuePair("api", String.valueOf(API_VERSION)));
+		final Map<String, String> p = new HashMap<>();
+		p.put("login", username);
+		p.put("pass", password);
+		p.put("api", String.valueOf(API_VERSION));
 
 		// send
 
-		doPost("api/auth/login/", p);
+		try
+		{
+			api.post(API_LOGIN, p).execute();
+		}
+		catch (IOException e)
+		{
+			throw new ConnectionException("Failed to POST " + server + API_LOGIN, e);
+		}
 	}
 }
