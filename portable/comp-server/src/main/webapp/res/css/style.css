@@ -296,7 +296,7 @@ li.feedbackPanelERROR {
 /* =========================== AUTH / REG =========================== */
 .login_panel {
     max-width: 200px;
-    padding: 0px 0px 0px 0px;
+    padding: 0;
     margin: 0 auto;
     font-size: 100%;
 }
