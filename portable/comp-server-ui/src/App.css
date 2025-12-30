@@ -1,0 +1,184 @@
+body {
+    font-family: Tahoma;
+    margin: 0;
+    color: #333;
+    background-color: #f7f7f7;
+}
+
+a {
+    text-decoration: none !important;
+    color: #428bca;
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;;
+}
+
+.btn-primary {
+    background: #428bca;
+    color: #fff;
+    border: #428bcaa0 solid 1px;
+}
+
+button:disabled {
+    background: #999;
+    color: #eee;
+    border: #666 solid 1px;
+}
+
+.muted {
+    color: #ccc;
+}
+
+.danger {
+    color: #f00 !important;
+}
+
+.error {
+    border: 1px solid #f00;
+    background-color: #ffdddd;
+    padding: 10px;
+}
+
+.section {
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 5px;
+    background-color: #fff;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 0 10px 0px #e7e7e7;
+}
+
+.pl-1 {
+    padding-left: 5px;
+}
+
+.pl-2 {
+    padding-left: 10px;
+}
+
+.pl-3 {
+    padding-left: 15px;
+}
+
+.pr-1 {
+    padding-right: 5px;
+}
+
+.pr-2 {
+    padding-right: 10px;
+}
+
+.pr-3 {
+    padding-right: 15px;
+}
+
+.pt-1 {
+    padding-top: 5px;
+}
+
+.pt-2 {
+    padding-top: 10px;
+}
+
+.pt-3 {
+    padding-top: 15px;
+}
+
+.pb-1 {
+    padding-bottom: 5px;
+}
+
+.pb-2 {
+    padding-bottom: 10px;
+}
+
+.pb-3 {
+    padding-bottom: 15px;
+}
+
+.ml-3 {
+    margin-left: 15px;
+}
+
+.mr-3 {
+    margin-right: 15px;
+}
+
+/*.m-1 {
+    margin: 5px;
+}
+
+.m-2 {
+    margin: 10px;
+}
+
+.m-3 {
+    margin: 15px;
+}*/
+
+/*.mt-1 {
+    margin-top: 5px;
+}
+
+.mt-2 {
+    margin-top: 10px;
+}
+
+.mt-3 {
+    margin-top: 15px;
+}*/
+
+.hidden {
+    display: none !important;
+}
+
+nav {
+    padding: 0 !important;
+}
+
+.navbar-toggler {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+}
+
+.offcanvas-header, h5 {
+    background-color: #303030 !important;
+    color: #cfcfcf !important;
+    height: 50px !important;
+}
+
+.offcanvas-title, h5 {
+    font-size: 120% !important;
+    font-weight: bold !important;
+}
+
+.offcanvas {
+    bottom: unset !important;
+}
+
+.offcanvas.offcanvas-end {
+    top: 50px !important;
+}
+
+.offcanvas-body {
+    padding: 0 !important;
+}
+
+.nav-link {
+    padding: 15px !important;
+}
+
+.nav-link:hover {
+    background: #eee;
+}
+
+.action-icon {
+    width: 24px;
+    margin-right: 10px;
+}

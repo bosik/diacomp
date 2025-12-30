@@ -1,0 +1,39 @@
+.block-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    padding: 0;
+    background-color: #fff;
+    border-bottom: 1px solid #e7e7e7;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.block-title {
+    white-space: nowrap;
+    color: #777;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-grow: 1;
+    margin-left: 10px;
+    font-size: 18px;
+    line-height: 20px;
+    cursor: default;
+}
+
+.block-content {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+}
+
+.logo {
+    margin: 5px 0 0 10px;
+    width: 25px;
+}

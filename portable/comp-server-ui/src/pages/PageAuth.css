@@ -1,0 +1,47 @@
+label {
+    display: block;
+    padding: 5px 0;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #0002;
+}
+
+.form-group {
+    flex-direction: column;
+    display: flex;
+}
+
+form {
+    margin: 20px auto;
+    max-width: 350px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+button#buttonLogin {
+    margin-bottom: 30px
+}
+
+.outline-label {
+    font-size: 70%;
+    position: relative;
+    top: -45px;
+    left: 5px;
+    background-color: #fff;
+    padding: 0 5px;
+    width: fit-content;
+    color: #888;
+}
+
+input {
+    -webkit-background-clip: text !important;
+}

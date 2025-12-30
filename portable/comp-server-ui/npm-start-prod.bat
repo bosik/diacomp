@@ -1,0 +1,1 @@
+start "NPM Startup" "npm" run prod

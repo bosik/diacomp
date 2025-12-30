@@ -1,0 +1,34 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+}
+
+.bg-dark {
+    background: #0d0d0d;
+}
+
+.properties-row {
+    display: flex;
+}
+
+.properties-key {
+    color: #808080;
+    width: 50%;
+    padding-right: 5px;
+}
+
+.properties-value {
+    width: 50%;
+    word-break: break-all;
+    padding-left: 5px;
+}
+
+audio {
+    width: 100%;
+}
+
+.large-image {
+    box-shadow: #ccc 0 0 5px 1px;
+}
