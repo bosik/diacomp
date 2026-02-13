@@ -20,7 +20,7 @@ public class CursorIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseabl
 	@Override
 	public boolean hasNext()
 	{
-		return !cursor.isClosed() && !cursor.isLast();
+		return !cursor.isClosed() && !cursor.isLast() && !cursor.isAfterLast(); // empty cursor has isLast()=false, isAfterLast()=true
 	}
 
 	@Override

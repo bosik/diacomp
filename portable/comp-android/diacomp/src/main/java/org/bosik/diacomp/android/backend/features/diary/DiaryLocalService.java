@@ -392,7 +392,7 @@ public class DiaryLocalService implements DiaryService, Importable
 				null;
 
 		final Cursor cursor = resolver.query(TableDiary.CONTENT_URI, select, selection, selectionArgs, null);
-		return cursor != null ?
+		return cursor != null && cursor.moveToFirst() ?
 				new CursorIterator<>(cursor, c -> cursor.getString(0)) :
 				CursorIterator.empty();
 	}
