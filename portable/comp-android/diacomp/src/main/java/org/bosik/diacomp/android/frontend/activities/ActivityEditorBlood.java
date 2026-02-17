@@ -18,9 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,46 +62,20 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		spinnerFinger = findViewById(R.id.spinnerBloodFinger);
 
 		buttonTime = findViewById(R.id.buttonBloodTime);
-		buttonTime.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showTimePickerDialog();
-			}
-		});
+		buttonTime.setOnClickListener(v -> showTimePickerDialog());
 		buttonDate = findViewById(R.id.buttonBloodDate);
-		buttonDate.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
+		buttonDate.setOnClickListener(v -> showDatePickerDialog());
+
+		editValue.setOnEditorActionListener((v, actionId, event) -> {
+			if (actionId == EditorInfo.IME_ACTION_DONE)
 			{
-				showDatePickerDialog();
+				submit();
+				return true;
 			}
+			return false;
 		});
 
-		editValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
-		{
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-			{
-				if (actionId == EditorInfo.IME_ACTION_DONE)
-				{
-					submit();
-					return true;
-				}
-				return false;
-			}
-		});
-
-		findViewById(R.id.buttonBloodOK).setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				ActivityEditorBlood.this.submit();
-			}
-		});
+		findViewById(R.id.buttonBloodOK).setOnClickListener(v -> ActivityEditorBlood.this.submit());
 
 		preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 	}
@@ -213,14 +185,11 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 
 	private static Units.BloodSugar readUnit(int index)
 	{
-		switch (index)
+		return switch (index)
 		{
-			case 0:
-				return Units.BloodSugar.MMOL_L;
-			case 1:
-				return Units.BloodSugar.MG_DL;
-			default:
-				throw new IllegalArgumentException();
-		}
+			case 0 -> Units.BloodSugar.MMOL_L;
+			case 1 -> Units.BloodSugar.MG_DL;
+			default -> throw new IllegalArgumentException();
+		};
 	}
 }
