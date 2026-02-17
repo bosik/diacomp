@@ -139,8 +139,8 @@ public class DiaryDayView extends LinearLayout
 	private       int        offset;
 
 	// Components
-	private BaseAdapter adapter;
-	private ListView    listRecs;
+	private final BaseAdapter adapter;
+	private final ListView    listRecs;
 
 	// Listeners
 	private OnRecordClickListener onRecordClickListener;
@@ -204,9 +204,8 @@ public class DiaryDayView extends LinearLayout
 						if (index >= 0 && index < data.size())
 						{
 							Item item = data.get(index);
-							if (item instanceof ItemData)
+							if (item instanceof ItemData itemData)
 							{
-								ItemData itemData = (ItemData) item;
 								itemData.record.setDeleted(true);
 								itemData.record.modified();
 								removedRecords.add(itemData.record);
@@ -435,39 +434,34 @@ public class DiaryDayView extends LinearLayout
 			}
 		});
 
-		listRecs.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+		listRecs.setOnItemClickListener((parent, view, position, id) -> {
+			int index = positionToIndex(position);
+
+			if (index < 0 || index >= data.size())
 			{
-				int index = positionToIndex(position);
+				return;
+			}
 
-				if (index < 0 || index >= data.size())
-				{
-					return;
-				}
+			Object item = data.get(index);
 
-				Object item = data.get(index);
-
-				if (item instanceof ItemHeader)
+			if (item instanceof ItemHeader)
+			{
+				if (onHeaderClickListener != null)
 				{
-					if (onHeaderClickListener != null)
-					{
-						onHeaderClickListener.onHeaderClick(((ItemHeader) item).date);
-					}
+					onHeaderClickListener.onHeaderClick(((ItemHeader) item).date);
 				}
-				else if (item instanceof ItemData)
+			}
+			else if (item instanceof ItemData)
+			{
+				Versioned<DiaryRecord> record = ((ItemData) item).record;
+				if (onRecordClickListener != null)
 				{
-					Versioned<DiaryRecord> record = ((ItemData) item).record;
-					if (onRecordClickListener != null)
-					{
-						onRecordClickListener.onRecordClick(record);
-					}
+					onRecordClickListener.onRecordClick(record);
 				}
-				else
-				{
-					throw new RuntimeException("Invalid data type: " + item);
-				}
+			}
+			else
+			{
+				throw new RuntimeException("Invalid data type: " + item);
 			}
 		});
 	}
@@ -675,9 +669,8 @@ public class DiaryDayView extends LinearLayout
 
 		for (Item item : data)
 		{
-			if (item instanceof ItemData)
+			if (item instanceof ItemData itemData)
 			{
-				ItemData itemData = (ItemData) item;
 				DiaryRecord record = itemData.record.getData();
 				if (record instanceof InsRecord)
 				{
@@ -687,9 +680,8 @@ public class DiaryDayView extends LinearLayout
 						minFreeTime = curFreeTime;
 					}
 				}
-				else if (record instanceof MealRecord)
+				else if (record instanceof MealRecord meal)
 				{
-					MealRecord meal = (MealRecord) record;
 					if (meal.getCarbs() > 1.0)
 					{
 						long affectTime = meal.getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT : DEFAULT_AFFECT_TIME_MEAL_STD;
