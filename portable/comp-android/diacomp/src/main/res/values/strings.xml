@@ -184,6 +184,7 @@
     <!-- Arrays -->
 
     <string-array name="fingers_middle">
+        <item>(not selected)</item>
         <item>Left hand, thumb</item>
         <item>Left hand, index</item>
         <item>Left hand, middle</item>

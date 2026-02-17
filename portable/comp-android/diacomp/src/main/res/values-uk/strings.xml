@@ -181,6 +181,7 @@
     <!-- Arrays -->
 
     <string-array name="fingers_middle">
+        <item>(не обрано)</item>
         <item>Ліва рука, великий</item>
         <item>Ліва рука, вказівний</item>
         <item>Ліва рука, середній</item>

@@ -103,7 +103,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 
 		if (askFinger)
 		{
-			spinnerFinger.setSelection(entity.getData().getFinger());
+			spinnerFinger.setSelection(entity.getData().getFinger() + 1);
 		}
 		else
 		{
@@ -150,7 +150,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		{
 			if (askFinger)
 			{
-				entity.getData().setFinger(spinnerFinger.getSelectedItemPosition());
+				entity.getData().setFinger(spinnerFinger.getSelectedItemPosition() - 1);
 			}
 			else
 			{
