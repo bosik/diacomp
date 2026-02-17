@@ -139,7 +139,6 @@
     <string name="main_option_login">Login</string>
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_refresh">Refresh</string>
-    <string name="main_title">Diacomp</string>
     <string name="notification_download_channel_description">Notifies when download is in progress</string>
     <string name="notification_download_channel_name">Downloads</string>
     <string name="notification_download_foodbase">Food base setup</string>

@@ -81,7 +81,6 @@
         <activity
             android:name=".frontend.activities.ActivityMain"
             android:exported="true"
-            android:label="@string/main_title"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

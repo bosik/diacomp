@@ -136,7 +136,6 @@
     <string name="main_option_login">Вхід</string>
     <string name="main_option_preferences">Налаштування</string>
     <string name="main_option_refresh">Обновити</string>
-    <string name="main_title">Diacomp</string>
     <string name="notification_download_channel_description">Нотифікація про статус завантаження</string>
     <string name="notification_download_channel_name">Завантаження</string>
     <string name="notification_download_foodbase">Налаштування бази продуктів</string>
