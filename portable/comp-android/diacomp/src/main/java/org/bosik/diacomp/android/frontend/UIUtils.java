@@ -22,8 +22,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
@@ -88,65 +86,45 @@ public class UIUtils
 		builder.setMessage(message);
 		builder.setView(input);
 
-		builder.setPositiveButton(context.getString(R.string.common_button_ok), new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialog, int whichButton)
-			{
-				String text = input.getText().toString();
+		builder.setPositiveButton(context.getString(R.string.common_button_ok), (dialog, whichButton) -> {
+			String text = input.getText().toString();
 
-				try
+			try
+			{
+				if (text.isEmpty())
 				{
-					if (text.isEmpty())
+					e.onSubmit(null);
+				}
+				else
+				{
+					double mass = Utils.parseExpression(text);
+					if (mass > Utils.EPS)
 					{
-						e.onSubmit(null);
+						e.onSubmit(mass);
 					}
 					else
 					{
-						double mass = Utils.parseExpression(text);
-						if (mass > Utils.EPS)
-						{
-							e.onSubmit(mass);
-						}
-						else
-						{
-							e.onSubmit(null);
-						}
+						e.onSubmit(null);
 					}
 				}
-				catch (NumberFormatException ex)
-				{
-					UIUtils.showTip((Activity) context, context.getString(R.string.editor_mass_error));
-					e.onCancel();
-				}
 			}
-		});
-		builder.setOnCancelListener(new OnCancelListener()
-		{
-			@Override
-			public void onCancel(DialogInterface dialog)
+			catch (NumberFormatException ex)
 			{
+				UIUtils.showTip((Activity) context, context.getString(R.string.editor_mass_error));
 				e.onCancel();
 			}
 		});
-		builder.setNegativeButton(context.getString(R.string.common_button_cancel),
-				new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton)
-					{
-						e.onCancel();
-					}
-				});
+		builder.setOnCancelListener(dialog -> e.onCancel());
+		builder.setNegativeButton(context.getString(R.string.common_button_cancel), (dialog, whichButton) -> e.onCancel());
 		builder.show();
 	}
 
 	/**
 	 * Formats date using local device format
 	 *
-	 * @param context
-	 * @param date
-	 * @return
+	 * @param context Context
+	 * @param date    Date
+	 * @return String representation
 	 */
 	public static String formatDateLocalDevice(Context context, Date date)
 	{
@@ -161,9 +139,9 @@ public class UIUtils
 	/**
 	 * Formats time using local device format
 	 *
-	 * @param context
-	 * @param time
-	 * @return
+	 * @param context Context
+	 * @param time Time
+	 * @return String representation
 	 */
 	public static String formatTimeLocalDevice(Context context, Date time)
 	{
@@ -184,15 +162,12 @@ public class UIUtils
 
 	public static String getBloodSugarUnitName(Context context, Units.BloodSugar unit)
 	{
-		switch (unit)
+		return switch (unit)
 		{
-			case MMOL_L:
-				return context.getString(R.string.common_unit_bs_mmoll);
-			case MG_DL:
-				return context.getString(R.string.common_unit_bs_mgdl);
-			default:
-				throw new UnsupportedOperationException("Unsupported blood sugar unit: " + unit);
-		}
+			case MMOL_L -> context.getString(R.string.common_unit_bs_mmoll);
+			case MG_DL -> context.getString(R.string.common_unit_bs_mgdl);
+			default -> throw new UnsupportedOperationException("Unsupported blood sugar unit: " + unit);
+		};
 	}
 
 	public static String formatBloodSugar(Context context, double value, Units.BloodSugar unit)
