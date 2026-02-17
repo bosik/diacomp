@@ -221,12 +221,6 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	protected boolean getValuesFromGUI()
 	{
 		String name = editName.getText().toString();
-		if (name == null)
-		{
-			UIUtils.showTip(this, getString(R.string.editor_dish_error_empty_name));
-			editName.requestFocus();
-			return false;
-		}
 
 		name = name.trim();
 		String nameCleared = Utils.removeNonUtf8(name).trim();

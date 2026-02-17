@@ -84,22 +84,14 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	{
 		String text = editText.getText().toString();
 
-		if (text != null)
+		String cleared = Utils.removeNonUtf8(text);
+		if (!text.equals(cleared))
 		{
-			String cleared = Utils.removeNonUtf8(text);
-			if (!text.equals(cleared))
-			{
-				UIUtils.showTip(this, getString(R.string.common_tip_unsupported_chars_removed));
-			}
+			UIUtils.showTip(this, getString(R.string.common_tip_unsupported_chars_removed));
+		}
 
-			entity.getData().setText(cleared);
-			return true;
-		}
-		else
-		{
-			UIUtils.showTip(this, getString(R.string.editor_note_error_text));
-			return false;
-		}
+		entity.getData().setText(cleared);
+		return true;
 	}
 
 	@Override

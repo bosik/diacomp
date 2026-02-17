@@ -102,12 +102,6 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	protected boolean getValuesFromGUI()
 	{
 		String name = editName.getText().toString();
-		if (name == null)
-		{
-			UIUtils.showTip(this, getString(R.string.editor_food_error_empty_name));
-			editName.requestFocus();
-			return false;
-		}
 
 		name = name.trim();
 		String nameCleared = Utils.removeNonUtf8(name).trim();
