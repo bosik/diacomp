@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend;
 
@@ -48,14 +48,14 @@ public class UIUtils
 		showTip(activity.getApplicationContext(), msg);
 	}
 
-	public static void showTipLong(Context context, String msg)
+	public static void showLongTip(Context context, String msg)
 	{
 		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 	}
 
 	public static void showLongTip(Activity activity, String msg)
 	{
-		showTipLong(activity.getApplicationContext(), msg);
+		showLongTip(activity.getApplicationContext(), msg);
 	}
 
 	public static void showInfo(Context context, String title, String message)
@@ -143,7 +143,7 @@ public class UIUtils
 
 	/**
 	 * Formats date using local device format
-	 * 
+	 *
 	 * @param context
 	 * @param date
 	 * @return
@@ -160,7 +160,7 @@ public class UIUtils
 
 	/**
 	 * Formats time using local device format
-	 * 
+	 *
 	 * @param context
 	 * @param time
 	 * @return
