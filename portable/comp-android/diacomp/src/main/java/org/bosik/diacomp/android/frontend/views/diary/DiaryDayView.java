@@ -218,7 +218,7 @@ public class DiaryDayView extends LinearLayout
 				LocalDiary.getInstance(getContext()).save(removedRecords);
 
 				String text = String.format(Locale.US, getContext().getString(R.string.common_tip_deleted), removedRecords.size());
-				UIUtils.showTipLong(listRecs.getContext(), text);
+				UIUtils.showTip(listRecs.getContext(), text);
 
 				return true;
 			}
