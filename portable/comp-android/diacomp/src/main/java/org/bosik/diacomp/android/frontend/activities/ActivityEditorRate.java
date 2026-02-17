@@ -110,7 +110,9 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 			@Override
 			public void onClick(View v)
 			{
-				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_k_description));
+				UIUtils.showInfo(ActivityEditorRate.this,
+						getString(R.string.common_rate_k),
+						getString(R.string.common_rate_k_description));
 			}
 		});
 		findViewById(R.id.buttonHelpQ).setOnClickListener(new OnClickListener()
@@ -118,7 +120,9 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 			@Override
 			public void onClick(View v)
 			{
-				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_q_description));
+				UIUtils.showInfo(ActivityEditorRate.this,
+						getString(R.string.common_rate_q),
+						getString(R.string.common_rate_q_description));
 			}
 		});
 		findViewById(R.id.buttonHelpX).setOnClickListener(new OnClickListener()
@@ -126,7 +130,9 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 			@Override
 			public void onClick(View v)
 			{
-				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_x_description));
+				UIUtils.showInfo(ActivityEditorRate.this,
+						getString(R.string.common_rate_x),
+						getString(R.string.common_rate_x_description));
 			}
 		});
 

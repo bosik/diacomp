@@ -104,7 +104,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		{
 			case R.id.item_ins_help:
 			{
-				UIUtils.showLongTip(this, getString(R.string.editor_ins_tip));
+				UIUtils.showInfo(this, getString(R.string.editor_ins_title), getString(R.string.editor_ins_tip));
 				return true;
 			}
 			default:

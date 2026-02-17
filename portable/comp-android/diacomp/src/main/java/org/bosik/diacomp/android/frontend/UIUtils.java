@@ -58,6 +58,15 @@ public class UIUtils
 		showTipLong(activity.getApplicationContext(), msg);
 	}
 
+	public static void showInfo(Context context, String title, String message)
+	{
+		new AlertDialog.Builder(context)
+				.setTitle(title)
+				.setMessage(message)
+				.setPositiveButton(context.getString(R.string.common_button_ok), (dialog, whichButton) -> {})
+				.show();
+	}
+
 	public interface OnSubmit
 	{
 		void onSubmit(Double mass);

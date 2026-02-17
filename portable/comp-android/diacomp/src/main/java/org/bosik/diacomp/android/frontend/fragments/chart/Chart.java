@@ -148,7 +148,7 @@ public class Chart extends Fragment implements ProgressListener
 			{
 				if (getActivity() != null && getDescription() != null)
 				{
-					UIUtils.showLongTip(getActivity(), getDescription());
+					UIUtils.showInfo(getActivity(), getTitle(), getDescription());
 				}
 			}
 		});
