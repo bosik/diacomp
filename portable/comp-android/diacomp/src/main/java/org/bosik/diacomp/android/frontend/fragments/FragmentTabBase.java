@@ -52,9 +52,9 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
+import org.bosik.diacomp.android.backend.features.search.UsageIndexDiary;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
@@ -64,9 +64,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.android.backend.features.search.UsageIndexDiary;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -93,7 +91,6 @@ public class FragmentTabBase extends Fragment
 	// Data
 	private          FoodBaseService                          foodBaseService;
 	private          DishBaseService                          dishBaseService;
-	private          DiaryService                             diaryService;
 	private final    List<Versioned<? extends NamedRelative>> data             = new ArrayList<>();
 	private          BaseAdapter                              adapter;
 	private          long                                     lastSearchTime;
@@ -134,7 +131,6 @@ public class FragmentTabBase extends Fragment
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
 		foodBaseService = FoodBaseLocalService.getInstance(getActivity());
 		dishBaseService = DishBaseLocalService.getInstance(getActivity());
-		diaryService = LocalDiary.getInstance(getActivity());
 	}
 
 	@Override
@@ -250,61 +246,56 @@ public class FragmentTabBase extends Fragment
 				mode.setSubtitle(selectedCount == 0 ? null : String.valueOf(selectedCount));
 			}
 		});
-		list.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long itemIndex)
+		list.setOnItemClickListener((parent, view, position, itemIndex) -> {
+			final String id = data.get(position).getId();
+
+			new AsyncTask<String, Void, Versioned<? extends NamedRelative>>()
 			{
-				final String id = data.get(position).getId();
-
-				new AsyncTask<String, Void, Versioned<? extends NamedRelative>>()
+				@Override
+				protected Versioned<? extends NamedRelative> doInBackground(String... params)
 				{
-					@Override
-					protected Versioned<? extends NamedRelative> doInBackground(String... params)
+					Versioned<? extends NamedRelative> food = foodBaseService.findById(id);
+					if (food != null)
 					{
-						Versioned<? extends NamedRelative> food = foodBaseService.findById(id);
-						if (food != null)
-						{
-							return food;
-						}
-
-						Versioned<? extends NamedRelative> dish = dishBaseService.findById(id);
-						if (dish != null)
-						{
-							return dish;
-						}
-
-						return null;
+						return food;
 					}
 
-					@SuppressWarnings("unchecked")
-					@Override
-					protected void onPostExecute(Versioned<? extends NamedRelative> item)
+					Versioned<? extends NamedRelative> dish = dishBaseService.findById(id);
+					if (dish != null)
 					{
-						if (item != null)
+						return dish;
+					}
+
+					return null;
+				}
+
+				@SuppressWarnings("unchecked")
+				@Override
+				protected void onPostExecute(Versioned<? extends NamedRelative> item)
+				{
+					if (item != null)
+					{
+						if (item.getData().getClass().isAssignableFrom(FoodItem.class))
 						{
-							if (item.getData().getClass().isAssignableFrom(FoodItem.class))
-							{
-								showFoodEditor((Versioned<FoodItem>) item, false);
-							}
-							else if (item.getData().getClass().isAssignableFrom(DishItem.class))
-							{
-								showDishEditor((Versioned<DishItem>) item, false);
-							}
-							else
-							{
-								throw new IllegalArgumentException(
-										"Unknown record type '" + item.getData().getClass().getName() + "', id " + id);
-							}
+							showFoodEditor((Versioned<FoodItem>) item, false);
+						}
+						else if (item.getData().getClass().isAssignableFrom(DishItem.class))
+						{
+							showDishEditor((Versioned<DishItem>) item, false);
 						}
 						else
 						{
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_item_not_found));
-							adapter.notifyDataSetChanged();
+							throw new IllegalArgumentException(
+									"Unknown record type '" + item.getData().getClass().getName() + "', id " + id);
 						}
 					}
-				}.execute(id);
-			}
+					else
+					{
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_item_not_found));
+						adapter.notifyDataSetChanged();
+					}
+				}
+			}.execute(id);
 		});
 
 		adapter = new BaseAdapter()
