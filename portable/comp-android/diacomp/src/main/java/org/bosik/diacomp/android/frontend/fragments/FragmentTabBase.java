@@ -38,9 +38,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -167,6 +166,21 @@ public class FragmentTabBase extends Fragment
 				runSearch();
 			}
 		});
+
+		final Button buttonAddFood = rootView.findViewById(R.id.buttonAddFood);
+		final Button buttonAddDish = rootView.findViewById(R.id.buttonAddDish);
+
+		buttonAddFood.setOnClickListener(v -> {
+			final FoodItem food = new FoodItem();
+			food.setName(editSearch.getText().toString());
+			showFoodEditor(new Versioned<>(food), true);
+		});
+		buttonAddDish.setOnClickListener(v -> {
+			final DishItem dish = new DishItem();
+			dish.setName(editSearch.getText().toString());
+			showDishEditor(new Versioned<>(dish), true);
+		});
+
 		list = rootView.findViewById(R.id.listBaseEditorSearchResults);
 		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		list.setMultiChoiceModeListener(new MultiChoiceModeListener()
@@ -490,32 +504,6 @@ public class FragmentTabBase extends Fragment
 			if (item != null)
 			{
 				item.setVisible(false);
-			}
-		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-			case R.id.item_base_addFood:
-			{
-				FoodItem food = new FoodItem();
-				food.setName(editSearch.getText().toString());
-				showFoodEditor(new Versioned<>(food), true);
-				return true;
-			}
-			case R.id.item_base_addDish:
-			{
-				DishItem dish = new DishItem();
-				dish.setName(editSearch.getText().toString());
-				showDishEditor(new Versioned<>(dish), true);
-				return true;
-			}
-			default:
-			{
-				return false;// super.onOptionsItemSelected(item);
 			}
 		}
 	}
