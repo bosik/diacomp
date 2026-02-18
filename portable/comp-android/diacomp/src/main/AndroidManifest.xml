@@ -128,10 +128,6 @@
             android:exported="false"
             android:label="@string/rates_title"
             android:parentActivityName=".frontend.activities.ActivityPreferences">
-            <intent-filter>
-                <action android:name=".frontend.activities.ActivityRates" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".frontend.activities.ActivityEditorRate"

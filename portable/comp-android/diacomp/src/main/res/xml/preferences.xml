@@ -49,7 +49,9 @@
             android:enabled="false"
             android:key="pref-edit-rates"
             android:title="@string/preferences_rates_edit">
-            <intent android:action=".frontend.activities.ActivityRates" />
+            <intent
+                android:targetPackage="org.bosik.diacomp.android"
+                android:targetClass="org.bosik.diacomp.android.frontend.activities.ActivityRates" />
         </Preference>
     </PreferenceCategory>
 
