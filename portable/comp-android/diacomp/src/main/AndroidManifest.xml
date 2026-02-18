@@ -24,7 +24,6 @@
             android:name=".backend.common.DiaryContentProvider"
             android:authorities="diacomp.provider"
             android:exported="false">
-            <grant-uri-permission android:pathPattern=".*" />
         </provider>
 
         <service
