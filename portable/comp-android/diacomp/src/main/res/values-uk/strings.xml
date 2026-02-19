@@ -42,10 +42,6 @@
     <string name="common_rate_q_description">Показує, наскільки зменшується глюкоза в крові від однієї одиниці інсуліна</string>
     <string name="common_rate_x">Потреба в інсуліні</string>
     <string name="common_rate_x_description">Показує, скільки інсуліну треба для засвоєння однієї одиниці вуглеводів</string>
-    <string name="common_rectype_blood">Замір ГК</string>
-    <string name="common_rectype_ins">Ін\'єкція</string>
-    <string name="common_rectype_meal">Прийом їжі</string>
-    <string name="common_rectype_note">Нотатка</string>
     <string name="common_tip_deleted">Видалено записів: %d</string>
     <string name="common_tip_error_invalid_decimal">Введіть коректне число</string>
     <string name="common_tip_error_invalid_preference">Налаштування \'%s\' має невірне значення, буде використано значення за замовченням \'%s\'</string>

@@ -42,10 +42,6 @@
     <string name="common_rate_q_description">Показывает, насколько уменьшится сахар крови от одной единицы инсулина</string>
     <string name="common_rate_x">Потребность в инсулине</string>
     <string name="common_rate_x_description">Показывает, сколько инсулина необходимо для усвоения одной единицы углеводов</string>
-    <string name="common_rectype_blood">Замер СК</string>
-    <string name="common_rectype_ins">Инъекция</string>
-    <string name="common_rectype_meal">Приём пищи</string>
-    <string name="common_rectype_note">Заметка</string>
     <string name="common_tip_deleted">Удалено записей: %d</string>
     <string name="common_tip_error_invalid_decimal">Введите корректное число</string>
     <string name="common_tip_error_invalid_preference" formatted="false">Настройка \'%s\' имеет неверное значение, будет использовано значение по умолчанию \'%s\'</string>
